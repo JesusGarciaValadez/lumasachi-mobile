@@ -190,6 +190,10 @@ dist
 !.yarn/releases
 !.yarn/versions
 !.yarn/sdks
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
 .pnp.*
 
 ### ReactNative.macOS Stack ###
@@ -222,6 +226,9 @@ Temporary Items
 .apdisk
 
 ### ReactNative.Android Stack ###
+# Gradle files
+.gradle/
+build/
 
 # Local configuration file (sdk path, etc)
 local.properties
