@@ -10,11 +10,13 @@ import CreateOrderScreen from '../screens/CreateOrderScreen';
 import EditOrderScreen from '../screens/EditOrderScreen';
 import UserManagementScreen from '../screens/UserManagementScreen';
 import {useAuth} from '../hooks/useAuth';
+import {useTranslationSafe} from '../hooks/useTranslationSafe';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 const RootNavigator: React.FC = () => {
   const {isAuthenticated, isLoading} = useAuth();
+  const {t} = useTranslationSafe();
 
   if (isLoading) {
     return <SplashScreen />;
@@ -34,7 +36,7 @@ const RootNavigator: React.FC = () => {
               component={OrderDetailsScreen}
               options={{
                 headerShown: true,
-                title: 'Detalles de Orden',
+                title: t('orders.orderDetails') as string,
                 headerBackTitle: '',
               }}
             />
@@ -43,7 +45,7 @@ const RootNavigator: React.FC = () => {
               component={CreateOrderScreen}
               options={{
                 headerShown: true,
-                title: 'Crear Orden',
+                title: t('createOrder.title') as string,
                 headerBackTitle: '',
               }}
             />
@@ -52,7 +54,7 @@ const RootNavigator: React.FC = () => {
               component={EditOrderScreen}
               options={{
                 headerShown: true,
-                title: 'Editar Orden',
+                title: t('editOrder.title') as string,
                 headerBackTitle: '',
               }}
             />
@@ -61,7 +63,7 @@ const RootNavigator: React.FC = () => {
               component={UserManagementScreen}
               options={{
                 headerShown: true,
-                title: 'Gestión de Usuarios',
+                title: t('userManagement.title') as string,
                 headerBackTitle: '',
               }}
             />
