@@ -25,7 +25,7 @@ export type MainTabParamList = {
   Home: undefined;
   Orders: undefined;
   Profile: undefined;
-  Users: undefined; // Solo para Admin/Super Admin
+  Users: undefined; // Only for Admin/Super Admin
   Settings: undefined;
 };
 
@@ -77,7 +77,19 @@ export interface EditOrderScreenProps {
 }
 
 // Role-based navigation helpers
-export type UserRole = 'Super Administrator' | 'Administrator' | 'Employee' | 'Customer';
+export enum UserRole {
+  SUPER_ADMIN = 'SUPER_ADMIN',
+  ADMIN = 'ADMIN',
+  EMPLOYEE = 'EMPLOYEE',
+  CUSTOMER = 'CUSTOMER',
+}
+
+export const USER_ROLES = {
+  SUPER_ADMIN: { key: UserRole.SUPER_ADMIN, displayName: 'Super Administrator' },
+  ADMIN: { key: UserRole.ADMIN, displayName: 'Administrator' },
+  EMPLOYEE: { key: UserRole.EMPLOYEE, displayName: 'Employee' },
+  CUSTOMER: { key: UserRole.CUSTOMER, displayName: 'Customer' },
+} as const;
 
 export interface NavigationConfig {
   showUsersTab: boolean;
@@ -89,7 +101,7 @@ export interface NavigationConfig {
 
 export const getNavigationConfig = (role: UserRole): NavigationConfig => {
   switch (role) {
-    case 'Super Administrator':
+    case UserRole.SUPER_ADMIN:
       return {
         showUsersTab: true,
         showCreateOrder: true,
@@ -97,7 +109,7 @@ export const getNavigationConfig = (role: UserRole): NavigationConfig => {
         canEditAllOrders: true,
         canDeleteOrders: true,
       };
-    case 'Administrator':
+    case UserRole.ADMIN:
       return {
         showUsersTab: true,
         showCreateOrder: true,
@@ -105,7 +117,7 @@ export const getNavigationConfig = (role: UserRole): NavigationConfig => {
         canEditAllOrders: true,
         canDeleteOrders: false,
       };
-    case 'Employee':
+    case UserRole.EMPLOYEE:
       return {
         showUsersTab: false,
         showCreateOrder: true,
@@ -113,7 +125,7 @@ export const getNavigationConfig = (role: UserRole): NavigationConfig => {
         canEditAllOrders: false,
         canDeleteOrders: false,
       };
-    case 'Customer':
+    case UserRole.CUSTOMER:
       return {
         showUsersTab: false,
         showCreateOrder: true,
