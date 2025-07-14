@@ -88,7 +88,7 @@ const ErrorBoundaryFallback: React.FC<{
       <TouchableOpacity
         style={[styles.retryButton, !canRetry && styles.retryButtonSecondary]}
         onPress={handleRetry}
-        disabled={false}
+        disabled={!canRetry}
       >
         <Text style={styles.retryButtonText}>
           {canRetry ? t('common.retry') : t('common.resetAndRetry')}
