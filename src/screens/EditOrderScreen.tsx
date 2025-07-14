@@ -87,12 +87,10 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
     );
   };
 
-  const statuses = [
-    {key: 'open', label: t('orders.statuses.open')},
-    {key: 'inProgress', label: t('orders.statuses.inProgress')},
-    {key: 'readyForDelivery', label: t('orders.statuses.readyForDelivery')},
-    {key: 'delivered', label: t('orders.statuses.delivered')},
-  ];
+  const statuses = Object.keys(t('orders.statuses', {returnObjects: true})).map(key => ({
+    key,
+    label: t(`orders.statuses.${key}`),
+  }));
 
   const priorities = [
     {key: 'low', label: t('orders.priorities.low')},
