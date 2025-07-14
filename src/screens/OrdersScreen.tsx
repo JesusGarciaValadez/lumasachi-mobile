@@ -44,7 +44,7 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
       </View>
       <View style={styles.orderDetails}>
         <Text style={styles.orderCustomer}>{t('orders.customer')}: {item.customerId}</Text>
-        <Text style={styles.orderStatus}>{t('orders.status')}: {t('orders.inProgress')}</Text>
+        <Text style={styles.orderStatus}>{t('orders.status')}: {t(`orders.statuses.${item.status}`)}</Text>
       </View>
     </TouchableOpacity>
   );

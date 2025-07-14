@@ -58,6 +58,7 @@ export interface Status {
 export interface Order {
   id: string;
   customerId: string;
+  status: Status['statusName'];
   createdAt: Date;
   updatedAt: Date;
   createdBy: string;
