@@ -79,7 +79,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
           </View>
         ) : statsError ? (
           <View style={styles.summaryCard}>
-            <Text style={styles.errorText}>{statsError}</Text>
+            <Text style={styles.errorText}>{t('home.error.generic')}</Text>
           </View>
         ) : (
           <>

@@ -34,7 +34,10 @@
     "viewProfile": "Ver Perfil",
     "summary": "Resumen",
     "activeOrders": "Órdenes Activas",
-    "completedOrders": "Órdenes Completadas"
+    "completedOrders": "Órdenes Completadas",
+    "error": {
+      "generic": "No se pueden cargar los datos. Por favor intenta de nuevo más tarde."
+    }
   },
   "orders": {
     "title": "Órdenes",
