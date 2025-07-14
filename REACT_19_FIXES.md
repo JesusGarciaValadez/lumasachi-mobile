@@ -15,6 +15,14 @@ Actualizado a versiones compatibles con React 19:
 - `i18next`: `^25.3.2` → `^23.16.8`
 - `react-i18next`: `^15.6.0` → `^14.1.3`
 
+**Nota**: Las versiones específicas fueron seleccionadas por su compatibilidad 
+probada con React 19 y estabilidad en el ecosistema React Native. Las versiones 
+más recientes de i18next (v25+) y react-i18next (v15+) presentan incompatibilidades 
+con React 19, particularmente en el orden de hooks y el manejo de estado interno. 
+Las versiones seleccionadas (i18next v23.16.8 y react-i18next v14.1.3) son las 
+últimas versiones estables que mantienen compatibilidad total con React 19 sin 
+sacrificar funcionalidad esencial.
+
 ### 2. Configuración de i18n Mejorada
 
 **Archivo**: `src/i18n/index.ts`
