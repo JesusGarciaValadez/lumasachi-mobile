@@ -79,7 +79,9 @@
   },
   "editOrder": {
     "title": "Guardar Cambios",
-    "confirmSave": "¿Estás seguro de que quieres guardar los cambios?"
+    "confirmSave": "¿Estás seguro de que quieres guardar los cambios?",
+    "loadingOrder": "Cargando orden...",
+    "loadError": "No se pudo cargar la orden"
   },
   "profile": {
     "title": "Perfil",

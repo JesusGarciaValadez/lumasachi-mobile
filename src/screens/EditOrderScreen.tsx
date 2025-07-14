@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import {EditOrderScreenProps} from '../types/navigation';
 import {useTranslation} from 'react-i18next';
@@ -17,13 +18,44 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
 }) => {
   const {orderId} = route.params;
   const {t} = useTranslation();
+  const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
-    customer: 'Cliente Demo',
-    description: 'Descripción de la orden existente',
+    customer: '',
+    description: '',
     priority: t('orders.priorities.normal'),
-    category: 'Reparación',
-    status: t('orders.statuses.inProgress'),
+    category: '',
+    status: t('orders.statuses.open'),
   });
+
+  useEffect(() => {
+    const loadOrderData = async () => {
+      try {
+        // TODO: Uncomment when backend is implemented
+        // const order = await fetchOrder(orderId);
+        // setFormData({
+        //   customer: order.customer,
+        //   description: order.description,
+        //   priority: order.priority,
+        //   category: order.category,
+        //   status: order.status,
+        // });
+        
+        // Temporary placeholder data until backend is ready
+        setFormData({
+          customer: 'Cliente Demo',
+          description: 'Descripción de la orden existente',
+          priority: t('orders.priorities.normal'),
+          category: 'Reparación',
+          status: t('orders.statuses.inProgress'),
+        });
+      } catch (error) {
+        Alert.alert(t('common.error'), t('editOrder.loadError'));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadOrderData();
+  }, [orderId, t]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({...prev, [field]: value}));
@@ -60,6 +92,15 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
     {key: 'high', label: t('orders.priorities.high')},
     {key: 'urgent', label: t('orders.priorities.urgent')},
   ];
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#007AFF" />
+        <Text style={styles.loadingText}>{t('editOrder.loadingOrder')}</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
@@ -160,6 +201,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#666',
   },
   header: {
     backgroundColor: '#007AFF',
