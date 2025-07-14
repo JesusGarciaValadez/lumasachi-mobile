@@ -13,9 +13,20 @@
     "logout": "Cerrar Sesión",
     "loggingOut": "Cerrando Sesión...",
     "logoutConfirm": "¿Estás seguro de que quieres cerrar sesión?",
+    "mockUser": {
+      "firstName": "Usuario Demo",
+      "lastName": "Prueba",
+      "company": "Lumasachi",
+      "address": "Calle Principal 123",
+      "phoneNumber": "+52-123-456-7890"
+    },
     "errors": {
       "missingFields": "Por favor ingresa tu email y contraseña",
-      "invalidCredentials": "Credenciales inválidas"
+      "invalidCredentials": "Credenciales inválidas",
+      "storageLoad": "Error cargando usuario desde almacenamiento",
+      "logout": "Error durante el cierre de sesión",
+      "storageUpdate": "Error actualizando usuario en almacenamiento",
+      "hookUsage": "useAuth debe usarse dentro de un AuthProvider"
     },
     "forgotPassword": "¿Olvidaste tu contraseña?",
     "forgotPasswordTitle": "Restablecer Contraseña",

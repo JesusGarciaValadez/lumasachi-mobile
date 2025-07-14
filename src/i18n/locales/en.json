@@ -13,9 +13,20 @@
     "logout": "Sign Out",
     "loggingOut": "Signing out...",
     "logoutConfirm": "Are you sure you want to sign out?",
+    "mockUser": {
+      "firstName": "Demo User",
+      "lastName": "Test",
+      "company": "Lumasachi",
+      "address": "123 Main St",
+      "phoneNumber": "+1-123-456-7890"
+    },
     "errors": {
       "missingFields": "Please enter your email and password",
-      "invalidCredentials": "Invalid credentials"
+      "invalidCredentials": "Invalid credentials",
+      "storageLoad": "Error loading user from storage",
+      "logout": "Error during logout",
+      "storageUpdate": "Error updating user in storage",
+      "hookUsage": "useAuth must be used within an AuthProvider"
     },
     "forgotPassword": "Forgot Password?",
     "forgotPasswordTitle": "Reset Password",
