@@ -86,7 +86,9 @@
     "title": "Guardar Cambios",
     "confirmSave": "¿Estás seguro de que quieres guardar los cambios?",
     "loadingOrder": "Cargando orden...",
-    "loadError": "No se pudo cargar la orden"
+    "loadError": "No se pudo cargar la orden",
+    "updateSuccess": "Orden actualizada correctamente",
+    "updateError": "No se pudo actualizar la orden"
   },
   "profile": {
     "title": "Perfil",

@@ -86,7 +86,9 @@
     "title": "Save Changes",
     "confirmSave": "Are you sure you want to save the changes?",
     "loadingOrder": "Loading order...",
-    "loadError": "Failed to load order"
+    "loadError": "Failed to load order",
+    "updateSuccess": "Order updated successfully",
+    "updateError": "Failed to update order"
   },
   "profile": {
     "title": "Profile",
