@@ -63,7 +63,7 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
 
   const handleSubmit = () => {
     Alert.alert(
-      t('editOrder.title'),
+      t('editOrder.saveChanges'),
       t('editOrder.confirmSave'),
       [
         {text: t('common.cancel'), style: 'cancel'},
@@ -198,7 +198,7 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
         <TouchableOpacity
           style={styles.submitButton}
           onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>{t('editOrder.title')}</Text>
+          <Text style={styles.submitButtonText}>{t('editOrder.saveChanges')}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

@@ -83,7 +83,8 @@
     }
   },
   "editOrder": {
-    "title": "Save Changes",
+    "title": "Edit Order",
+    "saveChanges": "Save Changes",
     "confirmSave": "Are you sure you want to save the changes?",
     "loadingOrder": "Loading order...",
     "loadError": "Failed to load order",
