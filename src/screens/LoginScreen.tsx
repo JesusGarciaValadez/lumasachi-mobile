@@ -11,16 +11,18 @@ import {
   Platform,
 } from 'react-native';
 import {useAuth} from '../hooks/useAuth';
+import {useTranslation} from 'react-i18next';
 
 const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const {login} = useAuth();
+  const {t} = useTranslation();
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Error', 'Por favor ingresa tu email y contraseña');
+      Alert.alert(t('common.error'), t('auth.errors.missingFields'));
       return;
     }
 
@@ -28,7 +30,7 @@ const LoginScreen: React.FC = () => {
     try {
       await login(email, password);
     } catch (error) {
-      Alert.alert('Error', 'Credenciales inválidas');
+      Alert.alert(t('common.error'), t('auth.errors.invalidCredentials'));
     } finally {
       setIsLoading(false);
     }
@@ -40,13 +42,13 @@ const LoginScreen: React.FC = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.formContainer}>
-          <Text style={styles.title}>Lumasachi Control</Text>
-          <Text style={styles.subtitle}>Inicia sesión en tu cuenta</Text>
+          <Text style={styles.title}>{t('auth.title')}</Text>
+          <Text style={styles.subtitle}>{t('auth.subtitle')}</Text>
 
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
-              placeholder="Email"
+              placeholder={t('auth.email')}
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -58,7 +60,7 @@ const LoginScreen: React.FC = () => {
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
-              placeholder="Contraseña"
+              placeholder={t('auth.password')}
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -71,7 +73,7 @@ const LoginScreen: React.FC = () => {
             onPress={handleLogin}
             disabled={isLoading}>
             <Text style={styles.buttonText}>
-              {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+              {isLoading ? t('auth.loggingIn') : t('auth.login')}
             </Text>
           </TouchableOpacity>
         </View>

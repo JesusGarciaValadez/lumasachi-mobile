@@ -1,0 +1,143 @@
+{
+  "app": {
+    "name": "Lumasachi Control",
+    "loading": "Cargando..."
+  },
+  "auth": {
+    "title": "Lumasachi Control",
+    "subtitle": "Inicia sesión en tu cuenta",
+    "email": "Email",
+    "password": "Contraseña",
+    "login": "Iniciar Sesión",
+    "loggingIn": "Iniciando sesión...",
+    "logout": "Cerrar Sesión",
+    "loggingOut": "Cerrando Sesión...",
+    "logoutConfirm": "¿Estás seguro de que quieres cerrar sesión?",
+    "errors": {
+      "missingFields": "Por favor ingresa tu email y contraseña",
+      "invalidCredentials": "Credenciales inválidas"
+    }
+  },
+  "home": {
+    "greeting": {
+      "morning": "Buenos días",
+      "afternoon": "Buenas tardes",
+      "evening": "Buenas noches"
+    },
+    "user": "Usuario",
+    "quickActions": "Acciones Rápidas",
+    "createOrder": "Crear Nueva Orden",
+    "viewOrders": "Ver Mis Órdenes",
+    "viewProfile": "Ver Perfil",
+    "summary": "Resumen",
+    "activeOrders": "Órdenes Activas",
+    "completedOrders": "Órdenes Completadas"
+  },
+  "orders": {
+    "title": "Órdenes",
+    "order": "Orden",
+    "customer": "Cliente",
+    "status": "Estado",
+    "description": "Descripción",
+    "priority": "Prioridad",
+    "category": "Categoría",
+    "createdAt": "Fecha de Creación",
+    "updatedAt": "Última Actualización",
+    "editingOrder": "Editando Orden",
+    "orderDetails": "Detalles de la Orden",
+    "generalInfo": "Información General",
+    "createFirstOrder": "Crear Primera Orden",
+    "noOrdersAvailable": "No hay órdenes disponibles",
+    "inProgress": "En Progreso",
+    "statuses": {
+      "open": "Abierto",
+      "inProgress": "En Progreso",
+      "readyForDelivery": "Listo para entrega",
+      "delivered": "Entregado"
+    },
+    "priorities": {
+      "low": "Baja",
+      "normal": "Normal",
+      "high": "Alta",
+      "urgent": "Urgente"
+    }
+  },
+  "createOrder": {
+    "title": "Crear Orden",
+    "customerInfo": "Información del Cliente",
+    "orderDetails": "Detalles de la Orden",
+    "customerName": "Nombre del cliente",
+    "orderDescription": "Describe los detalles de la orden",
+    "workCategory": "Categoría del trabajo",
+    "confirmCreate": "¿Estás seguro de que quieres crear esta orden?",
+    "errors": {
+      "missingFields": "Por favor completa todos los campos obligatorios"
+    }
+  },
+  "editOrder": {
+    "title": "Guardar Cambios",
+    "confirmSave": "¿Estás seguro de que quieres guardar los cambios?"
+  },
+  "profile": {
+    "title": "Perfil",
+    "personalInfo": "Información Personal",
+    "email": "Email",
+    "phone": "Teléfono",
+    "address": "Dirección",
+    "company": "Empresa",
+    "configuration": "Configuración"
+  },
+  "settings": {
+    "title": "Configuración",
+    "notifications": "Notificaciones",
+    "pushNotifications": "Notificaciones Push",
+    "pushNotificationsDesc": "Recibir notificaciones de nuevas órdenes",
+    "appearance": "Apariencia",
+    "darkMode": "Modo Oscuro",
+    "darkModeDesc": "Activar tema oscuro",
+    "data": "Datos",
+    "clearCache": "Limpiar Cache",
+    "clearCacheDesc": "Eliminar datos temporales",
+    "clearCacheConfirm": "¿Estás seguro de que quieres limpiar el cache?",
+    "information": "Información",
+    "version": "Versión",
+    "termsAndConditions": "Términos y Condiciones",
+    "privacyPolicy": "Política de Privacidad",
+    "language": "Idioma",
+    "languageDesc": "Seleccionar idioma de la aplicación"
+  },
+  "users": {
+    "title": "Usuarios",
+    "edit": "Editar",
+    "noUsers": "No hay usuarios registrados",
+    "totalUsers": "Usuarios Totales",
+    "activeUsers": "Usuarios Activos",
+    "availableRoles": "Roles Disponibles"
+  },
+  "userManagement": {
+    "title": "Gestión de Usuarios",
+    "subtitle": "Administra usuarios, roles y permisos",
+    "mainActions": "Acciones Principales",
+    "createUser": "Crear Usuario",
+    "createUserDesc": "Agregar un nuevo usuario al sistema",
+    "manageRoles": "Gestionar Roles",
+    "manageRolesDesc": "Configurar roles y permisos de usuarios",
+    "viewReports": "Ver Reportes",
+    "viewReportsDesc": "Generar reportes de actividad de usuarios",
+    "exportData": "Exportar Datos",
+    "exportDataDesc": "Exportar información de usuarios",
+    "statistics": "Estadísticas"
+  },
+  "common": {
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "create": "Crear",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "confirm": "Confirmar",
+    "error": "Error",
+    "success": "Éxito",
+    "loading": "Cargando...",
+    "required": "Obligatorio"
+  }
+} 

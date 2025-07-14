@@ -9,9 +9,11 @@ import {
 } from 'react-native';
 import {HomeScreenProps} from '../types/navigation';
 import {useAuth} from '../hooks/useAuth';
+import {useTranslation} from 'react-i18next';
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const {user} = useAuth();
+  const {t} = useTranslation();
 
   const handleCreateOrder = () => {
     navigation.navigate('CreateOrder');
@@ -27,52 +29,52 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 
   const getWelcomeMessage = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Buenos días';
-    if (hour < 18) return 'Buenas tardes';
-    return 'Buenas noches';
+    if (hour < 12) return t('home.greeting.morning');
+    if (hour < 18) return t('home.greeting.afternoon');
+    return t('home.greeting.evening');
   };
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.welcomeText}>
-          {getWelcomeMessage()}, {user?.firstName || 'Usuario'}
+          {getWelcomeMessage()}, {user?.firstName || t('home.user')}
         </Text>
         <Text style={styles.roleText}>
-          {user?.role || 'Usuario'}
+          {user?.role || t('home.user')}
         </Text>
       </View>
 
       <View style={styles.quickActions}>
-        <Text style={styles.sectionTitle}>Acciones Rápidas</Text>
+        <Text style={styles.sectionTitle}>{t('home.quickActions')}</Text>
         
         <TouchableOpacity
           style={styles.actionButton}
           onPress={handleCreateOrder}>
-          <Text style={styles.actionButtonText}>Crear Nueva Orden</Text>
+          <Text style={styles.actionButtonText}>{t('home.createOrder')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.actionButton}
           onPress={handleViewOrders}>
-          <Text style={styles.actionButtonText}>Ver Mis Órdenes</Text>
+          <Text style={styles.actionButtonText}>{t('home.viewOrders')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.actionButton}
           onPress={handleViewProfile}>
-          <Text style={styles.actionButtonText}>Ver Perfil</Text>
+          <Text style={styles.actionButtonText}>{t('home.viewProfile')}</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.summary}>
-        <Text style={styles.sectionTitle}>Resumen</Text>
+        <Text style={styles.sectionTitle}>{t('home.summary')}</Text>
         <View style={styles.summaryCard}>
-          <Text style={styles.summaryLabel}>Órdenes Activas</Text>
+          <Text style={styles.summaryLabel}>{t('home.activeOrders')}</Text>
           <Text style={styles.summaryValue}>0</Text>
         </View>
         <View style={styles.summaryCard}>
-          <Text style={styles.summaryLabel}>Órdenes Completadas</Text>
+          <Text style={styles.summaryLabel}>{t('home.completedOrders')}</Text>
           <Text style={styles.summaryValue}>0</Text>
         </View>
       </View>

@@ -9,24 +9,26 @@ import {
 } from 'react-native';
 import {ProfileScreenProps} from '../types/navigation';
 import {useAuth} from '../hooks/useAuth';
+import {useTranslation} from 'react-i18next';
 
 const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
   const {user, logout, isLoading} = useAuth();
+  const {t} = useTranslation();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = () => {
     if (isLoggingOut) return;
     
     Alert.alert(
-      'Cerrar Sesión',
-      '¿Estás seguro de que quieres cerrar sesión?',
+      t('auth.logout'),
+      t('auth.logoutConfirm'),
       [
         {
-          text: 'Cancelar',
+          text: t('common.cancel'),
           style: 'cancel',
         },
         {
-          text: 'Cerrar Sesión',
+          text: t('auth.logout'),
           style: 'destructive',
           onPress: async () => {
             setIsLoggingOut(true);
@@ -63,21 +65,21 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Información Personal</Text>
+        <Text style={styles.sectionTitle}>{t('profile.personalInfo')}</Text>
         <View style={styles.card}>
-          <InfoRow label="Email" value={user?.email || ''} />
-          <InfoRow label="Teléfono" value={user?.phoneNumber || ''} />
-          <InfoRow label="Dirección" value={user?.address || ''} />
-          <InfoRow label="Empresa" value={user?.company || ''} />
+          <InfoRow label={t('profile.email')} value={user?.email || ''} />
+          <InfoRow label={t('profile.phone')} value={user?.phoneNumber || ''} />
+          <InfoRow label={t('profile.address')} value={user?.address || ''} />
+          <InfoRow label={t('profile.company')} value={user?.company || ''} />
         </View>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Configuración</Text>
+        <Text style={styles.sectionTitle}>{t('profile.configuration')}</Text>
         <TouchableOpacity
           style={styles.actionButton}
           onPress={() => navigation.navigate('Settings')}>
-          <Text style={styles.actionButtonText}>Configuración</Text>
+          <Text style={styles.actionButtonText}>{t('profile.configuration')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -91,7 +93,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
           onPress={handleLogout}
           disabled={isLoggingOut || isLoading}>
           <Text style={[styles.actionButtonText, styles.logoutButtonText]}>
-            {isLoggingOut || isLoading ? 'Cerrando Sesión...' : 'Cerrar Sesión'}
+            {isLoggingOut || isLoading ? t('auth.loggingOut') : t('auth.logout')}
           </Text>
         </TouchableOpacity>
       </View>

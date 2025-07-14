@@ -1,12 +1,15 @@
 import React from 'react';
 import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
+import {useTranslation} from 'react-i18next';
 
 const SplashScreen: React.FC = () => {
+  const {t} = useTranslation();
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Lumasachi Control</Text>
+      <Text style={styles.title}>{t('app.name')}</Text>
       <ActivityIndicator size="large" color="#007AFF" style={styles.loader} />
-      <Text style={styles.subtitle}>Cargando...</Text>
+      <Text style={styles.subtitle}>{t('app.loading')}</Text>
     </View>
   );
 };

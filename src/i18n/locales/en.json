@@ -1,0 +1,143 @@
+{
+  "app": {
+    "name": "Lumasachi Control",
+    "loading": "Loading..."
+  },
+  "auth": {
+    "title": "Lumasachi Control",
+    "subtitle": "Sign in to your account",
+    "email": "Email",
+    "password": "Password",
+    "login": "Sign In",
+    "loggingIn": "Signing in...",
+    "logout": "Sign Out",
+    "loggingOut": "Signing out...",
+    "logoutConfirm": "Are you sure you want to sign out?",
+    "errors": {
+      "missingFields": "Please enter your email and password",
+      "invalidCredentials": "Invalid credentials"
+    }
+  },
+  "home": {
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "user": "User",
+    "quickActions": "Quick Actions",
+    "createOrder": "Create New Order",
+    "viewOrders": "View My Orders",
+    "viewProfile": "View Profile",
+    "summary": "Summary",
+    "activeOrders": "Active Orders",
+    "completedOrders": "Completed Orders"
+  },
+  "orders": {
+    "title": "Orders",
+    "order": "Order",
+    "customer": "Customer",
+    "status": "Status",
+    "description": "Description",
+    "priority": "Priority",
+    "category": "Category",
+    "createdAt": "Created Date",
+    "updatedAt": "Last Updated",
+    "editingOrder": "Editing Order",
+    "orderDetails": "Order Details",
+    "generalInfo": "General Information",
+    "createFirstOrder": "Create First Order",
+    "noOrdersAvailable": "No orders available",
+    "inProgress": "In Progress",
+    "statuses": {
+      "open": "Open",
+      "inProgress": "In Progress",
+      "readyForDelivery": "Ready for Delivery",
+      "delivered": "Delivered"
+    },
+    "priorities": {
+      "low": "Low",
+      "normal": "Normal",
+      "high": "High",
+      "urgent": "Urgent"
+    }
+  },
+  "createOrder": {
+    "title": "Create Order",
+    "customerInfo": "Customer Information",
+    "orderDetails": "Order Details",
+    "customerName": "Customer name",
+    "orderDescription": "Describe the order details",
+    "workCategory": "Work category",
+    "confirmCreate": "Are you sure you want to create this order?",
+    "errors": {
+      "missingFields": "Please complete all required fields"
+    }
+  },
+  "editOrder": {
+    "title": "Save Changes",
+    "confirmSave": "Are you sure you want to save the changes?"
+  },
+  "profile": {
+    "title": "Profile",
+    "personalInfo": "Personal Information",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "company": "Company",
+    "configuration": "Configuration"
+  },
+  "settings": {
+    "title": "Settings",
+    "notifications": "Notifications",
+    "pushNotifications": "Push Notifications",
+    "pushNotificationsDesc": "Receive notifications for new orders",
+    "appearance": "Appearance",
+    "darkMode": "Dark Mode",
+    "darkModeDesc": "Enable dark theme",
+    "data": "Data",
+    "clearCache": "Clear Cache",
+    "clearCacheDesc": "Remove temporary data",
+    "clearCacheConfirm": "Are you sure you want to clear the cache?",
+    "information": "Information",
+    "version": "Version",
+    "termsAndConditions": "Terms and Conditions",
+    "privacyPolicy": "Privacy Policy",
+    "language": "Language",
+    "languageDesc": "Select application language"
+  },
+  "users": {
+    "title": "Users",
+    "edit": "Edit",
+    "noUsers": "No registered users",
+    "totalUsers": "Total Users",
+    "activeUsers": "Active Users",
+    "availableRoles": "Available Roles"
+  },
+  "userManagement": {
+    "title": "User Management",
+    "subtitle": "Manage users, roles and permissions",
+    "mainActions": "Main Actions",
+    "createUser": "Create User",
+    "createUserDesc": "Add a new user to the system",
+    "manageRoles": "Manage Roles",
+    "manageRolesDesc": "Configure user roles and permissions",
+    "viewReports": "View Reports",
+    "viewReportsDesc": "Generate user activity reports",
+    "exportData": "Export Data",
+    "exportDataDesc": "Export user information",
+    "statistics": "Statistics"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "create": "Create",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "error": "Error",
+    "success": "Success",
+    "loading": "Loading...",
+    "required": "Required"
+  }
+} 

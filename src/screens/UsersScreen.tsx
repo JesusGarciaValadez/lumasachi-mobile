@@ -8,8 +8,10 @@ import {
   RefreshControl,
 } from 'react-native';
 import {User} from '../types';
+import {useTranslation} from 'react-i18next';
 
 const UsersScreen: React.FC = () => {
+  const {t} = useTranslation();
   const [users, setUsers] = useState<User[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -32,7 +34,7 @@ const UsersScreen: React.FC = () => {
       </View>
       <View style={styles.userActions}>
         <TouchableOpacity style={styles.actionButton}>
-          <Text style={styles.actionButtonText}>Editar</Text>
+          <Text style={styles.actionButtonText}>{t('users.edit')}</Text>
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -40,7 +42,7 @@ const UsersScreen: React.FC = () => {
 
   const EmptyComponent = () => (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyText}>No hay usuarios registrados</Text>
+      <Text style={styles.emptyText}>{t('users.noUsers')}</Text>
     </View>
   );
 
@@ -71,7 +73,6 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -102,30 +103,29 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   userActions: {
-    marginLeft: 15,
+    flexDirection: 'row',
   },
   actionButton: {
     backgroundColor: '#007AFF',
     paddingHorizontal: 15,
     paddingVertical: 8,
-    borderRadius: 4,
+    borderRadius: 6,
   },
   actionButtonText: {
     color: '#ffffff',
     fontSize: 14,
     fontWeight: '500',
   },
-  emptyList: {
-    flex: 1,
-  },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+  },
+  emptyList: {
+    flex: 1,
   },
   emptyText: {
-    fontSize: 18,
+    fontSize: 16,
     color: '#666666',
     textAlign: 'center',
   },

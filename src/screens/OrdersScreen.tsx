@@ -9,8 +9,10 @@ import {
 } from 'react-native';
 import {OrdersScreenProps} from '../types/navigation';
 import {Order} from '../types/index';
+import {useTranslation} from 'react-i18next';
 
 const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
+  const {t} = useTranslation();
   const [orders, setOrders] = useState<Order[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -35,25 +37,25 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
       style={styles.orderItem}
       onPress={() => handleOrderPress(item.id)}>
       <View style={styles.orderHeader}>
-        <Text style={styles.orderId}>Orden #{item.id}</Text>
+        <Text style={styles.orderId}>{t('orders.order')} #{item.id}</Text>
         <Text style={styles.orderDate}>
           {new Date(item.createdAt).toLocaleDateString()}
         </Text>
       </View>
       <View style={styles.orderDetails}>
-        <Text style={styles.orderCustomer}>Cliente: {item.customerId}</Text>
-        <Text style={styles.orderStatus}>Estado: En Progreso</Text>
+        <Text style={styles.orderCustomer}>{t('orders.customer')}: {item.customerId}</Text>
+        <Text style={styles.orderStatus}>{t('orders.status')}: {t('orders.inProgress')}</Text>
       </View>
     </TouchableOpacity>
   );
 
   const EmptyComponent = () => (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyText}>No hay órdenes disponibles</Text>
+      <Text style={styles.emptyText}>{t('orders.noOrdersAvailable')}</Text>
       <TouchableOpacity
         style={styles.createButton}
         onPress={handleCreateOrder}>
-        <Text style={styles.createButtonText}>Crear Primera Orden</Text>
+        <Text style={styles.createButtonText}>{t('orders.createFirstOrder')}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -70,12 +72,6 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
         ListEmptyComponent={EmptyComponent}
         contentContainerStyle={orders.length === 0 ? styles.emptyList : undefined}
       />
-      
-      <TouchableOpacity
-        style={styles.floatingButton}
-        onPress={handleCreateOrder}>
-        <Text style={styles.floatingButtonText}>+</Text>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -115,7 +111,7 @@ const styles = StyleSheet.create({
     color: '#666666',
   },
   orderDetails: {
-    marginTop: 5,
+    flexDirection: 'column',
   },
   orderCustomer: {
     fontSize: 14,
@@ -127,55 +123,31 @@ const styles = StyleSheet.create({
     color: '#007AFF',
     fontWeight: '500',
   },
-  emptyList: {
-    flex: 1,
-  },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    paddingHorizontal: 40,
+  },
+  emptyList: {
+    flex: 1,
   },
   emptyText: {
-    fontSize: 18,
+    fontSize: 16,
     color: '#666666',
-    marginBottom: 20,
     textAlign: 'center',
+    marginBottom: 20,
   },
   createButton: {
     backgroundColor: '#007AFF',
-    padding: 15,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
     borderRadius: 8,
-    alignItems: 'center',
   },
   createButtonText: {
     color: '#ffffff',
     fontSize: 16,
-    fontWeight: 'bold',
-  },
-  floatingButton: {
-    position: 'absolute',
-    right: 20,
-    bottom: 20,
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#007AFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    elevation: 8,
-  },
-  floatingButtonText: {
-    color: '#ffffff',
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: '500',
   },
 });
 

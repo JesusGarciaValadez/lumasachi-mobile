@@ -9,18 +9,20 @@ import {
   Alert,
 } from 'react-native';
 import {EditOrderScreenProps} from '../types/navigation';
+import {useTranslation} from 'react-i18next';
 
 const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
   navigation,
   route,
 }) => {
   const {orderId} = route.params;
+  const {t} = useTranslation();
   const [formData, setFormData] = useState({
     customer: 'Cliente Demo',
     description: 'Descripción de la orden existente',
-    priority: 'Normal',
+    priority: t('orders.priorities.normal'),
     category: 'Reparación',
-    status: 'En Progreso',
+    status: t('orders.statuses.inProgress'),
   });
 
   const handleInputChange = (field: string, value: string) => {
@@ -29,12 +31,12 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
 
   const handleSubmit = () => {
     Alert.alert(
-      'Guardar Cambios',
-      '¿Estás seguro de que quieres guardar los cambios?',
+      t('editOrder.title'),
+      t('editOrder.confirmSave'),
       [
-        {text: 'Cancelar', style: 'cancel'},
+        {text: t('common.cancel'), style: 'cancel'},
         {
-          text: 'Guardar',
+          text: t('common.save'),
           onPress: () => {
             // Aquí iría la lógica para actualizar la orden
             console.log('Orden actualizada:', formData);
@@ -45,83 +47,97 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
     );
   };
 
+  const statuses = [
+    {key: 'open', label: t('orders.statuses.open')},
+    {key: 'inProgress', label: t('orders.statuses.inProgress')},
+    {key: 'readyForDelivery', label: t('orders.statuses.readyForDelivery')},
+    {key: 'delivered', label: t('orders.statuses.delivered')},
+  ];
+
+  const priorities = [
+    {key: 'low', label: t('orders.priorities.low')},
+    {key: 'normal', label: t('orders.priorities.normal')},
+    {key: 'high', label: t('orders.priorities.high')},
+    {key: 'urgent', label: t('orders.priorities.urgent')},
+  ];
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.orderId}>Editando Orden #{orderId}</Text>
+        <Text style={styles.orderId}>{t('orders.editingOrder')} #{orderId}</Text>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Información del Cliente</Text>
+        <Text style={styles.sectionTitle}>{t('createOrder.customerInfo')}</Text>
         <View style={styles.card}>
-          <Text style={styles.label}>Cliente *</Text>
+          <Text style={styles.label}>{t('orders.customer')} *</Text>
           <TextInput
             style={styles.input}
             value={formData.customer}
             onChangeText={(value) => handleInputChange('customer', value)}
-            placeholder="Nombre del cliente"
+            placeholder={t('createOrder.customerName')}
           />
         </View>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Detalles de la Orden</Text>
+        <Text style={styles.sectionTitle}>{t('createOrder.orderDetails')}</Text>
         <View style={styles.card}>
-          <Text style={styles.label}>Descripción *</Text>
+          <Text style={styles.label}>{t('orders.description')} *</Text>
           <TextInput
             style={[styles.input, styles.textArea]}
             value={formData.description}
             onChangeText={(value) => handleInputChange('description', value)}
-            placeholder="Describe los detalles de la orden"
+            placeholder={t('createOrder.orderDescription')}
             multiline
             numberOfLines={4}
           />
 
-          <Text style={styles.label}>Categoría</Text>
+          <Text style={styles.label}>{t('orders.category')}</Text>
           <TextInput
             style={styles.input}
             value={formData.category}
             onChangeText={(value) => handleInputChange('category', value)}
-            placeholder="Categoría del trabajo"
+            placeholder={t('createOrder.workCategory')}
           />
 
-          <Text style={styles.label}>Estado</Text>
+          <Text style={styles.label}>{t('orders.status')}</Text>
           <View style={styles.statusContainer}>
-            {['Abierto', 'En Progreso', 'Listo para entrega', 'Entregado'].map((status) => (
+            {statuses.map((status) => (
               <TouchableOpacity
-                key={status}
+                key={status.key}
                 style={[
                   styles.statusButton,
-                  formData.status === status && styles.statusButtonActive,
+                  formData.status === status.label && styles.statusButtonActive,
                 ]}
-                onPress={() => handleInputChange('status', status)}>
+                onPress={() => handleInputChange('status', status.label)}>
                 <Text
                   style={[
                     styles.statusButtonText,
-                    formData.status === status && styles.statusButtonTextActive,
+                    formData.status === status.label && styles.statusButtonTextActive,
                   ]}>
-                  {status}
+                  {status.label}
                 </Text>
               </TouchableOpacity>
             ))}
           </View>
 
-          <Text style={styles.label}>Prioridad</Text>
+          <Text style={styles.label}>{t('orders.priority')}</Text>
           <View style={styles.priorityContainer}>
-            {['Baja', 'Normal', 'Alta', 'Urgente'].map((priority) => (
+            {priorities.map((priority) => (
               <TouchableOpacity
-                key={priority}
+                key={priority.key}
                 style={[
                   styles.priorityButton,
-                  formData.priority === priority && styles.priorityButtonActive,
+                  formData.priority === priority.label && styles.priorityButtonActive,
                 ]}
-                onPress={() => handleInputChange('priority', priority)}>
+                onPress={() => handleInputChange('priority', priority.label)}>
                 <Text
                   style={[
                     styles.priorityButtonText,
-                    formData.priority === priority && styles.priorityButtonTextActive,
+                    formData.priority === priority.label && styles.priorityButtonTextActive,
                   ]}>
-                  {priority}
+                  {priority.label}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -133,7 +149,7 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
         <TouchableOpacity
           style={styles.submitButton}
           onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>Guardar Cambios</Text>
+          <Text style={styles.submitButtonText}>{t('editOrder.title')}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -146,15 +162,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   header: {
-    backgroundColor: '#ffffff',
+    backgroundColor: '#007AFF',
     padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    marginBottom: 20,
   },
   orderId: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#333333',
+    color: '#ffffff',
+    textAlign: 'center',
   },
   section: {
     margin: 20,
@@ -201,23 +217,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     marginTop: 10,
-    marginBottom: 20,
   },
   statusButton: {
-    padding: 8,
+    flex: 1,
+    padding: 10,
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 6,
-    marginRight: 8,
-    marginBottom: 8,
+    marginHorizontal: 2,
+    marginVertical: 2,
     alignItems: 'center',
+    minWidth: '45%',
   },
   statusButtonActive: {
-    backgroundColor: '#28a745',
-    borderColor: '#28a745',
+    backgroundColor: '#007AFF',
+    borderColor: '#007AFF',
   },
   statusButtonText: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#666666',
   },
   statusButtonTextActive: {

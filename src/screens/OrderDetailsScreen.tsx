@@ -7,40 +7,49 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {OrderDetailsScreenProps} from '../types/navigation';
+import {useTranslation} from 'react-i18next';
 
 const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
   navigation,
   route,
 }) => {
   const {orderId} = route.params;
+  const {t} = useTranslation();
 
   const handleEditOrder = () => {
     navigation.navigate('EditOrder', {orderId});
   };
 
+  const DetailRow = ({label, value}: {label: string; value: string}) => (
+    <View style={styles.detailRow}>
+      <Text style={styles.detailLabel}>{label}:</Text>
+      <Text style={styles.detailValue}>{value}</Text>
+    </View>
+  );
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.orderId}>Orden #{orderId}</Text>
+        <Text style={styles.orderId}>{t('orders.order')} #{orderId}</Text>
         <TouchableOpacity
           style={styles.editButton}
           onPress={handleEditOrder}>
-          <Text style={styles.editButtonText}>Editar</Text>
+          <Text style={styles.editButtonText}>{t('common.edit')}</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Información General</Text>
+        <Text style={styles.sectionTitle}>{t('orders.generalInfo')}</Text>
         <View style={styles.card}>
-          <DetailRow label="Estado" value="En Progreso" />
-          <DetailRow label="Cliente" value="Cliente Demo" />
-          <DetailRow label="Fecha de Creación" value="2024-01-15" />
-          <DetailRow label="Última Actualización" value="2024-01-20" />
+          <DetailRow label={t('orders.status')} value={t('orders.inProgress')} />
+          <DetailRow label={t('orders.customer')} value="Cliente Demo" />
+          <DetailRow label={t('orders.createdAt')} value="2024-01-15" />
+          <DetailRow label={t('orders.updatedAt')} value="2024-01-20" />
         </View>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Descripción</Text>
+        <Text style={styles.sectionTitle}>{t('orders.description')}</Text>
         <View style={styles.card}>
           <Text style={styles.description}>
             Esta es una descripción de ejemplo para la orden. Aquí se mostraría
@@ -48,56 +57,9 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
           </Text>
         </View>
       </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Timeline</Text>
-        <View style={styles.card}>
-          <TimelineItem
-            title="Orden Creada"
-            date="2024-01-15 10:00"
-            description="La orden fue creada por el cliente"
-          />
-          <TimelineItem
-            title="En Revisión"
-            date="2024-01-16 14:30"
-            description="La orden está siendo revisada"
-          />
-          <TimelineItem
-            title="En Progreso"
-            date="2024-01-17 09:15"
-            description="Se comenzó el trabajo en la orden"
-          />
-        </View>
-      </View>
     </ScrollView>
   );
 };
-
-const DetailRow = ({label, value}: {label: string; value: string}) => (
-  <View style={styles.detailRow}>
-    <Text style={styles.detailLabel}>{label}</Text>
-    <Text style={styles.detailValue}>{value}</Text>
-  </View>
-);
-
-const TimelineItem = ({
-  title,
-  date,
-  description,
-}: {
-  title: string;
-  date: string;
-  description: string;
-}) => (
-  <View style={styles.timelineItem}>
-    <View style={styles.timelineMarker} />
-    <View style={styles.timelineContent}>
-      <Text style={styles.timelineTitle}>{title}</Text>
-      <Text style={styles.timelineDate}>{date}</Text>
-      <Text style={styles.timelineDescription}>{description}</Text>
-    </View>
-  </View>
-);
 
 const styles = StyleSheet.create({
   container: {
@@ -114,19 +76,19 @@ const styles = StyleSheet.create({
     borderBottomColor: '#e0e0e0',
   },
   orderId: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#333333',
   },
   editButton: {
     backgroundColor: '#007AFF',
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     paddingVertical: 8,
     borderRadius: 6,
   },
   editButtonText: {
     color: '#ffffff',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '500',
   },
   section: {
@@ -175,37 +137,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333333',
     lineHeight: 24,
-  },
-  timelineItem: {
-    flexDirection: 'row',
-    paddingVertical: 10,
-  },
-  timelineMarker: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: '#007AFF',
-    marginRight: 15,
-    marginTop: 5,
-  },
-  timelineContent: {
-    flex: 1,
-  },
-  timelineTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginBottom: 5,
-  },
-  timelineDate: {
-    fontSize: 14,
-    color: '#666666',
-    marginBottom: 5,
-  },
-  timelineDescription: {
-    fontSize: 14,
-    color: '#333333',
-    lineHeight: 20,
   },
 });
 
