@@ -13,29 +13,35 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 
 const MainNavigator: React.FC = () => {
   const {user} = useAuth();
-  const navigationConfig = getNavigationConfig(user?.role || 'Customer');
+  
+  if (!user) {
+    // This shouldn't happen in MainNavigator since it's only rendered for authenticated users
+    throw new Error('MainNavigator rendered without authenticated user');
+  }
+  
+  const navigationConfig = getNavigationConfig(user.role);
 
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
-        tabBarIcon: ({focused, color, size}) => {
+        tabBarIcon: ({color, size}) => {
           let iconName: string;
 
           switch (route.name) {
             case 'Home':
-              iconName = focused ? 'home' : 'home';
+              iconName = 'home';
               break;
             case 'Orders':
-              iconName = focused ? 'assignment' : 'assignment';
+              iconName = 'assignment';
               break;
             case 'Users':
-              iconName = focused ? 'people' : 'people';
+              iconName = 'people';
               break;
             case 'Profile':
-              iconName = focused ? 'person' : 'person';
+              iconName = 'person';
               break;
             case 'Settings':
-              iconName = focused ? 'settings' : 'settings';
+              iconName = 'settings';
               break;
             default:
               iconName = 'circle';
