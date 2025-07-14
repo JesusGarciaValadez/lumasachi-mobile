@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import { format } from 'date-fns';
 import {OrderDetailsScreenProps} from '../types/navigation';
@@ -21,7 +22,7 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
   const [order, setOrder] = useState<Order | null>(null);
   const [orderStatus, setOrderStatus] = useState<Status | null>(null);
   const [customer, setCustomer] = useState<Customer | null>(null);
-  const [_loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadOrderData = async () => {
@@ -106,45 +107,54 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.orderId}>{t('orders.order')} #{orderId}</Text>
-        <TouchableOpacity
-          style={styles.editButton}
-          onPress={handleEditOrder}>
-          <Text style={styles.editButtonText}>{t('common.edit')}</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('orders.generalInfo')}</Text>
-        <View style={styles.card}>
-          <DetailRow 
-            label={t('orders.status')} 
-            value={orderStatus ? getStatusTranslation(orderStatus.statusName) : '-'} 
-          />
-          <DetailRow 
-            label={t('orders.customer')} 
-            value={getCustomerName()} 
-          />
-          <DetailRow 
-            label={t('orders.createdAt')} 
-            value={order?.createdAt ? formatDate(order.createdAt) : '-'} 
-          />
-          <DetailRow 
-            label={t('orders.updatedAt')} 
-            value={order?.updatedAt ? formatDate(order.updatedAt) : '-'} 
-          />
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#007AFF" />
+          <Text style={styles.loadingText}>{t('common.loading')}</Text>
         </View>
-      </View>
+      ) : (
+        <>
+          <View style={styles.header}>
+            <Text style={styles.orderId}>{t('orders.order')} #{orderId}</Text>
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={handleEditOrder}>
+              <Text style={styles.editButtonText}>{t('common.edit')}</Text>
+            </TouchableOpacity>
+          </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('orders.description')}</Text>
-        <View style={styles.card}>
-          <Text style={styles.description}>
-            {t('orders.descriptionPlaceholder')}
-          </Text>
-        </View>
-      </View>
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('orders.generalInfo')}</Text>
+            <View style={styles.card}>
+              <DetailRow 
+                label={t('orders.status')} 
+                value={orderStatus ? getStatusTranslation(orderStatus.statusName) : '-'} 
+              />
+              <DetailRow 
+                label={t('orders.customer')} 
+                value={getCustomerName()} 
+              />
+              <DetailRow 
+                label={t('orders.createdAt')} 
+                value={order?.createdAt ? formatDate(order.createdAt) : '-'} 
+              />
+              <DetailRow 
+                label={t('orders.updatedAt')} 
+                value={order?.updatedAt ? formatDate(order.updatedAt) : '-'} 
+              />
+            </View>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('orders.description')}</Text>
+            <View style={styles.card}>
+              <Text style={styles.description}>
+                {t('orders.descriptionPlaceholder')}
+              </Text>
+            </View>
+          </View>
+        </>
+      )}
     </ScrollView>
   );
 };
@@ -153,6 +163,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 100,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#666666',
   },
   header: {
     flexDirection: 'row',
