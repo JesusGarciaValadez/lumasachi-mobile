@@ -10,6 +10,7 @@ import {
 import {ProfileScreenProps} from '../types/navigation';
 import {useAuth} from '../hooks/useAuth';
 import {useTranslation} from 'react-i18next';
+import DetailRow from '../components/DetailRow';
 
 const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
   const {user, logout, isLoading} = useAuth();
@@ -43,12 +44,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
     );
   };
 
-  const InfoRow = ({label, value}: {label: string; value: string}) => (
-    <View style={styles.infoRow}>
-      <Text style={styles.infoLabel}>{label}</Text>
-      <Text style={styles.infoValue}>{value}</Text>
-    </View>
-  );
+
 
   return (
     <ScrollView style={styles.container}>
@@ -67,10 +63,10 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t('profile.personalInfo')}</Text>
         <View style={styles.card}>
-          <InfoRow label={t('profile.email')} value={user?.email || ''} />
-          <InfoRow label={t('profile.phone')} value={user?.phoneNumber || ''} />
-          <InfoRow label={t('profile.address')} value={user?.address || ''} />
-          <InfoRow label={t('profile.company')} value={user?.company || ''} />
+          <DetailRow label={t('profile.email')} value={user?.email || ''} valueFlex={2} />
+          <DetailRow label={t('profile.phone')} value={user?.phoneNumber || ''} valueFlex={2} />
+          <DetailRow label={t('profile.address')} value={user?.address || ''} valueFlex={2} />
+          <DetailRow label={t('profile.company')} value={user?.company || ''} valueFlex={2} />
         </View>
       </View>
 
@@ -157,26 +153,7 @@ const styles = StyleSheet.create({
     shadowRadius: 2.22,
     elevation: 3,
   },
-  infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  infoLabel: {
-    fontSize: 16,
-    color: '#666666',
-    flex: 1,
-  },
-  infoValue: {
-    fontSize: 16,
-    color: '#333333',
-    fontWeight: '500',
-    flex: 2,
-    textAlign: 'right',
-  },
+
   actionButton: {
     backgroundColor: '#ffffff',
     padding: 15,

@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import {OrderDetailsScreenProps} from '../types/navigation';
 import {useTranslation} from 'react-i18next';
+import DetailRow from '../components/DetailRow';
 
 const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
   navigation,
@@ -19,13 +20,6 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
   const handleEditOrder = () => {
     navigation.navigate('EditOrder', {orderId});
   };
-
-  const DetailRow = ({label, value}: {label: string; value: string}) => (
-    <View style={styles.detailRow}>
-      <Text style={styles.detailLabel}>{label}:</Text>
-      <Text style={styles.detailValue}>{value}</Text>
-    </View>
-  );
 
   return (
     <ScrollView style={styles.container}>
@@ -112,26 +106,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
     elevation: 3,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  detailLabel: {
-    fontSize: 16,
-    color: '#666666',
-    flex: 1,
-  },
-  detailValue: {
-    fontSize: 16,
-    color: '#333333',
-    fontWeight: '500',
-    flex: 1,
-    textAlign: 'right',
   },
   description: {
     fontSize: 16,
