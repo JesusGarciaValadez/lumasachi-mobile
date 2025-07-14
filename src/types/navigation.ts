@@ -1,38 +1,135 @@
-import type { NavigationProp, RouteProp } from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
+import {CompositeNavigationProp, RouteProp} from '@react-navigation/native';
 
-// Tipos para la navegación principal
+// Stack Navigator Types
 export type RootStackParamList = {
   Auth: undefined;
-  App: undefined;
+  Main: undefined;
+  Splash: undefined;
   Login: undefined;
-  Register: undefined;
-  ForgotPassword: undefined;
-};
-
-// Tipos para la navegación de la aplicación principal
-export type AppStackParamList = {
-  Home: undefined;
-  Orders: undefined;
-  OrderDetail: { orderId: string };
+  OrderDetails: {orderId: string};
   CreateOrder: undefined;
-  EditOrder: { orderId: string };
+  EditOrder: {orderId: string};
   Profile: undefined;
+  UserManagement: undefined;
   Settings: undefined;
 };
 
-// Tipos para la navegación de tabs
-export type TabParamList = {
-  HomeTab: undefined;
-  OrdersTab: undefined;
-  ProfileTab: undefined;
+// Bottom Tab Navigator Types
+export type MainTabParamList = {
+  Home: undefined;
+  Orders: undefined;
+  Profile: undefined;
+  Users: undefined; // Solo para Admin/Super Admin
+  Settings: undefined;
 };
 
-// Tipos de navegación para usar en los componentes
-export type RootStackNavigationProp = NavigationProp<RootStackParamList>;
-export type AppStackNavigationProp = NavigationProp<AppStackParamList>;
-export type TabNavigationProp = NavigationProp<TabParamList>;
+// Navigation Props
+export type RootStackNavigationProp = StackNavigationProp<RootStackParamList>;
+export type MainTabNavigationProp = BottomTabNavigationProp<MainTabParamList>;
 
-// Tipos de rutas para usar en los componentes
-export type RootStackRouteProp<T extends keyof RootStackParamList> = RouteProp<RootStackParamList, T>;
-export type AppStackRouteProp<T extends keyof AppStackParamList> = RouteProp<AppStackParamList, T>;
-export type TabRouteProp<T extends keyof TabParamList> = RouteProp<TabParamList, T>; 
+// Composite Navigation Props
+export type HomeScreenNavigationProp = CompositeNavigationProp<
+  BottomTabNavigationProp<MainTabParamList, 'Home'>,
+  StackNavigationProp<RootStackParamList>
+>;
+
+export type OrdersScreenNavigationProp = CompositeNavigationProp<
+  BottomTabNavigationProp<MainTabParamList, 'Orders'>,
+  StackNavigationProp<RootStackParamList>
+>;
+
+export type ProfileScreenNavigationProp = CompositeNavigationProp<
+  BottomTabNavigationProp<MainTabParamList, 'Profile'>,
+  StackNavigationProp<RootStackParamList>
+>;
+
+// Route Props
+export type OrderDetailsRouteProp = RouteProp<RootStackParamList, 'OrderDetails'>;
+export type EditOrderRouteProp = RouteProp<RootStackParamList, 'EditOrder'>;
+
+// Screen Props
+export interface HomeScreenProps {
+  navigation: HomeScreenNavigationProp;
+}
+
+export interface OrdersScreenProps {
+  navigation: OrdersScreenNavigationProp;
+}
+
+export interface ProfileScreenProps {
+  navigation: ProfileScreenNavigationProp;
+}
+
+export interface OrderDetailsScreenProps {
+  navigation: StackNavigationProp<RootStackParamList, 'OrderDetails'>;
+  route: OrderDetailsRouteProp;
+}
+
+export interface EditOrderScreenProps {
+  navigation: StackNavigationProp<RootStackParamList, 'EditOrder'>;
+  route: EditOrderRouteProp;
+}
+
+// Role-based navigation helpers
+export type UserRole = 'Super Administrator' | 'Administrator' | 'Employee' | 'Customer';
+
+export interface NavigationConfig {
+  showUsersTab: boolean;
+  showCreateOrder: boolean;
+  showUserManagement: boolean;
+  canEditAllOrders: boolean;
+  canDeleteOrders: boolean;
+}
+
+export const getNavigationConfig = (role: UserRole): NavigationConfig => {
+  switch (role) {
+    case 'Super Administrator':
+      return {
+        showUsersTab: true,
+        showCreateOrder: true,
+        showUserManagement: true,
+        canEditAllOrders: true,
+        canDeleteOrders: true,
+      };
+    case 'Administrator':
+      return {
+        showUsersTab: true,
+        showCreateOrder: true,
+        showUserManagement: true,
+        canEditAllOrders: true,
+        canDeleteOrders: false,
+      };
+    case 'Employee':
+      return {
+        showUsersTab: false,
+        showCreateOrder: true,
+        showUserManagement: false,
+        canEditAllOrders: false,
+        canDeleteOrders: false,
+      };
+    case 'Customer':
+      return {
+        showUsersTab: false,
+        showCreateOrder: true,
+        showUserManagement: false,
+        canEditAllOrders: false,
+        canDeleteOrders: false,
+      };
+    default:
+      return {
+        showUsersTab: false,
+        showCreateOrder: false,
+        showUserManagement: false,
+        canEditAllOrders: false,
+        canDeleteOrders: false,
+      };
+  }
+};
+
+declare global {
+  namespace ReactNavigation {
+    interface RootParamList extends RootStackParamList {}
+  }
+} 
