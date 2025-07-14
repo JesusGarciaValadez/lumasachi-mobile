@@ -34,7 +34,10 @@
     "viewProfile": "View Profile",
     "summary": "Summary",
     "activeOrders": "Active Orders",
-    "completedOrders": "Completed Orders"
+    "completedOrders": "Completed Orders",
+    "error": {
+      "generic": "Unable to load data. Please try again later."
+    }
   },
   "orders": {
     "title": "Orders",
