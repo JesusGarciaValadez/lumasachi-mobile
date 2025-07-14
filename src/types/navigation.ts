@@ -1,6 +1,7 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
 import {CompositeNavigationProp, RouteProp} from '@react-navigation/native';
+import {UserRole, USER_ROLES} from '../constants';
 
 // Stack Navigator Types
 export type RootStackParamList = {
@@ -86,19 +87,6 @@ export interface EditOrderScreenProps {
 }
 
 // Role-based navigation helpers
-export enum UserRole {
-  SUPER_ADMIN = 'SUPER_ADMIN',
-  ADMIN = 'ADMIN',
-  EMPLOYEE = 'EMPLOYEE',
-  CUSTOMER = 'CUSTOMER',
-}
-
-export const USER_ROLES = {
-  SUPER_ADMIN: { key: UserRole.SUPER_ADMIN, displayName: 'Super Administrator' },
-  ADMIN: { key: UserRole.ADMIN, displayName: 'Administrator' },
-  EMPLOYEE: { key: UserRole.EMPLOYEE, displayName: 'Employee' },
-  CUSTOMER: { key: UserRole.CUSTOMER, displayName: 'Customer' },
-} as const;
 
 export interface NavigationConfig {
   showUsersTab: boolean;

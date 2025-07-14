@@ -57,11 +57,18 @@ export const SIZES = {
 } as const;
 
 // Roles
+export enum UserRole {
+  SUPER_ADMIN = 'SUPER_ADMIN',
+  ADMIN = 'ADMIN',
+  EMPLOYEE = 'EMPLOYEE',
+  CUSTOMER = 'CUSTOMER',
+}
+
 export const USER_ROLES = {
-  SUPER_ADMIN: 'Super Administrator',
-  ADMIN: 'Administrator',
-  EMPLOYEE: 'Employee',
-  CUSTOMER: 'Customer',
+  SUPER_ADMIN: { key: UserRole.SUPER_ADMIN, displayName: 'Super Administrator' },
+  ADMIN: { key: UserRole.ADMIN, displayName: 'Administrator' },
+  EMPLOYEE: { key: UserRole.EMPLOYEE, displayName: 'Employee' },
+  CUSTOMER: { key: UserRole.CUSTOMER, displayName: 'Customer' },
 } as const;
 
 // Order Statuses
