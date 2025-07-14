@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useContext, createContext} from 'react';
-import {User} from '../types';
+import {User, UserRole} from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useTranslationSafe} from './useTranslationSafe';
 
 interface AuthContextType {
   user: User | null;
@@ -16,6 +17,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
+    // Fallback to English since translations might not be available outside AuthProvider
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
@@ -24,6 +26,7 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{children: React.ReactNode}> = ({children}) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const {t} = useTranslationSafe();
 
   useEffect(() => {
     loadUserFromStorage();
@@ -36,7 +39,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({children}) 
         setUser(JSON.parse(storedUser));
       }
     } catch (error) {
-      console.error('Error loading user from storage:', error);
+      console.error(t('auth.errors.storageLoad'), error);
     } finally {
       setIsLoading(false);
     }
@@ -45,25 +48,25 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({children}) 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Simulación de login - en producción sería una llamada a la API
+      // Login simulation - in production this would be an API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Usuario mock para testing
+      // Mock user for testing
       const mockUser: User = {
         id: '1',
-        firstName: 'Usuario',
-        lastName: 'Demo',
+        firstName: t('auth.mockUser.firstName') as string,
+        lastName: t('auth.mockUser.lastName') as string,
         email: email,
-        role: 'Administrator',
-        company: 'Lumasachi',
-        phoneNumber: '123-456-7890',
-        address: '123 Main St',
+        role: UserRole.ADMINISTRATOR,
+        company: t('auth.mockUser.company') as string,
+        phoneNumber: t('auth.mockUser.phoneNumber') as string,
+        address: t('auth.mockUser.address') as string,
       };
 
       setUser(mockUser);
       await AsyncStorage.setItem('user', JSON.stringify(mockUser));
     } catch (error) {
-      throw new Error('Invalid credentials');
+      throw new Error(t('auth.errors.invalidCredentials') as string);
     } finally {
       setIsLoading(false);
     }
@@ -74,12 +77,12 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({children}) 
       setIsLoading(true);
       await AsyncStorage.removeItem('user');
       
-      // Pequeño delay para permitir que React Navigation se estabilice
+      // Small delay to allow React Navigation to stabilize
       await new Promise(resolve => setTimeout(resolve, 100));
       
       setUser(null);
     } catch (error) {
-      console.error('Error during logout:', error);
+      console.error(t('auth.errors.logout'), error);
     } finally {
       setIsLoading(false);
     }
@@ -90,7 +93,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({children}) 
     try {
       await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
     } catch (error) {
-      console.error('Error updating user in storage:', error);
+      console.error(t('auth.errors.storageUpdate'), error);
     }
   };
 
