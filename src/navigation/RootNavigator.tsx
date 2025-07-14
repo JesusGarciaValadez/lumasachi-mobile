@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {RootStackParamList} from '../types/navigation';
@@ -15,19 +15,8 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 const RootNavigator: React.FC = () => {
   const {isAuthenticated, isLoading} = useAuth();
-  const [authState, setAuthState] = useState<'loading' | 'authenticated' | 'unauthenticated'>('loading');
 
-  useEffect(() => {
-    if (isLoading) {
-      setAuthState('loading');
-    } else if (isAuthenticated) {
-      setAuthState('authenticated');
-    } else {
-      setAuthState('unauthenticated');
-    }
-  }, [isAuthenticated, isLoading]);
-
-  if (authState === 'loading') {
+  if (isLoading) {
     return <SplashScreen />;
   }
 
@@ -37,7 +26,7 @@ const RootNavigator: React.FC = () => {
         screenOptions={{
           headerShown: false,
         }}>
-        {authState === 'authenticated' ? (
+        {isAuthenticated ? (
           <>
             <Stack.Screen name="Main" component={MainNavigator} />
             <Stack.Screen
