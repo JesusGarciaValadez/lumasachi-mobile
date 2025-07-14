@@ -12,6 +12,9 @@ import {useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {changeLanguage} from '../i18n';
 import {version} from '../../package.json';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {queryClient} from '../services/queryClient';
+import {STORAGE_KEYS} from '../constants';
 
 const SettingsScreen: React.FC = () => {
   const {t, i18n} = useTranslation();
@@ -52,7 +55,39 @@ const SettingsScreen: React.FC = () => {
       t('settings.clearCacheConfirm'),
       [
         {text: t('common.cancel'), style: 'cancel'},
-        {text: t('settings.clearCache'), onPress: () => console.log('Cache cleared')},
+        {
+          text: t('settings.clearCache'), 
+          onPress: async () => {
+            try {
+              // Clear TanStack Query cache
+              await queryClient.clear();
+              
+              // Clear AsyncStorage data (excluding theme and language to preserve user preferences)
+              const keysToRemove = [
+                STORAGE_KEYS.AUTH_TOKEN,
+                STORAGE_KEYS.REFRESH_TOKEN,
+                STORAGE_KEYS.USER_DATA,
+                'user', // Additional key used by useAuth hook
+              ];
+              
+              await AsyncStorage.multiRemove(keysToRemove);
+              
+              // Clear axios cache (if any)
+              // The HTTP client doesn't have persistent cache, but we clear query cache above
+              
+              Alert.alert(
+                t('common.success'),
+                t('settings.clearCacheSuccess')
+              );
+            } catch (error) {
+              console.error('Error clearing cache:', error);
+              Alert.alert(
+                t('common.error'),
+                t('settings.clearCacheError')
+              );
+            }
+          }
+        },
       ]
     );
   };
