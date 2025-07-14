@@ -33,7 +33,7 @@ const CreateUserScreen: React.FC = () => {
 
   const handleSave = () => {
     if (!formData.firstName || !formData.lastName || !formData.email || !formData.role) {
-      Alert.alert(t('common.error'), t('createOrder.errors.missingFields'));
+      Alert.alert(t('common.error'), t('userManagement.createUserForm.errors.missingFields'));
       return;
     }
     
