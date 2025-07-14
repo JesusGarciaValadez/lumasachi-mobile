@@ -7,11 +7,13 @@
 
 import React, {useEffect, useState} from 'react';
 import {StatusBar, ActivityIndicator, View, StyleSheet} from 'react-native';
+import {QueryClientProvider} from '@tanstack/react-query';
 import {AuthProvider} from './hooks/useAuth';
 import RootNavigator from './navigation/RootNavigator';
 import './i18n'; // Importar configuración de i18n
 import {initializeI18n} from './i18n';
 import {TranslationProvider} from './i18n/TranslationProvider';
+import {queryClient} from './services/queryClient';
 
 const App: React.FC = () => {
   const [i18nInitialized, setI18nInitialized] = useState(false);
@@ -42,14 +44,14 @@ const App: React.FC = () => {
   }
 
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
       <TranslationProvider>
         <AuthProvider>
           <RootNavigator />
         </AuthProvider>
       </TranslationProvider>
-    </>
+    </QueryClientProvider>
   );
 };
 
