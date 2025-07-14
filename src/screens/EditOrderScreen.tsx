@@ -70,9 +70,17 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
         {
           text: t('common.save'),
           onPress: () => {
-            // Aquí iría la lógica para actualizar la orden
-            console.log('Orden actualizada:', formData);
-            navigation.goBack();
+            const updateOrder = async () => {
+              try {
+                // TODO: Uncomment when backend is implemented
+                // await updateOrderAPI(orderId, formData);
+                Alert.alert('Éxito', 'Orden actualizada correctamente');
+                navigation.goBack();
+              } catch (error) {
+                Alert.alert('Error', 'No se pudo actualizar la orden');
+              }
+            };
+            updateOrder();
           },
         },
       ]
