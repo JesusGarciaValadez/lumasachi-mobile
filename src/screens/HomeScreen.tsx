@@ -5,7 +5,6 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
 import {HomeScreenProps} from '../types/navigation';
 import {useAuth} from '../hooks/useAuth';
