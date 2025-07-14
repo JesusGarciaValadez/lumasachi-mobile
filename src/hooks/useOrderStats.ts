@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import {useAuth} from './useAuth';
 
 export interface OrderStats {
@@ -19,44 +19,44 @@ export const useOrderStats = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchOrderStats = useCallback(async () => {
     if (!user) {
       setIsLoading(false);
       return;
     }
 
-    const fetchOrderStats = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        
-        // TODO: Replace with actual API call when backend is ready
-        // const response = await httpClient.get(`/orders/stats/${user.id}`);
-        // setStats(response.data);
-        
-        // Mock data for now - simulating different stats based on user role
-        await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API delay
-        
-        const mockStats: OrderStats = {
-          activeOrders: user.role === 'Administrator' ? 5 : 2,
-          completedOrders: user.role === 'Administrator' ? 12 : 4,
-          totalOrders: user.role === 'Administrator' ? 17 : 6,
-          pendingOrders: user.role === 'Administrator' ? 3 : 1,
-        };
-        
-        setStats(mockStats);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Error loading order statistics');
-        console.error('Error fetching order stats:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchOrderStats();
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      // TODO: Replace with actual API call when backend is ready
+      // const response = await httpClient.get(`/orders/stats/${user.id}`);
+      // setStats(response.data);
+      
+      // Mock data for now - simulating different stats based on user role
+      await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API delay
+      
+      const mockStats: OrderStats = {
+        activeOrders: user.role === 'Administrator' ? 5 : 2,
+        completedOrders: user.role === 'Administrator' ? 12 : 4,
+        totalOrders: user.role === 'Administrator' ? 17 : 6,
+        pendingOrders: user.role === 'Administrator' ? 3 : 1,
+      };
+      
+      setStats(mockStats);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error loading order statistics');
+      console.error('Error fetching order stats:', err);
+    } finally {
+      setIsLoading(false);
+    }
   }, [user]);
 
-  const refresh = () => {
+  useEffect(() => {
+    fetchOrderStats();
+  }, [fetchOrderStats]);
+
+  const refresh = useCallback(() => {
     if (user) {
       setStats({
         activeOrders: 0,
@@ -66,8 +66,10 @@ export const useOrderStats = () => {
       });
       setIsLoading(true);
       setError(null);
+      // Trigger re-fetch by calling fetchOrderStats
+      fetchOrderStats();
     }
-  };
+  }, [user, fetchOrderStats]);
 
   return {
     stats,
