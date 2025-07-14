@@ -120,6 +120,8 @@
   "userManagement": {
     "title": "User Management",
     "subtitle": "Manage users, roles and permissions",
+    "editUser": "Edit User",
+    "editUserSubtitle": "Editing user with ID: {{userId}}",
     "mainActions": "Main Actions",
     "createUser": "Create User",
     "createUserDesc": "Add a new user to the system",

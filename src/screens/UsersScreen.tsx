@@ -8,9 +8,10 @@ import {
   RefreshControl,
 } from 'react-native';
 import {User} from '../types';
+import {UsersScreenProps} from '../types/navigation';
 import {useTranslation} from 'react-i18next';
 
-const UsersScreen: React.FC = () => {
+const UsersScreen: React.FC<UsersScreenProps> = ({navigation}) => {
   const {t} = useTranslation();
   const [users, setUsers] = useState<User[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -23,6 +24,10 @@ const UsersScreen: React.FC = () => {
     }, 1000);
   };
 
+  const handleEditUser = (userId: string) => {
+    navigation.navigate('UserManagement', {userId});
+  };
+
   const renderUserItem = ({item}: {item: User}) => (
     <TouchableOpacity style={styles.userItem}>
       <View style={styles.userInfo}>
@@ -33,7 +38,9 @@ const UsersScreen: React.FC = () => {
         <Text style={styles.userRole}>{item.role}</Text>
       </View>
       <View style={styles.userActions}>
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity 
+          style={styles.actionButton}
+          onPress={() => handleEditUser(item.id)}>
           <Text style={styles.actionButtonText}>{t('users.edit')}</Text>
         </TouchableOpacity>
       </View>

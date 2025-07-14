@@ -8,9 +8,15 @@ import {
   Alert,
 } from 'react-native';
 import {useTranslation} from 'react-i18next';
+import {useRoute, RouteProp} from '@react-navigation/native';
+import {RootStackParamList} from '../types/navigation';
+
+type UserManagementRouteProp = RouteProp<RootStackParamList, 'UserManagement'>;
 
 const UserManagementScreen: React.FC = () => {
   const {t} = useTranslation();
+  const route = useRoute<UserManagementRouteProp>();
+  const {userId} = route.params || {};
 
   // TODO: Implement action selection state when adding detailed views
   // const [selectedAction, setSelectedAction] = useState<string | null>(null);
@@ -53,9 +59,14 @@ const UserManagementScreen: React.FC = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>{t('userManagement.title')}</Text>
+        <Text style={styles.headerTitle}>
+          {userId ? t('userManagement.editUser') : t('userManagement.title')}
+        </Text>
         <Text style={styles.headerSubtitle}>
-          {t('userManagement.subtitle')}
+          {userId 
+            ? t('userManagement.editUserSubtitle', {userId}) 
+            : t('userManagement.subtitle')
+          }
         </Text>
       </View>
 
