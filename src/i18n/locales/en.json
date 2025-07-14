@@ -157,7 +157,76 @@
     "viewReportsDesc": "Generate user activity reports",
     "exportData": "Export Data",
     "exportDataDesc": "Export user information",
-    "statistics": "Statistics"
+    "statistics": "Statistics",
+    "createUserForm": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "role": "Role",
+      "company": "Company",
+      "phoneNumber": "Phone Number",
+      "placeholders": {
+        "firstName": "Enter first name",
+        "lastName": "Enter last name",
+        "email": "Enter email address",
+        "role": "Enter user role",
+        "company": "Enter company name",
+        "phoneNumber": "Enter phone number"
+      },
+      "userCreatedSuccess": "User created successfully!"
+    },
+    "roles": {
+      "administrator": "Administrator",
+      "employee": "Employee",
+      "permissions": {
+        "createUsers": "Create Users",
+        "editUsers": "Edit Users",
+        "deleteUsers": "Delete Users",
+        "viewReports": "View Reports"
+      },
+      "permissionsUpdatedSuccess": "Role permissions updated successfully!"
+    },
+    "reports": {
+      "userActivity": "User Activity Report",
+      "orderProcessing": "Order Processing Report",
+      "systemPerformance": "System Performance Report",
+      "userRegistration": "User Registration Report",
+      "descriptions": {
+        "userActivity": "Daily user login and activity statistics",
+        "orderProcessing": "Summary of orders processed this week",
+        "systemPerformance": "Application performance metrics",
+        "userRegistration": "New user registrations this month"
+      },
+      "filters": {
+        "all": "All",
+        "user": "User",
+        "order": "Order",
+        "system": "System"
+      },
+      "generated": "Generated:",
+      "viewReport": "View Report"
+    },
+    "export": {
+      "titles": {
+        "userData": "User Data Export",
+        "orderData": "Order Data Export",
+        "systemLogs": "System Logs Export",
+        "analytics": "Analytics Data Export"
+      },
+      "descriptions": {
+        "userData": "Export all user information and profiles",
+        "orderData": "Export order history and details",
+        "systemLogs": "Export system activity logs",
+        "analytics": "Export analytics and performance data"
+      },
+      "infoTitle": "Export Information",
+      "availableOptions": "Available Export Options",
+      "exporting": "Exporting...",
+      "exportedSuccessfully": "{{title}} exported successfully as {{format}}",
+      "exportFailed": "Failed to export data. Please try again.",
+      "infoText": "• All exports are generated in real-time\n• Exported files will be available for download\n• Data is filtered based on your permissions\n• Large datasets may take a few moments to process",
+      "footerText": "For custom export requirements or large datasets, please contact your system administrator."
+    }
   },
   "common": {
     "cancel": "Cancel",
