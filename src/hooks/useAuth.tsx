@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext, createContext} from 'react';
+import React, {useState, useEffect, useContext, createContext, useCallback} from 'react';
 import {User, UserRole} from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useTranslationSafe} from './useTranslationSafe';
@@ -28,11 +28,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({children}) 
   const [isLoading, setIsLoading] = useState(true);
   const {t} = useTranslationSafe();
 
-  useEffect(() => {
-    loadUserFromStorage();
-  }, []);
-
-  const loadUserFromStorage = async () => {
+  const loadUserFromStorage = useCallback(async () => {
     try {
       const storedUser = await AsyncStorage.getItem('user');
       if (storedUser) {
@@ -43,7 +39,11 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({children}) 
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [t]);
+
+  useEffect(() => {
+    loadUserFromStorage();
+  }, [loadUserFromStorage]);
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
