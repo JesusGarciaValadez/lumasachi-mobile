@@ -138,6 +138,17 @@
     "error": "Error",
     "success": "Éxito",
     "loading": "Cargando...",
-    "required": "Obligatorio"
+    "required": "Obligatorio",
+    "retry": "Reintentar",
+    "resetAndRetry": "Reiniciar y Reintentar",
+    "ok": "OK",
+    "errors": {
+      "networkError": "Error de conexión a la red. Por favor verifica tu conexión a internet e inténtalo nuevamente.",
+      "unexpectedError": "Ocurrió un error inesperado. Por favor inténtalo nuevamente.",
+      "connectionTitle": "Error de Conexión",
+      "errorTitle": "Algo salió mal",
+      "maxRetriesReached": "Se alcanzó el número máximo de reintentos. El error se reiniciará y podrás intentarlo nuevamente.",
+      "retryAttempt": "Intento {{count}} de {{max}}"
+    }
   }
 } 

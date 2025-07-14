@@ -138,6 +138,17 @@
     "error": "Error",
     "success": "Success",
     "loading": "Loading...",
-    "required": "Required"
+    "required": "Required",
+    "retry": "Retry",
+    "resetAndRetry": "Reset & Retry",
+    "ok": "OK",
+    "errors": {
+      "networkError": "Network connection error. Please check your internet connection and try again.",
+      "unexpectedError": "An unexpected error occurred. Please try again.",
+      "connectionTitle": "Connection Error",
+      "errorTitle": "Something went wrong",
+      "maxRetriesReached": "Maximum retry attempts reached. The error will be reset and you can try again.",
+      "retryAttempt": "Retry attempt {{count}} of {{max}}"
+    }
   }
 } 

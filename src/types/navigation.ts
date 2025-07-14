@@ -16,6 +16,10 @@ export type RootStackParamList = {
   Settings: undefined;
 };
 
+export type AuthStackParamList = {
+  Login: undefined;
+};
+
 // Bottom Tab Navigator Types
 export type MainTabParamList = {
   Home: undefined;

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,6 @@ import {useTranslation} from 'react-i18next';
 
 const UserManagementScreen: React.FC = () => {
   const {t} = useTranslation();
-  const [selectedAction, setSelectedAction] = useState<string | null>(null);
 
   const handleCreateUser = () => {
     Alert.alert(t('userManagement.createUser'), t('userManagement.createUserDesc'));
