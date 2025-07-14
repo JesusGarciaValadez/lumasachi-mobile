@@ -9,6 +9,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import {useAuth} from '../hooks/useAuth';
 import {useTranslation} from 'react-i18next';
@@ -47,7 +48,7 @@ const LoginScreen: React.FC = () => {
 
           <View style={styles.inputContainer}>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isLoading && styles.inputDisabled]}
               placeholder={t('auth.email')}
               value={email}
               onChangeText={setEmail}
@@ -59,7 +60,7 @@ const LoginScreen: React.FC = () => {
 
           <View style={styles.inputContainer}>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isLoading && styles.inputDisabled]}
               placeholder={t('auth.password')}
               value={password}
               onChangeText={setPassword}
@@ -72,12 +73,33 @@ const LoginScreen: React.FC = () => {
             style={[styles.button, isLoading && styles.buttonDisabled]}
             onPress={handleLogin}
             disabled={isLoading}>
-            <Text style={styles.buttonText}>
-              {isLoading ? t('auth.loggingIn') : t('auth.login')}
-            </Text>
+            <View style={styles.buttonContent}>
+              {isLoading && (
+                <ActivityIndicator
+                  size="small"
+                  color="#ffffff"
+                  style={styles.spinner}
+                />
+              )}
+              <Text style={styles.buttonText}>
+                {isLoading ? t('auth.loggingIn') : t('auth.login')}
+              </Text>
+            </View>
           </TouchableOpacity>
         </View>
       </ScrollView>
+      
+      {/* Loading Overlay */}
+      {isLoading && (
+        <View style={styles.loadingOverlay}>
+          <View style={styles.loadingContent}>
+            <ActivityIndicator size="large" color="#007AFF" />
+            <Text style={styles.loadingText}>
+              {t('auth.loggingIn')}
+            </Text>
+          </View>
+        </View>
+      )}
     </KeyboardAvoidingView>
   );
 };
@@ -129,6 +151,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#f9f9f9',
   },
+  inputDisabled: {
+    backgroundColor: '#e9ecef',
+    color: '#6c757d',
+  },
   button: {
     backgroundColor: '#007AFF',
     padding: 15,
@@ -139,10 +165,48 @@ const styles = StyleSheet.create({
   buttonDisabled: {
     backgroundColor: '#999999',
   },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  spinner: {
+    marginRight: 10,
+  },
   buttonText: {
     color: '#ffffff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingContent: {
+    backgroundColor: '#ffffff',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#333333',
+    fontWeight: '500',
   },
 });
 
