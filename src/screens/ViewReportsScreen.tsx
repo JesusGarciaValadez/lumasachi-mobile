@@ -100,14 +100,14 @@ const ViewReportsScreen: React.FC = () => {
 
       <View style={styles.filterContainer}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {['all', 'user', 'order', 'system'].map(type => (
+          {(['all', 'user', 'order', 'system'] as Array<'all' | 'user' | 'order' | 'system'>).map(type => (
             <TouchableOpacity
               key={type}
               style={[
                 styles.filterButton,
                 selectedType === type && styles.filterButtonActive,
               ]}
-              onPress={() => setSelectedType(type as any)}
+              onPress={() => setSelectedType(type)}
             >
               <Text
                 style={[
