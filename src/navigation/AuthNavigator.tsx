@@ -32,7 +32,10 @@ const ErrorBoundaryFallback: React.FC<{
   const canRetry = retryCount < maxRetries;
   const isNetworkError = error.message?.includes('Network') || 
                          error.message?.includes('fetch') ||
-                         error.message?.includes('timeout');
+                         error.message?.includes('timeout') ||
+                         error.message?.includes('connection') ||
+                         error.message?.includes('offline') ||
+                         error.name === 'NetworkError';
 
   const getErrorMessage = () => {
     if (isNetworkError) {
@@ -155,13 +158,13 @@ class AuthErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState
       });
     }
 
-    // Auto-reset retry count after successful operation (5 minutes)
+    // Auto-reset retry count after successful operation (2 minutes)
     this.resetTimeoutId = setTimeout(() => {
       this.setState(prevState => ({
         ...prevState,
         retryCount: 0,
       }));
-    }, 5 * 60 * 1000);
+    }, 2 * 60 * 1000);
   };
 
   render() {
