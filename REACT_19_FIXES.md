@@ -71,7 +71,17 @@ const MyComponent: React.FC = () => {
     return <LoadingComponent />;
   }
   
-  return <Text>{t('my.key')}</Text>;
+  // Handle translation errors gracefully
+  const safeTranslate = (key: string, fallback: string = key) => {
+    try {
+      return t(key);
+    } catch (error) {
+      console.warn(`Translation failed for key: ${key}`, error);
+      return fallback;
+    }
+  };
+  
+  return <Text>{safeTranslate('my.key', 'Default Text')}</Text>;
 };
 ```
 
