@@ -46,7 +46,7 @@ const SettingRow: React.FC<SettingRowProps> = ({
         accessibilityLabel={`${title} toggle`}
       />
     )}
-    {showValue && (
+    {!showSwitch && showValue && (
       <Text style={styles.settingValue}>{showValue}</Text>
     )}
   </TouchableOpacity>
