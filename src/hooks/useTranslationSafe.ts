@@ -20,7 +20,7 @@ export const useTranslationSafe = () => {
     language: i18n.language,
     isInitialized: i18n.isInitialized,
     isReady: i18n.isInitialized && i18n.hasLoadedNamespace('translation'),
-  }), [i18n.language, i18n.isInitialized]);
+  }), [i18n.language, i18n.isInitialized, i18n]);
 
   return {
     t: translate,
