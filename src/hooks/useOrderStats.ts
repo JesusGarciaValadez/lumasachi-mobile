@@ -1,5 +1,6 @@
 import {useState, useEffect, useCallback} from 'react';
 import {useAuth} from './useAuth';
+import {UserRole} from '../types';
 
 export interface OrderStats {
   activeOrders: number;
@@ -37,10 +38,10 @@ export const useOrderStats = () => {
       await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API delay
       
       const mockStats: OrderStats = {
-        activeOrders: user.role === 'Administrator' ? 5 : 2,
-        completedOrders: user.role === 'Administrator' ? 12 : 4,
-        totalOrders: user.role === 'Administrator' ? 17 : 6,
-        pendingOrders: user.role === 'Administrator' ? 3 : 1,
+        activeOrders: user.role === UserRole.ADMINISTRATOR ? 5 : 2,
+        completedOrders: user.role === UserRole.ADMINISTRATOR ? 12 : 4,
+        totalOrders: user.role === UserRole.ADMINISTRATOR ? 17 : 6,
+        pendingOrders: user.role === UserRole.ADMINISTRATOR ? 3 : 1,
       };
       
       setStats(mockStats);
