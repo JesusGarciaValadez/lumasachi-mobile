@@ -16,7 +16,10 @@
     "errors": {
       "missingFields": "Please enter your email and password",
       "invalidCredentials": "Invalid credentials"
-    }
+    },
+    "forgotPassword": "Forgot Password?",
+    "forgotPasswordTitle": "Reset Password",
+    "forgotPasswordMessage": "Password reset functionality will be implemented soon."
   },
   "home": {
     "greeting": {

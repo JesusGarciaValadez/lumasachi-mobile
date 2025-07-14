@@ -31,10 +31,20 @@ const LoginScreen: React.FC = () => {
     try {
       await login(email, password);
     } catch (error) {
-      Alert.alert(t('common.error'), t('auth.errors.invalidCredentials'));
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : t('auth.errors.invalidCredentials');
+      Alert.alert(t('common.error'), errorMessage);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleForgotPassword = () => {
+    Alert.alert(
+      t('auth.forgotPasswordTitle'),
+      t('auth.forgotPasswordMessage')
+    );
   };
 
   return (
@@ -85,6 +95,15 @@ const LoginScreen: React.FC = () => {
                 {isLoading ? t('auth.loggingIn') : t('auth.login')}
               </Text>
             </View>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={styles.forgotPasswordButton}
+            onPress={handleForgotPassword}
+            disabled={isLoading}>
+            <Text style={styles.forgotPasswordText}>
+              {t('auth.forgotPassword')}
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -206,6 +225,16 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     color: '#333333',
+    fontWeight: '500',
+  },
+  forgotPasswordButton: {
+    marginTop: 20,
+    alignItems: 'center',
+    padding: 10,
+  },
+  forgotPasswordText: {
+    color: '#007AFF',
+    fontSize: 16,
     fontWeight: '500',
   },
 });
