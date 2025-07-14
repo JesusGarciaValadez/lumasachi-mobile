@@ -74,10 +74,10 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
               try {
                 // TODO: Uncomment when backend is implemented
                 // await updateOrderAPI(orderId, formData);
-                Alert.alert('Éxito', 'Orden actualizada correctamente');
+                Alert.alert(t('common.success'), t('editOrder.updateSuccess'));
                 navigation.goBack();
               } catch (error) {
-                Alert.alert('Error', 'No se pudo actualizar la orden');
+                Alert.alert(t('common.error'), t('editOrder.updateError'));
               }
             };
             updateOrder();
