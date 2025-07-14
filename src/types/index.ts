@@ -1,11 +1,18 @@
 // Tipos base para la aplicación Lumasachi Control
 
+export enum UserRole {
+  SUPER_ADMINISTRATOR = 'Super Administrator',
+  ADMINISTRATOR = 'Administrator',
+  EMPLOYEE = 'Employee',
+  CUSTOMER = 'Customer',
+}
+
 export interface User {
   id: string;
   firstName: string;
   lastName: string;
   email: string;
-  role: 'Super Administrator' | 'Administrator' | 'Employee' | 'Customer';
+  role: UserRole;
   company: string;
   phoneNumber: string;
   address: string;
@@ -34,7 +41,7 @@ export interface Employee {
 
 export interface Role {
   id: string;
-  roleName: 'Super Administrator' | 'Administrator' | 'Employee' | 'Customer';
+  roleName: UserRole;
   permissions: string[];
 }
 
