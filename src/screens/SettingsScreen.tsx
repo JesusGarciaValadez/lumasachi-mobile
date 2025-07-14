@@ -9,8 +9,11 @@ import {
   Alert,
 } from 'react-native';
 import {useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import {changeLanguage} from '../i18n';
 
 const SettingsScreen: React.FC = () => {
+  const {t, i18n} = useTranslation();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
 
@@ -22,15 +25,39 @@ const SettingsScreen: React.FC = () => {
     setDarkModeEnabled(value);
   };
 
-  const handleClearCache = () => {
+  const handleLanguageChange = () => {
+    const currentLanguage = i18n.language;
+    const newLanguage = currentLanguage === 'es' ? 'en' : 'es';
+    const languageName = newLanguage === 'es' ? 'Español' : 'English';
+    
     Alert.alert(
-      'Limpiar Cache',
-      '¿Estás seguro de que quieres limpiar el cache?',
+      t('settings.language'),
+      `${t('settings.languageDesc')} ${languageName}?`,
       [
-        {text: 'Cancelar', style: 'cancel'},
-        {text: 'Limpiar', onPress: () => console.log('Cache cleared')},
+        {text: t('common.cancel'), style: 'cancel'},
+        {
+          text: t('common.confirm'),
+          onPress: () => {
+            changeLanguage(newLanguage);
+          },
+        },
       ]
     );
+  };
+
+  const handleClearCache = () => {
+    Alert.alert(
+      t('settings.clearCache'),
+      t('settings.clearCacheConfirm'),
+      [
+        {text: t('common.cancel'), style: 'cancel'},
+        {text: t('settings.clearCache'), onPress: () => console.log('Cache cleared')},
+      ]
+    );
+  };
+
+  const getCurrentLanguageLabel = () => {
+    return i18n.language === 'es' ? 'Español' : 'English';
   };
 
   const SettingRow = ({
@@ -40,6 +67,7 @@ const SettingsScreen: React.FC = () => {
     switchValue,
     onSwitchToggle,
     onPress,
+    showValue,
   }: {
     title: string;
     subtitle?: string;
@@ -47,6 +75,7 @@ const SettingsScreen: React.FC = () => {
     switchValue?: boolean;
     onSwitchToggle?: (value: boolean) => void;
     onPress?: () => void;
+    showValue?: string;
   }) => (
     <TouchableOpacity
       style={styles.settingRow}
@@ -64,17 +93,20 @@ const SettingsScreen: React.FC = () => {
           thumbColor={switchValue ? '#ffffff' : '#f4f3f4'}
         />
       )}
+      {showValue && (
+        <Text style={styles.settingValue}>{showValue}</Text>
+      )}
     </TouchableOpacity>
   );
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Notificaciones</Text>
+        <Text style={styles.sectionTitle}>{t('settings.notifications')}</Text>
         <View style={styles.card}>
           <SettingRow
-            title="Notificaciones Push"
-            subtitle="Recibir notificaciones de nuevas órdenes"
+            title={t('settings.pushNotifications')}
+            subtitle={t('settings.pushNotificationsDesc')}
             showSwitch={true}
             switchValue={notificationsEnabled}
             onSwitchToggle={handleNotificationToggle}
@@ -83,11 +115,11 @@ const SettingsScreen: React.FC = () => {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Apariencia</Text>
+        <Text style={styles.sectionTitle}>{t('settings.appearance')}</Text>
         <View style={styles.card}>
           <SettingRow
-            title="Modo Oscuro"
-            subtitle="Activar tema oscuro"
+            title={t('settings.darkMode')}
+            subtitle={t('settings.darkModeDesc')}
             showSwitch={true}
             switchValue={darkModeEnabled}
             onSwitchToggle={handleDarkModeToggle}
@@ -96,29 +128,41 @@ const SettingsScreen: React.FC = () => {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Datos</Text>
+        <Text style={styles.sectionTitle}>{t('settings.language')}</Text>
         <View style={styles.card}>
           <SettingRow
-            title="Limpiar Cache"
-            subtitle="Eliminar datos temporales"
+            title={t('settings.language')}
+            subtitle={t('settings.languageDesc')}
+            onPress={handleLanguageChange}
+            showValue={getCurrentLanguageLabel()}
+          />
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{t('settings.data')}</Text>
+        <View style={styles.card}>
+          <SettingRow
+            title={t('settings.clearCache')}
+            subtitle={t('settings.clearCacheDesc')}
             onPress={handleClearCache}
           />
         </View>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Información</Text>
+        <Text style={styles.sectionTitle}>{t('settings.information')}</Text>
         <View style={styles.card}>
           <SettingRow
-            title="Versión"
+            title={t('settings.version')}
             subtitle="1.0.0"
           />
           <SettingRow
-            title="Términos y Condiciones"
+            title={t('settings.termsAndConditions')}
             onPress={() => console.log('Terms pressed')}
           />
           <SettingRow
-            title="Política de Privacidad"
+            title={t('settings.privacyPolicy')}
             onPress={() => console.log('Privacy pressed')}
           />
         </View>
@@ -155,8 +199,8 @@ const styles = StyleSheet.create({
   },
   settingRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
     padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
@@ -166,12 +210,18 @@ const styles = StyleSheet.create({
   },
   settingTitle: {
     fontSize: 16,
+    fontWeight: '500',
     color: '#333333',
-    marginBottom: 5,
   },
   settingSubtitle: {
     fontSize: 14,
     color: '#666666',
+    marginTop: 2,
+  },
+  settingValue: {
+    fontSize: 16,
+    color: '#007AFF',
+    fontWeight: '500',
   },
 });
 

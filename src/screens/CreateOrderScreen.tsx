@@ -9,13 +9,15 @@ import {
   Alert,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import {useTranslation} from 'react-i18next';
 
 const CreateOrderScreen: React.FC = () => {
   const navigation = useNavigation();
+  const {t} = useTranslation();
   const [formData, setFormData] = useState({
     customer: '',
     description: '',
-    priority: 'Normal',
+    priority: t('orders.priorities.normal'),
     category: '',
   });
 
@@ -25,17 +27,17 @@ const CreateOrderScreen: React.FC = () => {
 
   const handleSubmit = () => {
     if (!formData.customer || !formData.description) {
-      Alert.alert('Error', 'Por favor completa todos los campos obligatorios');
+      Alert.alert(t('common.error'), t('createOrder.errors.missingFields'));
       return;
     }
 
     Alert.alert(
-      'Crear Orden',
-      '¿Estás seguro de que quieres crear esta orden?',
+      t('createOrder.title'),
+      t('createOrder.confirmCreate'),
       [
-        {text: 'Cancelar', style: 'cancel'},
+        {text: t('common.cancel'), style: 'cancel'},
         {
-          text: 'Crear',
+          text: t('common.create'),
           onPress: () => {
             // Aquí iría la lógica para crear la orden
             console.log('Orden creada:', formData);
@@ -46,58 +48,65 @@ const CreateOrderScreen: React.FC = () => {
     );
   };
 
+  const priorities = [
+    {key: 'low', label: t('orders.priorities.low')},
+    {key: 'normal', label: t('orders.priorities.normal')},
+    {key: 'high', label: t('orders.priorities.high')},
+    {key: 'urgent', label: t('orders.priorities.urgent')},
+  ];
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Información del Cliente</Text>
+        <Text style={styles.sectionTitle}>{t('createOrder.customerInfo')}</Text>
         <View style={styles.card}>
-          <Text style={styles.label}>Cliente *</Text>
+          <Text style={styles.label}>{t('orders.customer')} *</Text>
           <TextInput
             style={styles.input}
             value={formData.customer}
             onChangeText={(value) => handleInputChange('customer', value)}
-            placeholder="Nombre del cliente"
+            placeholder={t('createOrder.customerName')}
           />
         </View>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Detalles de la Orden</Text>
+        <Text style={styles.sectionTitle}>{t('createOrder.orderDetails')}</Text>
         <View style={styles.card}>
-          <Text style={styles.label}>Descripción *</Text>
+          <Text style={styles.label}>{t('orders.description')} *</Text>
           <TextInput
             style={[styles.input, styles.textArea]}
             value={formData.description}
             onChangeText={(value) => handleInputChange('description', value)}
-            placeholder="Describe los detalles de la orden"
+            placeholder={t('createOrder.orderDescription')}
             multiline
             numberOfLines={4}
           />
 
-          <Text style={styles.label}>Categoría</Text>
+          <Text style={styles.label}>{t('orders.category')}</Text>
           <TextInput
             style={styles.input}
             value={formData.category}
             onChangeText={(value) => handleInputChange('category', value)}
-            placeholder="Categoría del trabajo"
+            placeholder={t('createOrder.workCategory')}
           />
 
-          <Text style={styles.label}>Prioridad</Text>
+          <Text style={styles.label}>{t('orders.priority')}</Text>
           <View style={styles.priorityContainer}>
-            {['Baja', 'Normal', 'Alta', 'Urgente'].map((priority) => (
+            {priorities.map((priority) => (
               <TouchableOpacity
-                key={priority}
+                key={priority.key}
                 style={[
                   styles.priorityButton,
-                  formData.priority === priority && styles.priorityButtonActive,
+                  formData.priority === priority.label && styles.priorityButtonActive,
                 ]}
-                onPress={() => handleInputChange('priority', priority)}>
+                onPress={() => handleInputChange('priority', priority.label)}>
                 <Text
                   style={[
                     styles.priorityButtonText,
-                    formData.priority === priority && styles.priorityButtonTextActive,
+                    formData.priority === priority.label && styles.priorityButtonTextActive,
                   ]}>
-                  {priority}
+                  {priority.label}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -109,7 +118,7 @@ const CreateOrderScreen: React.FC = () => {
         <TouchableOpacity
           style={styles.submitButton}
           onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>Crear Orden</Text>
+          <Text style={styles.submitButtonText}>{t('createOrder.title')}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
