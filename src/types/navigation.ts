@@ -108,49 +108,47 @@ export interface NavigationConfig {
   canDeleteOrders: boolean;
 }
 
+const ROLE_CONFIGS: Record<UserRole, NavigationConfig> = {
+  [UserRole.SUPER_ADMIN]: {
+    showUsersTab: true,
+    showCreateOrder: true,
+    showUserManagement: true,
+    canEditAllOrders: true,
+    canDeleteOrders: true,
+  },
+  [UserRole.ADMIN]: {
+    showUsersTab: true,
+    showCreateOrder: true,
+    showUserManagement: true,
+    canEditAllOrders: true,
+    canDeleteOrders: false,
+  },
+  [UserRole.EMPLOYEE]: {
+    showUsersTab: false,
+    showCreateOrder: true,
+    showUserManagement: false,
+    canEditAllOrders: false,
+    canDeleteOrders: false,
+  },
+  [UserRole.CUSTOMER]: {
+    showUsersTab: false,
+    showCreateOrder: true,
+    showUserManagement: false,
+    canEditAllOrders: false,
+    canDeleteOrders: false,
+  },
+};
+
+const DEFAULT_CONFIG: NavigationConfig = {
+  showUsersTab: false,
+  showCreateOrder: false,
+  showUserManagement: false,
+  canEditAllOrders: false,
+  canDeleteOrders: false,
+};
+
 export const getNavigationConfig = (role: UserRole): NavigationConfig => {
-  switch (role) {
-    case UserRole.SUPER_ADMIN:
-      return {
-        showUsersTab: true,
-        showCreateOrder: true,
-        showUserManagement: true,
-        canEditAllOrders: true,
-        canDeleteOrders: true,
-      };
-    case UserRole.ADMIN:
-      return {
-        showUsersTab: true,
-        showCreateOrder: true,
-        showUserManagement: true,
-        canEditAllOrders: true,
-        canDeleteOrders: false,
-      };
-    case UserRole.EMPLOYEE:
-      return {
-        showUsersTab: false,
-        showCreateOrder: true,
-        showUserManagement: false,
-        canEditAllOrders: false,
-        canDeleteOrders: false,
-      };
-    case UserRole.CUSTOMER:
-      return {
-        showUsersTab: false,
-        showCreateOrder: true,
-        showUserManagement: false,
-        canEditAllOrders: false,
-        canDeleteOrders: false,
-      };
-    default:
-      return {
-        showUsersTab: false,
-        showCreateOrder: false,
-        showUserManagement: false,
-        canEditAllOrders: false,
-        canDeleteOrders: false,
-      };
-  }
+  return ROLE_CONFIGS[role] || DEFAULT_CONFIG;
 };
 
 declare global {
