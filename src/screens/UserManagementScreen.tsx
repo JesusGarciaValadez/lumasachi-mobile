@@ -4,12 +4,12 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
   Alert,
 } from 'react-native';
 import {useTranslation} from 'react-i18next';
 import {useRoute, RouteProp} from '@react-navigation/native';
 import {RootStackParamList} from '../types/navigation';
+import {ActionCard} from '../components';
 
 type UserManagementRouteProp = RouteProp<RootStackParamList, 'UserManagement'>;
 
@@ -37,24 +37,7 @@ const UserManagementScreen: React.FC = () => {
     Alert.alert(t('userManagement.exportData'), t('userManagement.exportDataDesc'));
   };
 
-  const ActionCard = ({
-    title,
-    description,
-    onPress,
-    color = '#007AFF',
-  }: {
-    title: string;
-    description: string;
-    onPress: () => void;
-    color?: string;
-  }) => (
-    <TouchableOpacity
-      style={[styles.actionCard, {borderLeftColor: color}]}
-      onPress={onPress}>
-      <Text style={styles.actionTitle}>{title}</Text>
-      <Text style={styles.actionDescription}>{description}</Text>
-    </TouchableOpacity>
-  );
+
 
   return (
     <ScrollView style={styles.container}>
@@ -152,32 +135,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     color: '#333333',
   },
-  actionCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    padding: 20,
-    marginBottom: 15,
-    borderLeftWidth: 4,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-    elevation: 3,
-  },
-  actionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginBottom: 5,
-  },
-  actionDescription: {
-    fontSize: 14,
-    color: '#666666',
-    lineHeight: 20,
-  },
+
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
