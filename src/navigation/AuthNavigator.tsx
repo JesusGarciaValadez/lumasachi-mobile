@@ -39,9 +39,9 @@ const ErrorBoundaryFallback: React.FC<{
 
   const getErrorMessage = () => {
     if (isNetworkError) {
-      return t('common.errors.networkError');
+      return t('common.errors.networkError') || 'Network connection error';
     }
-    return error.message || t('common.errors.unexpectedError');
+    return error.message || t('common.errors.unexpectedError') || 'An unexpected error occurred';
   };
 
   const handleRetry = () => {
