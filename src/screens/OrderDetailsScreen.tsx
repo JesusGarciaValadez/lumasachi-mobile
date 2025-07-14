@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,7 +6,9 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
+import { format } from 'date-fns';
 import {OrderDetailsScreenProps} from '../types/navigation';
+import {Order, Status, Customer} from '../types';
 import {useTranslation} from 'react-i18next';
 import DetailRow from '../components/DetailRow';
 
@@ -16,9 +18,89 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
 }) => {
   const {orderId} = route.params;
   const {t} = useTranslation();
+  const [order, setOrder] = useState<Order | null>(null);
+  const [orderStatus, setOrderStatus] = useState<Status | null>(null);
+  const [customer, setCustomer] = useState<Customer | null>(null);
+  const [_loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadOrderData = async () => {
+      try {
+        setLoading(true);
+        // TODO: Uncomment when backend is implemented
+        // const orderData = await fetchOrder(orderId);
+        // const statusData = await fetchOrderStatus(orderData.statusId);
+        // const customerData = await fetchCustomer(orderData.customerId);
+        // setOrder(orderData);
+        // setOrderStatus(statusData);
+        // setCustomer(customerData);
+        
+        // Temporary placeholder data until backend is ready
+        setOrder({
+          id: orderId,
+          customerId: 'customer-123',
+          createdAt: new Date('2024-01-15T10:30:00Z'),
+          updatedAt: new Date('2024-01-20T14:45:00Z'),
+          createdBy: 'admin',
+          updatedBy: 'admin',
+        });
+        setOrderStatus({
+          id: 'status-1',
+          statusName: 'In Progress',
+        });
+        setCustomer({
+          id: 'customer-123',
+          firstName: 'Cliente',
+          lastName: 'Demo',
+          address: '123 Demo Street',
+          phoneNumber: '+1234567890',
+          email: 'demo@example.com',
+          company: 'Demo Company',
+        });
+      } catch (error) {
+        console.error('Error loading order data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadOrderData();
+  }, [orderId]);
 
   const handleEditOrder = () => {
     navigation.navigate('EditOrder', {orderId});
+  };
+
+  const getStatusTranslation = (statusName: string) => {
+    switch (statusName) {
+      case 'Open':
+        return t('orders.statuses.open');
+      case 'In Progress':
+        return t('orders.statuses.inProgress');
+      case 'Ready for delivery':
+        return t('orders.statuses.readyForDelivery');
+      case 'Delivered':
+        return t('orders.statuses.delivered');
+      case 'Paid':
+        return t('orders.statuses.paid');
+      case 'Returned':
+        return t('orders.statuses.returned');
+      case 'Not paid':
+        return t('orders.statuses.notPaid');
+      case 'Cancelled':
+        return t('orders.statuses.cancelled');
+      default:
+        return statusName;
+    }
+  };
+
+  const getCustomerName = () => {
+    if (!customer) return '-';
+    return `${customer.firstName} ${customer.lastName}`;
+  };
+
+  const formatDate = (date: Date) => {
+    return format(date, 'dd/MM/yyyy');
   };
 
   return (
@@ -35,10 +117,22 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t('orders.generalInfo')}</Text>
         <View style={styles.card}>
-          <DetailRow label={t('orders.status')} value={t('orders.inProgress')} />
-          <DetailRow label={t('orders.customer')} value="Cliente Demo" />
-          <DetailRow label={t('orders.createdAt')} value="2024-01-15" />
-          <DetailRow label={t('orders.updatedAt')} value="2024-01-20" />
+          <DetailRow 
+            label={t('orders.status')} 
+            value={orderStatus ? getStatusTranslation(orderStatus.statusName) : '-'} 
+          />
+          <DetailRow 
+            label={t('orders.customer')} 
+            value={getCustomerName()} 
+          />
+          <DetailRow 
+            label={t('orders.createdAt')} 
+            value={order?.createdAt ? formatDate(order.createdAt) : '-'} 
+          />
+          <DetailRow 
+            label={t('orders.updatedAt')} 
+            value={order?.updatedAt ? formatDate(order.updatedAt) : '-'} 
+          />
         </View>
       </View>
 
