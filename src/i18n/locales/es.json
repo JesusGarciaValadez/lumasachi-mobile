@@ -67,7 +67,8 @@
       "normal": "Normal",
       "high": "Alta",
       "urgent": "Urgente"
-    }
+    },
+    "descriptionPlaceholder": "Esta es una descripción de ejemplo para la orden. Aquí se mostraría información detallada sobre lo que se solicita en la orden."
   },
   "createOrder": {
     "title": "Crear Orden",

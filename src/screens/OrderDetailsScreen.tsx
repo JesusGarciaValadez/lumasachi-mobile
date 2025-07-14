@@ -140,8 +140,7 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
         <Text style={styles.sectionTitle}>{t('orders.description')}</Text>
         <View style={styles.card}>
           <Text style={styles.description}>
-            Esta es una descripción de ejemplo para la orden. Aquí se mostraría
-            información detallada sobre lo que se solicita en la orden.
+            {t('orders.descriptionPlaceholder')}
           </Text>
         </View>
       </View>
