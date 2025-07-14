@@ -20,41 +20,58 @@ export const useOrderStats = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchOrderStats = useCallback(async () => {
+  const fetchOrderStats = useCallback(async (controller?: AbortController) => {
     if (!user) {
       setIsLoading(false);
       return;
     }
 
+    const signal = controller?.signal;
     try {
       setIsLoading(true);
       setError(null);
       
       // TODO: Replace with actual API call when backend is ready
-      // const response = await httpClient.get(`/orders/stats/${user.id}`);
+      // const response = await httpClient.get(`/orders/stats/${user.id}`, { signal });
       // setStats(response.data);
       
       // Mock data for now - simulating different stats based on user role
-      await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API delay
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          if (signal?.aborted) {
+            reject(new Error('Operation aborted'));
+          } else {
+            resolve(undefined);
+          }
+        }, 500);
+        signal?.addEventListener('abort', () => clearTimeout(timeout));
+      });
       
-      const mockStats: OrderStats = {
-        activeOrders: user.role === UserRole.ADMINISTRATOR ? 5 : 2,
-        completedOrders: user.role === UserRole.ADMINISTRATOR ? 12 : 4,
-        totalOrders: user.role === UserRole.ADMINISTRATOR ? 17 : 6,
-        pendingOrders: user.role === UserRole.ADMINISTRATOR ? 3 : 1,
-      };
-      
-      setStats(mockStats);
+      if (!signal?.aborted) {
+        const mockStats: OrderStats = {
+          activeOrders: user.role === UserRole.ADMINISTRATOR ? 5 : 2,
+          completedOrders: user.role === UserRole.ADMINISTRATOR ? 12 : 4,
+          totalOrders: user.role === UserRole.ADMINISTRATOR ? 17 : 6,
+          pendingOrders: user.role === UserRole.ADMINISTRATOR ? 3 : 1,
+        };
+        setStats(mockStats);
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error loading order statistics');
-      console.error('Error fetching order stats:', err);
+      if (err instanceof Error && err.message !== 'Operation aborted') {
+        setError(err.message);
+        console.error('Error fetching order stats:', err);
+      }
     } finally {
-      setIsLoading(false);
+      if (!signal?.aborted) {
+        setIsLoading(false);
+      }
     }
   }, [user]);
 
   useEffect(() => {
-    fetchOrderStats();
+    const controller = new AbortController();
+    fetchOrderStats(controller);
+    return () => controller.abort();
   }, [fetchOrderStats]);
 
   const refresh = useCallback(() => {
@@ -68,7 +85,8 @@ export const useOrderStats = () => {
       setIsLoading(true);
       setError(null);
       // Trigger re-fetch by calling fetchOrderStats
-      fetchOrderStats();
+      const controller = new AbortController();
+      fetchOrderStats(controller);
     }
   }, [user, fetchOrderStats]);
 
