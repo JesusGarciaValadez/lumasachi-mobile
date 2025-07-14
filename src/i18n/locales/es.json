@@ -16,7 +16,10 @@
     "errors": {
       "missingFields": "Por favor ingresa tu email y contraseña",
       "invalidCredentials": "Credenciales inválidas"
-    }
+    },
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "forgotPasswordTitle": "Restablecer Contraseña",
+    "forgotPasswordMessage": "La funcionalidad de restablecimiento de contraseña se implementará pronto."
   },
   "home": {
     "greeting": {
