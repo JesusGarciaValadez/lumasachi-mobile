@@ -18,11 +18,29 @@ const UsersScreen: React.FC<UsersScreenProps> = ({navigation}) => {
 
   const onRefresh = () => {
     setRefreshing(true);
-    // Simular carga de datos
+    // TODO: Implement actual data loading when backend is ready
+    // loadUsers().then(setUsers).finally(() => setRefreshing(false));
+    
+    // Simular carga de datos - remove when backend is implemented
     setTimeout(() => {
       setRefreshing(false);
     }, 1000);
   };
+
+  // TODO: Implement data loading function when backend is ready
+  // const loadUsers = async () => {
+  //   try {
+  //     const response = await httpClient.get('/users');
+  //     setUsers(response.data);
+  //   } catch (error) {
+  //     console.error('Error loading users:', error);
+  //   }
+  // };
+
+  // TODO: Call loadUsers on component mount when backend is ready
+  // useEffect(() => {
+  //   loadUsers();
+  // }, []);
 
   const handleEditUser = (userId: string) => {
     navigation.navigate('UserManagement', {userId});
