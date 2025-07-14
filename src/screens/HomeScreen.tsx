@@ -5,13 +5,16 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import {HomeScreenProps} from '../types/navigation';
 import {useAuth} from '../hooks/useAuth';
+import {useOrderStats} from '../hooks/useOrderStats';
 import {useTranslation} from 'react-i18next';
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const {user} = useAuth();
+  const {stats, isLoading: statsLoading, error: statsError} = useOrderStats();
   const {t} = useTranslation();
 
   const handleCreateOrder = () => {
@@ -68,14 +71,28 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 
       <View style={styles.summary}>
         <Text style={styles.sectionTitle}>{t('home.summary')}</Text>
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryLabel}>{t('home.activeOrders')}</Text>
-          <Text style={styles.summaryValue}>0</Text>
-        </View>
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryLabel}>{t('home.completedOrders')}</Text>
-          <Text style={styles.summaryValue}>0</Text>
-        </View>
+        
+        {statsLoading ? (
+          <View style={[styles.summaryCard, styles.loadingCard]}>
+            <ActivityIndicator size="small" color="#007AFF" />
+            <Text style={styles.loadingText}>{t('app.loading')}</Text>
+          </View>
+        ) : statsError ? (
+          <View style={styles.summaryCard}>
+            <Text style={styles.errorText}>{statsError}</Text>
+          </View>
+        ) : (
+          <>
+            <View style={styles.summaryCard}>
+              <Text style={styles.summaryLabel}>{t('home.activeOrders')}</Text>
+              <Text style={styles.summaryValue}>{stats.activeOrders}</Text>
+            </View>
+            <View style={styles.summaryCard}>
+              <Text style={styles.summaryLabel}>{t('home.completedOrders')}</Text>
+              <Text style={styles.summaryValue}>{stats.completedOrders}</Text>
+            </View>
+          </>
+        )}
       </View>
     </ScrollView>
   );
@@ -158,6 +175,21 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#007AFF',
+  },
+  loadingCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#666666',
+    marginLeft: 10,
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#FF3B30',
+    textAlign: 'center',
   },
 });
 
