@@ -12,7 +12,7 @@ export type RootStackParamList = {
   CreateOrder: undefined;
   EditOrder: {orderId: string};
   Profile: undefined;
-  UserManagement: undefined;
+  UserManagement: {userId?: string};
   Settings: undefined;
 };
 
@@ -49,6 +49,11 @@ export type ProfileScreenNavigationProp = CompositeNavigationProp<
   StackNavigationProp<RootStackParamList>
 >;
 
+export type UsersScreenNavigationProp = CompositeNavigationProp<
+  BottomTabNavigationProp<MainTabParamList, 'Users'>,
+  StackNavigationProp<RootStackParamList>
+>;
+
 // Route Props
 export type OrderDetailsRouteProp = RouteProp<RootStackParamList, 'OrderDetails'>;
 export type EditOrderRouteProp = RouteProp<RootStackParamList, 'EditOrder'>;
@@ -64,6 +69,10 @@ export interface OrdersScreenProps {
 
 export interface ProfileScreenProps {
   navigation: ProfileScreenNavigationProp;
+}
+
+export interface UsersScreenProps {
+  navigation: UsersScreenNavigationProp;
 }
 
 export interface OrderDetailsScreenProps {
