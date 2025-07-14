@@ -29,7 +29,10 @@ const SettingRow: React.FC<SettingRowProps> = ({
   <TouchableOpacity
     style={styles.settingRow}
     onPress={onPress}
-    disabled={showSwitch}>
+    disabled={showSwitch}
+    accessibilityRole="button"
+    accessibilityLabel={title}
+    accessibilityHint={subtitle}>
     <View style={styles.settingInfo}>
       <Text style={styles.settingTitle}>{title}</Text>
       {subtitle && <Text style={styles.settingSubtitle}>{subtitle}</Text>}
@@ -40,6 +43,7 @@ const SettingRow: React.FC<SettingRowProps> = ({
         onValueChange={onSwitchToggle}
         trackColor={{false: '#767577', true: '#007AFF'}}
         thumbColor={switchValue ? '#ffffff' : '#f4f3f4'}
+        accessibilityLabel={`${title} toggle`}
       />
     )}
     {showValue && (
