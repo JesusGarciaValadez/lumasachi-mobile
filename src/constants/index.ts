@@ -1,3 +1,5 @@
+import { UserRole } from '../types';
+
 // API Constants
 export const API_BASE_URL = __DEV__ 
   ? 'http://localhost:8000/api' 
@@ -57,16 +59,9 @@ export const SIZES = {
 } as const;
 
 // Roles
-export enum UserRole {
-  SUPER_ADMIN = 'SUPER_ADMIN',
-  ADMIN = 'ADMIN',
-  EMPLOYEE = 'EMPLOYEE',
-  CUSTOMER = 'CUSTOMER',
-}
-
 export const USER_ROLES = {
-  SUPER_ADMIN: { key: UserRole.SUPER_ADMIN, displayName: 'Super Administrator' },
-  ADMIN: { key: UserRole.ADMIN, displayName: 'Administrator' },
+  SUPER_ADMINISTRATOR: { key: UserRole.SUPER_ADMINISTRATOR, displayName: 'Super Administrator' },
+  ADMINISTRATOR: { key: UserRole.ADMINISTRATOR, displayName: 'Administrator' },
   EMPLOYEE: { key: UserRole.EMPLOYEE, displayName: 'Employee' },
   CUSTOMER: { key: UserRole.CUSTOMER, displayName: 'Customer' },
 } as const;
