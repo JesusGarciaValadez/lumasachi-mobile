@@ -56,7 +56,11 @@
       "open": "Abierto",
       "inProgress": "En Progreso",
       "readyForDelivery": "Listo para entrega",
-      "delivered": "Entregado"
+      "delivered": "Entregado",
+      "paid": "Pagado",
+      "returned": "Devuelto",
+      "notPaid": "No Pagado",
+      "cancelled": "Cancelado"
     },
     "priorities": {
       "low": "Baja",
