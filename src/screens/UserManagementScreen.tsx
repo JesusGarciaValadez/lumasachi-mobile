@@ -12,6 +12,9 @@ import {useTranslation} from 'react-i18next';
 const UserManagementScreen: React.FC = () => {
   const {t} = useTranslation();
 
+  // TODO: Implement action selection state when adding detailed views
+  // const [selectedAction, setSelectedAction] = useState<string | null>(null);
+
   const handleCreateUser = () => {
     Alert.alert(t('userManagement.createUser'), t('userManagement.createUserDesc'));
   };
