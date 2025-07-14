@@ -45,7 +45,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({children}) 
     loadUserFromStorage();
   }, [loadUserFromStorage]);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, _password: string) => {
     setIsLoading(true);
     try {
       // Login simulation - in production this would be an API call
