@@ -2,13 +2,15 @@ import React from 'react';
 import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
 import {useTranslation} from 'react-i18next';
 
+const PRIMARY_COLOR = '#007AFF';
+
 const SplashScreen: React.FC = () => {
   const {t} = useTranslation();
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{t('app.name')}</Text>
-      <ActivityIndicator size="large" color="#007AFF" style={styles.loader} />
+      <ActivityIndicator size="large" color={PRIMARY_COLOR} style={styles.loader} />
       <Text style={styles.subtitle}>{t('app.loading')}</Text>
     </View>
   );
@@ -24,7 +26,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#007AFF',
+    color: PRIMARY_COLOR,
     marginBottom: 20,
   },
   subtitle: {
