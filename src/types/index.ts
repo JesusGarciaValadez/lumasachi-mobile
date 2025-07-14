@@ -1,5 +1,16 @@
 // Tipos base para la aplicación Lumasachi Control
 
+export interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: 'Super Administrator' | 'Administrator' | 'Employee' | 'Customer';
+  company: string;
+  phoneNumber: string;
+  address: string;
+}
+
 export interface Customer {
   id: string;
   firstName: string;
