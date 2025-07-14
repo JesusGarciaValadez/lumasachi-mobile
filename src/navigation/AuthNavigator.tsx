@@ -48,6 +48,7 @@ const ErrorBoundaryFallback: React.FC<{
     if (canRetry) {
       onRetry();
     } else {
+      // If max retries reached, reset and try again
       Alert.alert(
         t('common.error'),
         t('common.errors.maxRetriesReached'),
@@ -85,9 +86,9 @@ const ErrorBoundaryFallback: React.FC<{
       )}
 
       <TouchableOpacity
-        style={[styles.retryButton, !canRetry && styles.retryButtonDisabled]}
+        style={[styles.retryButton, !canRetry && styles.retryButtonSecondary]}
         onPress={handleRetry}
-        disabled={false} // Always allow retry, but handle max retries in the function
+        disabled={false}
       >
         <Text style={styles.retryButtonText}>
           {canRetry ? t('common.retry') : t('common.resetAndRetry')}
@@ -248,8 +249,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginTop: 10,
   },
-  retryButtonDisabled: {
-    backgroundColor: '#999999',
+  retryButtonSecondary: {
+    backgroundColor: '#FF9500',
+    borderWidth: 1,
+    borderColor: '#FF9500',
   },
   retryButtonText: {
     color: '#ffffff',
