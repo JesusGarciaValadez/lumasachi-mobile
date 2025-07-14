@@ -1,7 +1,7 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
 import {CompositeNavigationProp, RouteProp} from '@react-navigation/native';
-import {UserRole, USER_ROLES} from '../constants';
+import {UserRole} from '../types';
 
 // Stack Navigator Types
 export type RootStackParamList = {
@@ -97,14 +97,14 @@ export interface NavigationConfig {
 }
 
 const ROLE_CONFIGS: Record<UserRole, NavigationConfig> = {
-  [UserRole.SUPER_ADMIN]: {
+  [UserRole.SUPER_ADMINISTRATOR]: {
     showUsersTab: true,
     showCreateOrder: true,
     showUserManagement: true,
     canEditAllOrders: true,
     canDeleteOrders: true,
   },
-  [UserRole.ADMIN]: {
+  [UserRole.ADMINISTRATOR]: {
     showUsersTab: true,
     showCreateOrder: true,
     showUserManagement: true,
