@@ -102,6 +102,8 @@
     "clearCache": "Clear Cache",
     "clearCacheDesc": "Remove temporary data",
     "clearCacheConfirm": "Are you sure you want to clear the cache?",
+    "clearCacheSuccess": "Cache cleared successfully",
+    "clearCacheError": "Could not clear cache",
     "information": "Information",
     "version": "Version",
     "termsAndConditions": "Terms and Conditions",
