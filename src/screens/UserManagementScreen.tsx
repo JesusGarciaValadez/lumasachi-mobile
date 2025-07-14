@@ -4,40 +4,40 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  Alert,
 } from 'react-native';
 import {useTranslation} from 'react-i18next';
-import {useRoute, RouteProp} from '@react-navigation/native';
+import {useRoute, RouteProp, useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../types/navigation';
 import {ActionCard} from '../components';
 
 type UserManagementRouteProp = RouteProp<RootStackParamList, 'UserManagement'>;
+type UserManagementNavigationProp = StackNavigationProp<RootStackParamList, 'UserManagement'>;
 
 const UserManagementScreen: React.FC = () => {
   const {t} = useTranslation();
   const route = useRoute<UserManagementRouteProp>();
+  const navigation = useNavigation<UserManagementNavigationProp>();
   const {userId} = route.params || {};
 
   // TODO: Implement action selection state when adding detailed views
   // const [selectedAction, setSelectedAction] = useState<string | null>(null);
 
   const handleCreateUser = () => {
-    Alert.alert(t('userManagement.createUser'), t('userManagement.createUserDesc'));
+    navigation.navigate('CreateUser');
   };
 
   const handleManageRoles = () => {
-    Alert.alert(t('userManagement.manageRoles'), t('userManagement.manageRolesDesc'));
+    navigation.navigate('ManageRoles');
   };
 
   const handleViewReports = () => {
-    Alert.alert(t('userManagement.viewReports'), t('userManagement.viewReportsDesc'));
+    navigation.navigate('ViewReports');
   };
 
   const handleExportData = () => {
-    Alert.alert(t('userManagement.exportData'), t('userManagement.exportDataDesc'));
+    navigation.navigate('ExportData');
   };
-
-
 
   return (
     <ScrollView style={styles.container}>

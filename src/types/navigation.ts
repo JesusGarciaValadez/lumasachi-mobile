@@ -15,6 +15,10 @@ export type RootStackParamList = {
   Profile: undefined;
   UserManagement: {userId?: string};
   Settings: undefined;
+  CreateUser: undefined;
+  ManageRoles: undefined;
+  ViewReports: undefined;
+  ExportData: undefined;
 };
 
 export type AuthStackParamList = {

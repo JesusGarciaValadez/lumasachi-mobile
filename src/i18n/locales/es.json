@@ -157,7 +157,76 @@
     "viewReportsDesc": "Generar reportes de actividad de usuarios",
     "exportData": "Exportar Datos",
     "exportDataDesc": "Exportar información de usuarios",
-    "statistics": "Estadísticas"
+    "statistics": "Estadísticas",
+    "createUserForm": {
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "email": "Correo Electrónico",
+      "role": "Rol",
+      "company": "Empresa",
+      "phoneNumber": "Número de Teléfono",
+      "placeholders": {
+        "firstName": "Ingrese el nombre",
+        "lastName": "Ingrese el apellido",
+        "email": "Ingrese el correo electrónico",
+        "role": "Ingrese el rol del usuario",
+        "company": "Ingrese el nombre de la empresa",
+        "phoneNumber": "Ingrese el número de teléfono"
+      },
+      "userCreatedSuccess": "¡Usuario creado exitosamente!"
+    },
+    "roles": {
+      "administrator": "Administrador",
+      "employee": "Empleado",
+      "permissions": {
+        "createUsers": "Crear Usuarios",
+        "editUsers": "Editar Usuarios",
+        "deleteUsers": "Eliminar Usuarios",
+        "viewReports": "Ver Reportes"
+      },
+      "permissionsUpdatedSuccess": "¡Permisos de rol actualizados exitosamente!"
+    },
+    "reports": {
+      "userActivity": "Reporte de Actividad de Usuarios",
+      "orderProcessing": "Reporte de Procesamiento de Órdenes",
+      "systemPerformance": "Reporte de Rendimiento del Sistema",
+      "userRegistration": "Reporte de Registro de Usuarios",
+      "descriptions": {
+        "userActivity": "Estadísticas diarias de inicio de sesión y actividad de usuarios",
+        "orderProcessing": "Resumen de órdenes procesadas esta semana",
+        "systemPerformance": "Métricas de rendimiento de la aplicación",
+        "userRegistration": "Nuevos registros de usuarios este mes"
+      },
+      "filters": {
+        "all": "Todos",
+        "user": "Usuario",
+        "order": "Orden",
+        "system": "Sistema"
+      },
+      "generated": "Generado:",
+      "viewReport": "Ver Reporte"
+    },
+    "export": {
+      "titles": {
+        "userData": "Exportar Datos de Usuario",
+        "orderData": "Exportar Datos de Órdenes",
+        "systemLogs": "Exportar Logs del Sistema",
+        "analytics": "Exportar Datos de Análisis"
+      },
+      "descriptions": {
+        "userData": "Exportar toda la información y perfiles de usuarios",
+        "orderData": "Exportar historial y detalles de órdenes",
+        "systemLogs": "Exportar registros de actividad del sistema",
+        "analytics": "Exportar datos de análisis y rendimiento"
+      },
+      "infoTitle": "Información de Exportación",
+      "availableOptions": "Opciones de Exportación Disponibles",
+      "exporting": "Exportando...",
+      "exportedSuccessfully": "{{title}} exportado exitosamente como {{format}}",
+      "exportFailed": "Error al exportar los datos. Por favor intente de nuevo.",
+      "infoText": "• Todas las exportaciones se generan en tiempo real\n• Los archivos exportados estarán disponibles para descarga\n• Los datos se filtran según sus permisos\n• Los conjuntos de datos grandes pueden tardar unos momentos en procesarse",
+      "footerText": "Para requisitos de exportación personalizados o conjuntos de datos grandes, por favor contacte a su administrador del sistema."
+    }
   },
   "common": {
     "cancel": "Cancelar",

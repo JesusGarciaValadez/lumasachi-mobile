@@ -9,6 +9,10 @@ import OrderDetailsScreen from '../screens/OrderDetailsScreen';
 import CreateOrderScreen from '../screens/CreateOrderScreen';
 import EditOrderScreen from '../screens/EditOrderScreen';
 import UserManagementScreen from '../screens/UserManagementScreen';
+import CreateUserScreen from '../screens/CreateUserScreen';
+import ManageRolesScreen from '../screens/ManageRolesScreen';
+import ViewReportsScreen from '../screens/ViewReportsScreen';
+import ExportDataScreen from '../screens/ExportDataScreen';
 import {useAuth} from '../hooks/useAuth';
 import {useTranslationSafe} from '../hooks/useTranslationSafe';
 
@@ -64,6 +68,42 @@ const RootNavigator: React.FC = () => {
               options={{
                 headerShown: true,
                 title: t('userManagement.title') as string,
+                headerBackTitle: '',
+              }}
+            />
+            <Stack.Screen
+              name="CreateUser"
+              component={CreateUserScreen}
+              options={{
+                headerShown: true,
+                title: t('userManagement.createUser') as string,
+                headerBackTitle: '',
+              }}
+            />
+            <Stack.Screen
+              name="ManageRoles"
+              component={ManageRolesScreen}
+              options={{
+                headerShown: true,
+                title: t('userManagement.manageRoles') as string,
+                headerBackTitle: '',
+              }}
+            />
+            <Stack.Screen
+              name="ViewReports"
+              component={ViewReportsScreen}
+              options={{
+                headerShown: true,
+                title: t('userManagement.viewReports') as string,
+                headerBackTitle: '',
+              }}
+            />
+            <Stack.Screen
+              name="ExportData"
+              component={ExportDataScreen}
+              options={{
+                headerShown: true,
+                title: t('userManagement.exportData') as string,
                 headerBackTitle: '',
               }}
             />
