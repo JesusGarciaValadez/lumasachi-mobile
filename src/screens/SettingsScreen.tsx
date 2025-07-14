@@ -11,6 +11,7 @@ import {
 import {useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {changeLanguage} from '../i18n';
+import {version} from '../../package.json';
 
 const SettingsScreen: React.FC = () => {
   const {t, i18n} = useTranslation();
@@ -155,7 +156,7 @@ const SettingsScreen: React.FC = () => {
         <View style={styles.card}>
           <SettingRow
             title={t('settings.version')}
-            subtitle="1.0.0"
+            subtitle={version}
           />
           <SettingRow
             title={t('settings.termsAndConditions')}
