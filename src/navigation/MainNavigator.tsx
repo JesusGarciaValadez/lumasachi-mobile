@@ -8,7 +8,6 @@ import UsersScreen from '../screens/UsersScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import {useAuth} from '../hooks/useAuth';
 import {useTranslationSafe} from '../hooks/useTranslationSafe';
-import {UserRole} from '../types';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {View, Text, StyleSheet} from 'react-native';
 
