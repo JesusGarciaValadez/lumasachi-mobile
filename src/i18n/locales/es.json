@@ -263,6 +263,28 @@
       "footerText": "Para requisitos de exportación personalizados o conjuntos de datos grandes, por favor contacte a su administrador del sistema."
     }
   },
+  "navigation": {
+    "home": {
+      "title": "Inicio",
+      "tab": "Inicio"
+    },
+    "orders": {
+      "title": "Órdenes",
+      "tab": "Órdenes"
+    },
+    "users": {
+      "title": "Usuarios",
+      "tab": "Usuarios"
+    },
+    "profile": {
+      "title": "Perfil",
+      "tab": "Perfil"
+    },
+    "settings": {
+      "title": "Configuración",
+      "tab": "Config"
+    }
+  },
   "common": {
     "cancel": "Cancelar",
     "save": "Guardar",

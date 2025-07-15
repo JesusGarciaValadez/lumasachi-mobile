@@ -263,6 +263,28 @@
       "footerText": "For custom export requirements or large datasets, please contact your system administrator."
     }
   },
+  "navigation": {
+    "home": {
+      "title": "Home",
+      "tab": "Home"
+    },
+    "orders": {
+      "title": "Orders",
+      "tab": "Orders"
+    },
+    "users": {
+      "title": "Users",
+      "tab": "Users"
+    },
+    "profile": {
+      "title": "Profile",
+      "tab": "Profile"
+    },
+    "settings": {
+      "title": "Settings",
+      "tab": "Settings"
+    }
+  },
   "common": {
     "cancel": "Cancel",
     "save": "Save",
