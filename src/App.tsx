@@ -7,6 +7,7 @@
 
 import React, {useEffect, useState, useCallback} from 'react';
 import {StatusBar, ActivityIndicator, View, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {QueryClientProvider} from '@tanstack/react-query';
 import {AuthProvider} from './hooks/useAuth';
 import RootNavigator from './navigation/RootNavigator';
@@ -67,58 +68,64 @@ const App: React.FC = () => {
   // Loading state
   if (appState === 'loading') {
     return (
-      <View style={styles.loadingContainer}>
-        <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
-        <ActivityIndicator size="large" color="#007AFF" />
-        <Text style={styles.loadingText}>
-          Initializing application...
-          {retryCount > 0 && ` (Attempt ${retryCount + 1}/${MAX_RETRY_ATTEMPTS})`}
-        </Text>
-      </View>
+      <SafeAreaProvider>
+        <View style={styles.loadingContainer}>
+          <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+          <ActivityIndicator size="large" color="#007AFF" />
+          <Text style={styles.loadingText}>
+            Initializing application...
+            {retryCount > 0 && ` (Attempt ${retryCount + 1}/${MAX_RETRY_ATTEMPTS})`}
+          </Text>
+        </View>
+      </SafeAreaProvider>
     );
   }
 
   // Error state
   if (appState === 'error') {
     return (
-      <View style={styles.errorContainer}>
-        <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
-        <Text style={styles.errorTitle}>Initialization Failed</Text>
-        <Text style={styles.errorMessage}>{error}</Text>
-        
-        <View style={styles.buttonContainer}>
-                  <TouchableOpacity 
-          style={styles.retryButton} 
-          onPress={handleRetry}
-          accessibilityLabel="Retry application initialization"
-          accessibilityRole="button"
-        >
-          <Text style={styles.retryButtonText}>Retry</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={styles.continueButton} 
-          onPress={handleContinueWithDefaults}
-          accessibilityLabel="Continue with default settings"
-          accessibilityRole="button"
-        >
-          <Text style={styles.continueButtonText}>Continue with defaults</Text>
-        </TouchableOpacity>
+      <SafeAreaProvider>
+        <View style={styles.errorContainer}>
+          <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+          <Text style={styles.errorTitle}>Initialization Failed</Text>
+          <Text style={styles.errorMessage}>{error}</Text>
+          
+          <View style={styles.buttonContainer}>
+                    <TouchableOpacity 
+            style={styles.retryButton} 
+            onPress={handleRetry}
+            accessibilityLabel="Retry application initialization"
+            accessibilityRole="button"
+          >
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.continueButton} 
+            onPress={handleContinueWithDefaults}
+            accessibilityLabel="Continue with default settings"
+            accessibilityRole="button"
+          >
+            <Text style={styles.continueButtonText}>Continue with defaults</Text>
+          </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </SafeAreaProvider>
     );
   }
 
   // Ready state - normal app flow
   return (
-    <QueryClientProvider client={queryClient}>
-      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
-      <TranslationProvider>
-        <AuthProvider>
-          <RootNavigator />
-        </AuthProvider>
-      </TranslationProvider>
-    </QueryClientProvider>
+    <SafeAreaProvider>
+      <QueryClientProvider client={queryClient}>
+        <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+        <TranslationProvider>
+          <AuthProvider>
+            <RootNavigator />
+          </AuthProvider>
+        </TranslationProvider>
+      </QueryClientProvider>
+    </SafeAreaProvider>
   );
 };
 
