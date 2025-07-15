@@ -241,10 +241,10 @@
         "analytics": "Exportar Datos de Análisis"
       },
       "descriptions": {
-        "userData": "Exportar toda la información y perfiles de usuarios",
-        "orderData": "Exportar historial y detalles de órdenes",
-        "systemLogs": "Exportar registros de actividad del sistema",
-        "analytics": "Exportar datos de análisis y rendimiento"
+        "userData": "Exportar toda la información y perfiles de usuarios como PDF",
+        "orderData": "Exportar historial y detalles de órdenes como PDF",
+        "systemLogs": "Exportar registros de actividad del sistema como PDF",
+        "analytics": "Exportar datos de análisis y rendimiento como PDF"
       },
       "infoTitle": "Información de Exportación",
       "availableOptions": "Opciones de Exportación Disponibles",
@@ -254,9 +254,10 @@
       "savedTo": "Guardado en",
       "errors": {
         "invalidDataType": "Tipo de datos inválido",
-        "unsupportedFormat": "Formato no soportado",
+        "unsupportedFormat": "Formato no soportado - solo se admite PDF",
         "exportFailed": "Error al exportar",
-        "saveFailed": "Error al guardar"
+        "saveFailed": "Error al guardar",
+        "noContentToSave": "No hay contenido para guardar"
       },
       "mockData": {
         "users": {
@@ -276,8 +277,8 @@
           "levelError": "error"
         }
       },
-      "infoText": "• Todas las exportaciones se generan en tiempo real\n• Los archivos exportados estarán disponibles para descarga\n• Los datos se filtran según sus permisos\n• Los conjuntos de datos grandes pueden tardar unos momentos en procesarse",
-      "footerText": "Para requisitos de exportación personalizados o conjuntos de datos grandes, por favor contacte a su administrador del sistema."
+      "infoText": "• Todas las exportaciones se generan como documentos PDF\n• Los archivos exportados estarán disponibles para descarga\n• Los datos se filtran según sus permisos\n• Los conjuntos de datos grandes pueden tardar unos momentos en procesarse\n• Solo se admite formato PDF en esta versión",
+      "footerText": "Para requisitos de exportación personalizados u otros formatos, por favor contacte a su administrador del sistema."
     }
   },
   "navigation": {

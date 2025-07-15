@@ -241,10 +241,10 @@
         "analytics": "Analytics Data Export"
       },
       "descriptions": {
-        "userData": "Export all user information and profiles",
-        "orderData": "Export order history and details",
-        "systemLogs": "Export system activity logs",
-        "analytics": "Export analytics and performance data"
+        "userData": "Export all user information and profiles as PDF",
+        "orderData": "Export order history and details as PDF",
+        "systemLogs": "Export system activity logs as PDF",
+        "analytics": "Export analytics and performance data as PDF"
       },
       "infoTitle": "Export Information",
       "availableOptions": "Available Export Options",
@@ -254,9 +254,10 @@
       "savedTo": "Saved to",
       "errors": {
         "invalidDataType": "Invalid data type",
-        "unsupportedFormat": "Unsupported format",
+        "unsupportedFormat": "Unsupported format - only PDF is supported",
         "exportFailed": "Export failed",
-        "saveFailed": "Save failed"
+        "saveFailed": "Save failed",
+        "noContentToSave": "No content to save"
       },
       "mockData": {
         "users": {
@@ -276,8 +277,8 @@
           "levelError": "error"
         }
       },
-      "infoText": "• All exports are generated in real-time\n• Exported files will be available for download\n• Data is filtered based on your permissions\n• Large datasets may take a few moments to process",
-      "footerText": "For custom export requirements or large datasets, please contact your system administrator."
+      "infoText": "• All exports are generated as PDF documents\n• Exported files will be available for download\n• Data is filtered based on your permissions\n• Large datasets may take a few moments to process\n• Only PDF format is supported in this version",
+      "footerText": "For custom export requirements or other formats, please contact your system administrator."
     }
   },
   "navigation": {
