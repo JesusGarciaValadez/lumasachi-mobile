@@ -93,6 +93,12 @@
     "orderDescription": "Describe los detalles de la orden",
     "workCategory": "Categoría del trabajo",
     "confirmCreate": "¿Estás seguro de que quieres crear esta orden?",
+    "selectCustomer": "Seleccionar Cliente",
+    "selectCustomerAccessibility": "Seleccionar cliente para esta orden",
+    "orderTitle": "Título de la Orden",
+    "priorityButtonAccessibility": "Establecer prioridad a {{priority}}",
+    "submitButtonAccessibility": "Crear orden con los detalles actuales",
+    "customerItemAccessibility": "Seleccionar {{customerName}} de {{company}}",
     "errors": {
       "missingFields": "Por favor completa todos los campos obligatorios",
       "titleTooShort": "El título de la orden debe tener al menos 3 caracteres",
@@ -310,6 +316,8 @@
     "retry": "Reintentar",
     "resetAndRetry": "Reiniciar y Reintentar",
     "ok": "OK",
+    "close": "Cerrar",
+    "closeModal": "Cerrar modal",
     "unauthorized": "Acceso Denegado",
     "unauthorizedMessage": "No tienes permisos para acceder a esta sección. Por favor contacta a tu administrador si crees que esto es un error.",
     "errors": {
