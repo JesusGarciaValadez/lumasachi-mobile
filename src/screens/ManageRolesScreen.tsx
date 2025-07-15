@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -34,28 +34,32 @@ const ManageRolesScreen: React.FC = () => {
   const {t} = useTranslation();
   const navigation = useNavigation<ManageRolesScreenNavigationProp>();
   
-  const [roles, setRoles] = useState<RoleWithPermissions[]>([
-    {
-      id: '1',
-      name: t('userManagement.roles.administrator'),
-      permissions: [
-        {id: '1', name: t('userManagement.roles.permissions.createUsers'), enabled: true},
-        {id: '2', name: t('userManagement.roles.permissions.editUsers'), enabled: true},
-        {id: '3', name: t('userManagement.roles.permissions.deleteUsers'), enabled: false},
-        {id: '4', name: t('userManagement.roles.permissions.viewReports'), enabled: true},
-      ],
-    },
-    {
-      id: '2',
-      name: t('userManagement.roles.employee'),
-      permissions: [
-        {id: '1', name: t('userManagement.roles.permissions.createUsers'), enabled: false},
-        {id: '2', name: t('userManagement.roles.permissions.editUsers'), enabled: false},
-        {id: '3', name: t('userManagement.roles.permissions.deleteUsers'), enabled: false},
-        {id: '4', name: t('userManagement.roles.permissions.viewReports'), enabled: false},
-      ],
-    },
-  ]);
+  const [roles, setRoles] = useState<RoleWithPermissions[]>([]);
+
+  useEffect(() => {
+    setRoles([
+      {
+        id: '1',
+        name: t('userManagement.roles.administrator'),
+        permissions: [
+          {id: '1', name: t('userManagement.roles.permissions.createUsers'), enabled: true},
+          {id: '2', name: t('userManagement.roles.permissions.editUsers'), enabled: true},
+          {id: '3', name: t('userManagement.roles.permissions.deleteUsers'), enabled: false},
+          {id: '4', name: t('userManagement.roles.permissions.viewReports'), enabled: true},
+        ],
+      },
+      {
+        id: '2',
+        name: t('userManagement.roles.employee'),
+        permissions: [
+          {id: '1', name: t('userManagement.roles.permissions.createUsers'), enabled: false},
+          {id: '2', name: t('userManagement.roles.permissions.editUsers'), enabled: false},
+          {id: '3', name: t('userManagement.roles.permissions.deleteUsers'), enabled: false},
+          {id: '4', name: t('userManagement.roles.permissions.viewReports'), enabled: false},
+        ],
+      },
+    ]);
+  }, [t]);
 
   const handlePermissionToggle = (roleId: string, permissionId: string) => {
     setRoles(prevRoles =>
