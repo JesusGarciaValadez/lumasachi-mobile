@@ -1,7 +1,7 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {RootStackParamList} from '../types/navigation';
+import {RootStackParamList, getNavigationConfig} from '../types/navigation';
 import AuthNavigator from './AuthNavigator';
 import MainNavigator from './MainNavigator';
 import SplashScreen from '../screens/SplashScreen';
@@ -15,8 +15,66 @@ import ViewReportsScreen from '../screens/ViewReportsScreen';
 import ExportDataScreen from '../screens/ExportDataScreen';
 import {useAuth} from '../hooks/useAuth';
 import {useTranslationSafe} from '../hooks/useTranslationSafe';
+import {UserRole} from '../types';
+import {View, Text, StyleSheet} from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const Stack = createStackNavigator<RootStackParamList>();
+
+// Componente para mostrar cuando el usuario no tiene permisos
+const UnauthorizedScreen: React.FC = () => {
+  const {t} = useTranslationSafe();
+  
+  return (
+    <View style={styles.unauthorizedContainer}>
+      <Icon name="security" size={64} color="#ccc" />
+      <Text style={styles.unauthorizedTitle}>
+        {t('common.unauthorized') as string}
+      </Text>
+      <Text style={styles.unauthorizedMessage}>
+        {t('common.unauthorizedMessage') as string}
+      </Text>
+    </View>
+  );
+};
+
+// HOC para proteger screens con validación de permisos
+const withPermissionCheck = <P extends object>(
+  Component: React.ComponentType<P>,
+  checkPermission: (config: ReturnType<typeof getNavigationConfig>) => boolean
+) => {
+  return (props: P) => {
+    const {user} = useAuth();
+    
+    if (!user) {
+      return <UnauthorizedScreen />;
+    }
+    
+    const navigationConfig = getNavigationConfig(user.role);
+    
+    if (!checkPermission(navigationConfig)) {
+      return <UnauthorizedScreen />;
+    }
+    
+    return <Component {...props} />;
+  };
+};
+
+// Funciones de validación de permisos
+const canCreateOrder = (config: ReturnType<typeof getNavigationConfig>) => config.showCreateOrder;
+const canManageUsers = (config: ReturnType<typeof getNavigationConfig>) => config.showUserManagement;
+const canEditAllOrders = (config: ReturnType<typeof getNavigationConfig>) => config.canEditAllOrders;
+const canViewReports = (config: ReturnType<typeof getNavigationConfig>) => config.showUserManagement; // Solo admins
+const canExportData = (config: ReturnType<typeof getNavigationConfig>) => config.showUserManagement; // Solo admins
+
+// Aplicar protección a las screens
+const ProtectedCreateOrderScreen = withPermissionCheck(CreateOrderScreen, canCreateOrder);
+const ProtectedEditOrderScreen = withPermissionCheck(EditOrderScreen, canEditAllOrders);
+const ProtectedUserManagementScreen = withPermissionCheck(UserManagementScreen, canManageUsers);
+const ProtectedCreateUserScreen = withPermissionCheck(CreateUserScreen, canManageUsers);
+const ProtectedManageRolesScreen = withPermissionCheck(ManageRolesScreen, canManageUsers);
+const ProtectedViewReportsScreen = withPermissionCheck(ViewReportsScreen, canViewReports);
+const ProtectedExportDataScreen = withPermissionCheck(ExportDataScreen, canExportData);
 
 const RootNavigator: React.FC = () => {
   const {isAuthenticated, isLoading} = useAuth();
@@ -46,7 +104,7 @@ const RootNavigator: React.FC = () => {
             />
             <Stack.Screen
               name="CreateOrder"
-              component={CreateOrderScreen}
+              component={ProtectedCreateOrderScreen}
               options={{
                 headerShown: true,
                 title: t('createOrder.title') as string,
@@ -55,7 +113,7 @@ const RootNavigator: React.FC = () => {
             />
             <Stack.Screen
               name="EditOrder"
-              component={EditOrderScreen}
+              component={ProtectedEditOrderScreen}
               options={{
                 headerShown: true,
                 title: t('editOrder.title') as string,
@@ -64,7 +122,7 @@ const RootNavigator: React.FC = () => {
             />
             <Stack.Screen
               name="UserManagement"
-              component={UserManagementScreen}
+              component={ProtectedUserManagementScreen}
               options={{
                 headerShown: true,
                 title: t('userManagement.title') as string,
@@ -73,7 +131,7 @@ const RootNavigator: React.FC = () => {
             />
             <Stack.Screen
               name="CreateUser"
-              component={CreateUserScreen}
+              component={ProtectedCreateUserScreen}
               options={{
                 headerShown: true,
                 title: t('userManagement.createUser') as string,
@@ -82,7 +140,7 @@ const RootNavigator: React.FC = () => {
             />
             <Stack.Screen
               name="ManageRoles"
-              component={ManageRolesScreen}
+              component={ProtectedManageRolesScreen}
               options={{
                 headerShown: true,
                 title: t('userManagement.manageRoles') as string,
@@ -91,7 +149,7 @@ const RootNavigator: React.FC = () => {
             />
             <Stack.Screen
               name="ViewReports"
-              component={ViewReportsScreen}
+              component={ProtectedViewReportsScreen}
               options={{
                 headerShown: true,
                 title: t('userManagement.viewReports') as string,
@@ -100,7 +158,7 @@ const RootNavigator: React.FC = () => {
             />
             <Stack.Screen
               name="ExportData"
-              component={ExportDataScreen}
+              component={ProtectedExportDataScreen}
               options={{
                 headerShown: true,
                 title: t('userManagement.exportData') as string,
@@ -118,5 +176,29 @@ const RootNavigator: React.FC = () => {
     </NavigationContainer>
   );
 };
+
+const styles = StyleSheet.create({
+  unauthorizedContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f8f9fa',
+    padding: 20,
+  },
+  unauthorizedTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#dc3545',
+    marginTop: 16,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  unauthorizedMessage: {
+    fontSize: 16,
+    color: '#6c757d',
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+});
 
 export default RootNavigator; 
