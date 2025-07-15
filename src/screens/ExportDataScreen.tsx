@@ -73,7 +73,7 @@ const ExportDataScreen: React.FC = () => {
       
       // Save to device
       const filename = `${option.title.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.${option.format.toLowerCase()}`;
-      const saveResult = await exportService.saveToDevice(exportResult.filePath!, filename, t);
+      const saveResult = await exportService.saveToDevice(exportResult.content || '', filename, t);
       
       if (!saveResult.success) {
         throw new Error(saveResult.error || t('userManagement.export.errors.saveFailed'));
@@ -81,10 +81,10 @@ const ExportDataScreen: React.FC = () => {
       
       Alert.alert(
         t('common.success'),
-        t('userManagement.export.exportedSuccessfully', {
+        `${t('userManagement.export.exportedSuccessfully', {
           title: option.title,
           format: option.format,
-        }) + `\n\n${t('userManagement.export.savedTo')}: ${saveResult.filePath}`,
+        })}\n\n${t('userManagement.export.savedTo')}: ${saveResult.filePath}`,
         [
           {
             text: t('common.ok'),
@@ -95,7 +95,7 @@ const ExportDataScreen: React.FC = () => {
     } catch (error) {
       Alert.alert(
         t('common.error'),
-        t('userManagement.export.exportFailed') + `\n\n${error instanceof Error ? error.message : 'Unknown error'}`,
+        `${t('userManagement.export.exportFailed')}\n\n${error instanceof Error ? error.message : 'Unknown error'}`,
         [
           {
             text: t('common.ok'),
