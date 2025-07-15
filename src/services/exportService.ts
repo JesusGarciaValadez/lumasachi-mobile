@@ -14,6 +14,7 @@ export interface ExportData {
 export interface ExportResult {
   success: boolean;
   filePath?: string;
+  content?: string;
   error?: string;
 }
 
@@ -185,7 +186,7 @@ class ExportService {
 
       return {
         success: true,
-        filePath: exportedContent,
+        content: exportedContent,
       };
     } catch (error) {
       return {
