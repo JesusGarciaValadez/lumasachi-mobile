@@ -118,6 +118,10 @@ const ExportDataScreen: React.FC = () => {
       style={[styles.exportCard, {borderLeftColor: option.color}]}
       onPress={() => handleExport(option)}
       disabled={isExporting}
+      accessibilityRole="button"
+      accessibilityLabel={`${t('userManagement.export.exportOption')} ${option.title} ${t('common.as')} ${option.format}`}
+      accessibilityHint={option.description}
+      accessibilityState={{disabled: isExporting}}
     >
       <View style={styles.exportHeader}>
         <View style={styles.exportIcon}>
