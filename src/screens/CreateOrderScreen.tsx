@@ -75,6 +75,10 @@ const CreateOrderScreen: React.FC = () => {
         setCustomers(mockCustomers);
       } catch (error) {
         console.error('Error loading customers:', error);
+        Alert.alert(
+          t('common.error'),
+          t('createOrder.errors.loadCustomersFailed')
+        );
       }
     };
 

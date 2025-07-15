@@ -102,7 +102,8 @@
     "errors": {
       "missingFields": "Por favor completa todos los campos obligatorios",
       "titleTooShort": "El título de la orden debe tener al menos 3 caracteres",
-      "descriptionTooShort": "La descripción de la orden debe tener al menos 10 caracteres"
+      "descriptionTooShort": "La descripción de la orden debe tener al menos 10 caracteres",
+      "loadCustomersFailed": "Error al cargar los datos del cliente. Por favor intenta de nuevo."
     }
   },
   "editOrder": {
