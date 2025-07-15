@@ -13,6 +13,7 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
 import {User, UserRole} from '../types';
+import {validateOrderForm} from '../utils/orderValidation';
 
 const CreateOrderScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -94,8 +95,9 @@ const CreateOrderScreen: React.FC = () => {
   };
 
   const handleSubmit = () => {
-    if (!formData.customerId || !formData.title || !formData.description) {
-      Alert.alert(t('common.error'), t('createOrder.errors.missingFields'));
+    const validationResult = validateOrderForm(formData);
+    if (!validationResult.isValid) {
+      Alert.alert(t('common.error'), t(`createOrder.errors.${validationResult.errorMessage}`));
       return;
     }
 
