@@ -12,6 +12,7 @@ import {useTranslation} from 'react-i18next';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../types/navigation';
+import {exportService} from '../services/exportService';
 
 type ExportDataScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -72,15 +73,27 @@ const ExportDataScreen: React.FC = () => {
     setIsExporting(true);
     
     try {
-      // Simulate export process
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Implement actual export
+      const exportResult = await exportService.exportData(option.format, option.id);
+      
+      if (!exportResult.success) {
+        throw new Error(exportResult.error || 'Export failed');
+      }
+      
+      // Save to device
+      const filename = `${option.title.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.${option.format.toLowerCase()}`;
+      const saveResult = await exportService.saveToDevice(exportResult.filePath!, filename);
+      
+      if (!saveResult.success) {
+        throw new Error(saveResult.error || 'Save failed');
+      }
       
       Alert.alert(
         t('common.success'),
         t('userManagement.export.exportedSuccessfully', {
           title: option.title,
           format: option.format,
-        }),
+        }) + `\n\n${t('userManagement.export.savedTo')}: ${saveResult.filePath}`,
         [
           {
             text: t('common.ok'),
@@ -91,7 +104,7 @@ const ExportDataScreen: React.FC = () => {
     } catch (error) {
       Alert.alert(
         t('common.error'),
-        t('userManagement.export.exportFailed'),
+        t('userManagement.export.exportFailed') + `\n\n${error instanceof Error ? error.message : 'Unknown error'}`,
         [
           {
             text: t('common.ok'),

@@ -234,6 +234,7 @@
       "exporting": "Exporting...",
       "exportedSuccessfully": "{{title}} exported successfully as {{format}}",
       "exportFailed": "Failed to export data. Please try again.",
+      "savedTo": "Saved to",
       "infoText": "• All exports are generated in real-time\n• Exported files will be available for download\n• Data is filtered based on your permissions\n• Large datasets may take a few moments to process",
       "footerText": "For custom export requirements or large datasets, please contact your system administrator."
     }
