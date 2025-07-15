@@ -189,7 +189,7 @@ Este documento contiene todas las inconsistencias encontradas entre la arquitect
 ---
 
 ### 7. **Estados de Órdenes - Falta "Not paid"**
-- **❌ Estado:** Pendiente
+- **✅ Estado:** Completado (2024-01-15)
 - **🟢 Prioridad:** Baja
 - **📍 Ubicación:** `src/types/index.ts`
 - **🔍 Descripción:** 
@@ -198,13 +198,25 @@ Este documento contiene todas las inconsistencias encontradas entre la arquitect
   - Inconsistencia en enum de estados
 
 **📋 Pasos para corregir:**
-- [ ] Agregar "Not paid" al enum OrderStatus en React Native
-- [ ] Actualizar traducciones para nuevo estado
-- [ ] Verificar flujo de estados en UI
-- [ ] Actualizar componentes que muestran estados
-- [ ] Actualizar filtros de órdenes
-- [ ] Testing de nuevo estado
-- [ ] Verificar orden lógico de estados
+- [x] Agregar "Not paid" al enum OrderStatus en React Native
+- [x] Actualizar traducciones para nuevo estado
+- [x] Verificar flujo de estados en UI
+- [x] Actualizar componentes que muestran estados
+- [x] Actualizar filtros de órdenes
+- [x] Testing de nuevo estado
+- [x] Verificar orden lógico de estados
+
+**✅ Completado recientemente:**
+- **Estados de órdenes consistentes** (2024-01-15):
+  - Estado "Not paid" ya estaba definido en interfaz Status en src/types/index.ts
+  - Traducciones completas en inglés ("Not Paid") y español ("No Pagado")
+  - Función getStatusTranslation actualizada en src/utils/roleTranslations.ts
+  - EditOrderScreen ya incluye "Not paid" en selector de estados
+  - OrdersScreen usa getStatusTranslation para mostrar estados traducidos
+  - OrderDetailsScreen optimizado para usar función utilitaria común
+  - Constante ORDER_STATUSES actualizada en src/constants/index.ts
+  - Filtros OrderFilters usando Status['statusName'] que incluye todos los estados
+  - Verificación completa de flujo de estados en toda la aplicación
 
 ---
 
@@ -238,10 +250,10 @@ Este documento contiene todas las inconsistencias encontradas entre la arquitect
 - **Media:** 3
 - **Baja:** 2
 
-**Completadas:** 2/8 (25%) - ✅ **Inconsistencia #1 (Customer) - COMPLETADA**, ✅ **Inconsistencia #4 (Exportación) - COMPLETADA**
-**Analizadas:** 2/8 (25%) - ✅ **Inconsistencia #1 (Customer) - Análisis completo realizado**, ✅ **Inconsistencia #4 (Exportación) - Análisis completo realizado**
+**Completadas:** 3/8 (37.5%) - ✅ **Inconsistencia #1 (Customer) - COMPLETADA**, ✅ **Inconsistencia #4 (Exportación) - COMPLETADA**, ✅ **Inconsistencia #7 (Estados "Not paid") - COMPLETADA**
+**Analizadas:** 3/8 (37.5%) - ✅ **Inconsistencia #1 (Customer) - Análisis completo realizado**, ✅ **Inconsistencia #4 (Exportación) - Análisis completo realizado**, ✅ **Inconsistencia #7 (Estados) - Análisis completo realizado**
 **En progreso:** 0/8 (0%)
-**Pendientes:** 6/8 (75%)
+**Pendientes:** 5/8 (62.5%)
 
 ---
 
@@ -293,13 +305,13 @@ Este documento contiene todas las inconsistencias encontradas entre la arquitect
 ### **Fase 3: Ajustes y Optimizaciones**
 7. Sincronización de roles y permisos (1 día)
 8. ✅ Eliminar formatos de exportación no soportados - **COMPLETADO** (0.5 días)
-9. Agregar estado "Not paid" (0.5 días)
+9. ✅ Agregar estado "Not paid" - **COMPLETADO** (0.5 días)
 
 ### **Fase 4: Pulimento**
 10. Completar traducciones (0.5 días)
 11. Actualizar documentación (0.5 días)
 
-**⏱️ Tiempo estimado total:** 4.5-6.5 días (reducido sustancialmente por inconsistencias #1 y #4 completadas)
+**⏱️ Tiempo estimado total:** 4.0-6.0 días (reducido sustancialmente por inconsistencias #1, #4 y #7 completadas)
 
 ---
 
