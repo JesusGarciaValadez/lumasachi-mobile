@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useMemo} from 'react';
 import {
   View,
   Text,
@@ -25,7 +25,7 @@ const ExportDataScreen: React.FC = () => {
   
   const [exportingId, setExportingId] = useState<string | null>(null);
   
-  const exportOptions: ExportOption[] = [
+  const exportOptions: ExportOption[] = useMemo(() => [
     {
       id: '1',
       title: t('userManagement.export.titles.userData'),
@@ -58,7 +58,7 @@ const ExportDataScreen: React.FC = () => {
       color: '#fd7e14',
       icon: '📊',
     },
-  ];
+  ], [t]);
 
   const handleExport = async (option: ExportOption) => {
     setExportingId(option.id);
