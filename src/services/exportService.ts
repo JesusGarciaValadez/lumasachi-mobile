@@ -4,6 +4,21 @@ import {UserRole} from '../types'
 
 type TranslationFunction = (key: string, options?: any) => string;
 
+export const EXPORT_FORMATS = {
+  CSV: 'csv',
+  EXCEL: 'excel',
+  JSON: 'json',
+  PDF: 'pdf',
+  TXT: 'txt'
+} as const;
+
+export const DATA_TYPES = {
+  USER_DATA: '1',
+  ORDER_DATA: '2',
+  SYSTEM_LOGS: '3',
+  ANALYTICS: '4'
+} as const;
+
 export interface ExportData {
   userData: any[];
   orderData: any[];
@@ -144,16 +159,16 @@ class ExportService {
       
       // Get the appropriate data based on type
       switch (dataType) {
-        case '1': // userData
+        case DATA_TYPES.USER_DATA: // userData
           data = await this.getUserData(t);
           break;
-        case '2': // orderData
+        case DATA_TYPES.ORDER_DATA: // orderData
           data = await this.getOrderData(t);
           break;
-        case '3': // systemLogs
+        case DATA_TYPES.SYSTEM_LOGS: // systemLogs
           data = await this.getSystemLogs(t);
           break;
-        case '4': // analytics
+        case DATA_TYPES.ANALYTICS: // analytics
           data = await this.getAnalytics();
           break;
         default:
@@ -164,20 +179,20 @@ class ExportService {
       let exportedContent: string;
       
       switch (format.toLowerCase()) {
-        case 'csv':
+        case EXPORT_FORMATS.CSV:
           exportedContent = this.convertToCSV(data);
           break;
-        case 'excel':
+        case EXPORT_FORMATS.EXCEL:
           exportedContent = this.convertToExcelCompatibleCSV(data);
           break;
-        case 'json':
+        case EXPORT_FORMATS.JSON:
           exportedContent = this.convertToJSON(data);
           break;
-        case 'pdf':
+        case EXPORT_FORMATS.PDF:
           // Note: This generates plain text, not actual PDF
           exportedContent = this.convertToPlainText(data);
           break;
-        case 'txt':
+        case EXPORT_FORMATS.TXT:
           exportedContent = this.convertToPlainText(data);
           break;
         default:
