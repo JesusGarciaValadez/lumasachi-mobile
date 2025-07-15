@@ -46,6 +46,7 @@ export const changeLanguage = async (language: string) => {
     await i18n.changeLanguage(language);
   } catch (error) {
     console.error('Error saving language:', error);
+    throw new Error(`Failed to change language to ${language}: ${error}`);
   }
 };
 
@@ -55,20 +56,81 @@ export const loadSavedLanguage = async () => {
     const savedLanguage = await AsyncStorage.getItem('language');
     if (savedLanguage && ['es', 'en'].includes(savedLanguage)) {
       await i18n.changeLanguage(savedLanguage);
+      return savedLanguage;
     }
+    return null;
   } catch (error) {
     console.error('Error loading saved language:', error);
+    // Don't throw here - this is a fallback operation
+    return null;
+  }
+};
+
+// Función para reinicializar i18n con configuración por defecto
+export const reinitializeWithDefaults = async () => {
+  try {
+    await i18n.changeLanguage('es'); // Fallback to Spanish
+    return true;
+  } catch (error) {
+    console.error('Error reinitializing i18n with defaults:', error);
+    return false;
+  }
+};
+
+// Función para verificar si AsyncStorage está disponible
+const isAsyncStorageAvailable = async (): Promise<boolean> => {
+  try {
+    const testKey = '__test__';
+    await AsyncStorage.setItem(testKey, 'test');
+    await AsyncStorage.removeItem(testKey);
+    return true;
+  } catch (error) {
+    console.warn('AsyncStorage is not available:', error);
+    return false;
   }
 };
 
 // Función para inicializar i18n (será llamada desde App.tsx)
 export const initializeI18n = async () => {
-  // Cargar el idioma guardado
-  await loadSavedLanguage();
-  
-  // Asegurar que i18n esté listo
-  if (!i18n.isInitialized) {
-    await i18n.init();
+  try {
+    // Verificar si AsyncStorage está disponible
+    const storageAvailable = await isAsyncStorageAvailable();
+    
+    if (storageAvailable) {
+      // Intentar cargar el idioma guardado
+      const savedLanguage = await loadSavedLanguage();
+      if (savedLanguage) {
+        console.log(`Loaded saved language: ${savedLanguage}`);
+      }
+    } else {
+      console.warn('AsyncStorage not available, using default language');
+    }
+    
+    // Asegurar que i18n esté inicializado
+    if (!i18n.isInitialized) {
+      await i18n.init();
+    }
+    
+    // Verificar que el idioma actual esté disponible
+    const currentLanguage = i18n.language;
+    if (!['es', 'en'].includes(currentLanguage)) {
+      console.warn(`Current language ${currentLanguage} not supported, falling back to Spanish`);
+      await i18n.changeLanguage('es');
+    }
+    
+    console.log(`i18n initialized successfully with language: ${i18n.language}`);
+    
+  } catch (error) {
+    console.error('Critical error during i18n initialization:', error);
+    
+    // Intentar reinicializar con configuración por defecto
+    const fallbackSuccess = await reinitializeWithDefaults();
+    if (!fallbackSuccess) {
+      // Si incluso el fallback falla, lanzar el error original
+      throw new Error(`Failed to initialize i18n and fallback failed: ${error}`);
+    }
+    
+    console.warn('i18n initialized with default fallback configuration');
   }
 };
 
