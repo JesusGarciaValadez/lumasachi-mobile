@@ -75,6 +75,11 @@ const ViewReportsScreen: React.FC = () => {
     }
   };
 
+  const handleViewReport = (report: ReportItem) => {
+    // Navigate to report details screen
+    navigation.navigate('ReportDetails', { reportId: report.id });
+  };
+
   const renderReportItem = ({item}: {item: ReportItem}) => (
     <View style={styles.reportCard}>
       <View style={styles.reportHeader}>
@@ -85,7 +90,10 @@ const ViewReportsScreen: React.FC = () => {
       </View>
       <Text style={styles.reportDescription}>{item.description}</Text>
       <Text style={styles.reportDate}>{t('userManagement.reports.generated')} {item.date}</Text>
-      <TouchableOpacity style={styles.viewButton}>
+      <TouchableOpacity 
+        style={styles.viewButton}
+        onPress={() => handleViewReport(item)}
+      >
         <Text style={styles.viewButtonText}>{t('userManagement.reports.viewReport')}</Text>
       </TouchableOpacity>
     </View>
