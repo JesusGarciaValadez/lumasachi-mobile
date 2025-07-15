@@ -125,7 +125,7 @@ const ROLE_CONFIGS: Record<UserRole, NavigationConfig> = {
   },
   [UserRole.CUSTOMER]: {
     showUsersTab: false,
-    showCreateOrder: true,
+    showCreateOrder: false,
     showUserManagement: false,
     canEditAllOrders: false,
     canDeleteOrders: false,
