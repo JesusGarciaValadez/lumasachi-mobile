@@ -87,13 +87,23 @@ const App: React.FC = () => {
         <Text style={styles.errorMessage}>{error}</Text>
         
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.retryButton} onPress={handleRetry}>
-            <Text style={styles.retryButtonText}>Retry</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.continueButton} onPress={handleContinueWithDefaults}>
-            <Text style={styles.continueButtonText}>Continue with defaults</Text>
-          </TouchableOpacity>
+                  <TouchableOpacity 
+          style={styles.retryButton} 
+          onPress={handleRetry}
+          accessibilityLabel="Retry application initialization"
+          accessibilityRole="button"
+        >
+          <Text style={styles.retryButtonText}>Retry</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={styles.continueButton} 
+          onPress={handleContinueWithDefaults}
+          accessibilityLabel="Continue with default settings"
+          accessibilityRole="button"
+        >
+          <Text style={styles.continueButtonText}>Continue with defaults</Text>
+        </TouchableOpacity>
         </View>
       </View>
     );
