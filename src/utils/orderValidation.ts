@@ -11,13 +11,28 @@ export interface OrderFormData {
 export interface ValidationResult {
   isValid: boolean;
   errorMessage: string;
+  missingFields?: string[];
 }
 
-export const validateOrderForm = (formData: OrderFormData): ValidationResult => {
-  if (!formData.customerId || !formData.title || !formData.description) {
+export const validateOrderForm = (formData: OrderFormData, t?: (key: string) => string): ValidationResult => {
+  const missingFields: string[] = [];
+  
+  // Check for missing required fields
+  if (!formData.customerId) {
+    missingFields.push(t ? t('orders.customer') : 'Customer');
+  }
+  if (!formData.title) {
+    missingFields.push(t ? t('orders.orderTitle') : 'Title');
+  }
+  if (!formData.description) {
+    missingFields.push(t ? t('orders.description') : 'Description');
+  }
+
+  if (missingFields.length > 0) {
     return {
       isValid: false,
-      errorMessage: 'missingFields'
+      errorMessage: 'missingFields',
+      missingFields: missingFields
     };
   }
 

@@ -158,9 +158,16 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
   };
 
   const handleSubmit = () => {
-    const validationResult = validateOrderForm(formData);
+    const validationResult = validateOrderForm(formData, t);
     if (!validationResult.isValid) {
-      Alert.alert(t('common.error'), t(`editOrder.errors.${validationResult.errorMessage}`));
+      let errorMessage = t(`editOrder.errors.${validationResult.errorMessage}`);
+      
+      // Add specific missing fields information
+      if (validationResult.errorMessage === 'missingFields' && validationResult.missingFields) {
+        errorMessage = `${errorMessage}: ${validationResult.missingFields.join(', ')}`;
+      }
+      
+      Alert.alert(t('common.error'), errorMessage);
       return;
     }
 
@@ -258,7 +265,7 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t('createOrder.orderDetails')}</Text>
         <View style={styles.card}>
-          <Text style={styles.label}>{t('orders.title')} *</Text>
+          <Text style={styles.label}>{t('orders.orderTitle')} *</Text>
           <TextInput
             style={styles.input}
             value={formData.title}
