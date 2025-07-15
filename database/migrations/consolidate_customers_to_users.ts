@@ -131,7 +131,7 @@ async function migrateCustomersToUsers(): Promise<number> {
       id: customer.id,
       firstName: customer.firstName,
       lastName: customer.lastName,
-      email: customer.email || `${customer.firstName.toLowerCase()}.${customer.lastName.toLowerCase()}@temp.com`,
+      email: customer.email || `${customer.firstName.toLowerCase()}.${customer.lastName.toLowerCase()}@example.invalid`,
       phoneNumber: customer.phoneNumber,
       address: customer.address,
       company: customer.company,
