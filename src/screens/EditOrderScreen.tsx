@@ -130,6 +130,33 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
     setShowCustomerModal(false);
   };
 
+  const handleReset = () => {
+    if (!originalOrder) return;
+    
+    Alert.alert(
+      t('editOrder.resetChanges'),
+      t('editOrder.confirmReset'),
+      [
+        {text: t('common.cancel'), style: 'cancel'},
+        {
+          text: t('common.reset'),
+          style: 'destructive',
+          onPress: () => {
+            setFormData({
+              customerId: originalOrder.customerId,
+              customerName: originalOrder.customer ? `${originalOrder.customer.firstName} ${originalOrder.customer.lastName}` : '',
+              title: originalOrder.title,
+              description: originalOrder.description,
+              priority: originalOrder.priority,
+              category: originalOrder.category || '',
+              status: originalOrder.status,
+            });
+          },
+        },
+      ]
+    );
+  };
+
   const handleSubmit = () => {
     const validationResult = validateOrderForm(formData);
     if (!validationResult.isValid) {
@@ -303,6 +330,11 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity
+          style={styles.resetButton}
+          onPress={handleReset}>
+          <Text style={styles.resetButtonText}>{t('editOrder.resetChanges')}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
           style={styles.submitButton}
           onPress={handleSubmit}>
           <Text style={styles.submitButtonText}>{t('editOrder.saveChanges')}</Text>
@@ -474,8 +506,26 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     margin: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  resetButton: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#FF3B30',
+  },
+  resetButtonText: {
+    color: '#FF3B30',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   submitButton: {
+    flex: 1,
     backgroundColor: '#007AFF',
     padding: 15,
     borderRadius: 8,
