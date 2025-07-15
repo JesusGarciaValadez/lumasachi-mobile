@@ -72,8 +72,12 @@ const ExportDataScreen: React.FC = () => {
       }
       
       // Save to device
+      if (!exportResult.content) {
+        throw new Error(t('userManagement.export.errors.noContentToSave'));
+      }
+      
       const filename = `${option.title.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.${option.format.toLowerCase()}`;
-      const saveResult = await exportService.saveToDevice(exportResult.content || '', filename, t);
+      const saveResult = await exportService.saveToDevice(exportResult.content, filename, t);
       
       if (!saveResult.success) {
         throw new Error(saveResult.error || t('userManagement.export.errors.saveFailed'));
