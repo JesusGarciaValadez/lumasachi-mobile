@@ -10,6 +10,7 @@ import {
 import {User} from '../types';
 import {UsersScreenProps} from '../types/navigation';
 import {useTranslation} from 'react-i18next';
+import {translateRole} from '../utils/roleTranslations';
 
 const UsersScreen: React.FC<UsersScreenProps> = ({navigation}) => {
   const {t} = useTranslation();
@@ -46,27 +47,31 @@ const UsersScreen: React.FC<UsersScreenProps> = ({navigation}) => {
     navigation.navigate('UserManagement', {userId});
   };
 
-  const renderUserItem = ({item}: {item: User}) => (
-    <TouchableOpacity 
-      style={styles.userItem}
-      accessibilityRole="button"
-      accessibilityLabel={`User: ${item.firstName} ${item.lastName}, Email: ${item.email}, Role: ${item.role}`}>
-      <View style={styles.userInfo}>
-        <Text style={styles.userName}>
-          {item.firstName} {item.lastName}
-        </Text>
-        <Text style={styles.userEmail}>{item.email}</Text>
-        <Text style={styles.userRole}>{item.role}</Text>
-      </View>
-      <View style={styles.userActions}>
-        <TouchableOpacity 
-          style={styles.actionButton}
-          onPress={() => handleEditUser(item.id)}>
-          <Text style={styles.actionButtonText}>{t('users.edit')}</Text>
-        </TouchableOpacity>
-      </View>
-    </TouchableOpacity>
-  );
+  const renderUserItem = ({item}: {item: User}) => {
+    const translatedRole = translateRole(item.role, t);
+    
+    return (
+      <TouchableOpacity 
+        style={styles.userItem}
+        accessibilityRole="button"
+        accessibilityLabel={`User: ${item.firstName} ${item.lastName}, Email: ${item.email}, Role: ${translatedRole}`}>
+        <View style={styles.userInfo}>
+          <Text style={styles.userName}>
+            {item.firstName} {item.lastName}
+          </Text>
+          <Text style={styles.userEmail}>{item.email}</Text>
+          <Text style={styles.userRole}>{translatedRole}</Text>
+        </View>
+        <View style={styles.userActions}>
+          <TouchableOpacity 
+            style={styles.actionButton}
+            onPress={() => handleEditUser(item.id)}>
+            <Text style={styles.actionButtonText}>{t('users.edit')}</Text>
+          </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   const EmptyComponent = () => (
     <View style={styles.emptyContainer}>
