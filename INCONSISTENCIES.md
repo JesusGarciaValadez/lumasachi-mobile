@@ -74,11 +74,11 @@ Este documento contiene todas las inconsistencias encontradas entre la arquitect
   - Falta implementación de react-native-document-picker
 
 **📋 Pasos para corregir:**
-- [ ] Instalar react-native-document-picker en React Native
-- [ ] Actualizar tipos TypeScript para arrays de archivos
-- [ ] Modificar componentes de upload para soportar múltiples selecciones
-- [ ] Actualizar CreateOrderScreen para múltiples attachments
-- [ ] Actualizar EditOrderScreen para múltiples attachments
+- [x] Instalar react-native-document-picker en React Native
+- [x] Actualizar tipos TypeScript para arrays de archivos
+- [x] Modificar componentes de upload para soportar múltiples selecciones
+- [x] Actualizar CreateOrderScreen para múltiples attachments
+- [x] Actualizar EditOrderScreen para múltiples attachments
 - [ ] Implementar preview de múltiples archivos
 - [ ] Crear servicio de upload masivo con progress
 - [ ] Actualizar validaciones en cliente y servidor

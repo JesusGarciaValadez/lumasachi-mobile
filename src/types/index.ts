@@ -74,10 +74,26 @@ export interface Order {
   notes?: string;
   assignedTo?: string;
   assignedUser?: User; // Reference to the assigned user
+  attachments?: Attachment[]; // Array of attachments
   createdAt: Date;
   updatedAt: Date;
   createdBy: string;
   updatedBy: string;
+}
+
+export interface Attachment {
+  id: string;
+  fileName: string;
+  filePath: string;
+  fileSize: number;
+  mimeType: string;
+  uploadedBy: User;
+  downloadUrl: string;
+  previewUrl?: string;
+  isImage: boolean;
+  isDocument: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface OrderHistory {
@@ -90,7 +106,7 @@ export interface OrderHistory {
   priorityTo?: string;
   description: string;
   notes?: string;
-  documentsAttached: string[];
+  attachments: Attachment[];
   createdAt: Date;
   updatedAt: Date;
   createdBy: string;
@@ -121,4 +137,49 @@ export interface UserFilters {
   isActive?: boolean;
   search?: string;
   customersOnly?: boolean;
+}
+
+// Types for file handling
+export interface FileUploadProgress {
+  id: string;
+  name: string;
+  progress: number;
+  status: 'pending' | 'uploading' | 'completed' | 'error';
+  error?: string;
+}
+
+export interface FileUploadResult {
+  attachment: Attachment;
+  success: boolean;
+  error?: string;
+}
+
+export interface MultipleFileUploadResult {
+  attachments: Attachment[];
+  failedFiles: {
+    name: string;
+    error: string;
+  }[];
+  totalFiles: number;
+  successfulFiles: number;
+  failedCount: number;
+}
+
+// Types for file selection
+export interface FileSelection {
+  uri: string;
+  type: string;
+  name: string;
+  size: number;
+}
+
+// Types for file preview
+export interface FilePreview {
+  id: string;
+  uri: string;
+  type: string;
+  name: string;
+  size: number;
+  isImage: boolean;
+  isDocument: boolean;
 } 

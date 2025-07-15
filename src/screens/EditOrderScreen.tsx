@@ -13,8 +13,9 @@ import {
 } from 'react-native';
 import {EditOrderScreenProps} from '../types/navigation';
 import {useTranslation} from 'react-i18next';
-import {User, UserRole, Order} from '../types';
+import {User, UserRole, Order, FileSelection, MultipleFileUploadResult} from '../types';
 import {validateOrderForm} from '../utils/orderValidation';
+import {FileUploader} from '../components/ui';
 
 const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
   navigation,
@@ -35,6 +36,8 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
   const [customers, setCustomers] = useState<User[]>([]);
   const [showCustomerModal, setShowCustomerModal] = useState(false);
   const [originalOrder, setOriginalOrder] = useState<Order | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<FileSelection[]>([]);
+  const [uploadResults, setUploadResults] = useState<MultipleFileUploadResult | null>(null);
 
   useEffect(() => {
     const loadOrderData = async () => {
@@ -128,6 +131,20 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
       customerName: `${customer.firstName} ${customer.lastName}`,
     }));
     setShowCustomerModal(false);
+  };
+
+  const handleFilesChanged = (files: FileSelection[]) => {
+    setSelectedFiles(files);
+  };
+
+  const handleFileUploadComplete = (result: MultipleFileUploadResult) => {
+    setUploadResults(result);
+    console.log('Files uploaded:', result);
+  };
+
+  const handleFileUploadError = (error: string) => {
+    console.error('File upload error:', error);
+    Alert.alert(t('common.error'), error);
   };
 
   const handleReset = () => {
@@ -333,6 +350,22 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
             ))}
           </View>
         </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{t('editOrder.attachments')}</Text>
+        <FileUploader
+          entityType="order"
+          entityId={orderId}
+          title={t('editOrder.attachments')}
+          subtitle={t('editOrder.attachmentsDescription')}
+          maxFiles={10}
+          allowMultiple={true}
+          showUploadButton={true}
+          onFilesChanged={handleFilesChanged}
+          onUploadComplete={handleFileUploadComplete}
+          onUploadError={handleFileUploadError}
+        />
       </View>
 
       <View style={styles.buttonContainer}>

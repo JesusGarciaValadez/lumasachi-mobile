@@ -12,8 +12,9 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
-import {User, UserRole} from '../types';
+import {User, UserRole, FileSelection, MultipleFileUploadResult} from '../types';
 import {validateOrderForm} from '../utils/orderValidation';
+import {FileUploader} from '../components/ui';
 
 const CreateOrderScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -28,6 +29,8 @@ const CreateOrderScreen: React.FC = () => {
   });
   const [customers, setCustomers] = useState<User[]>([]);
   const [showCustomerModal, setShowCustomerModal] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<FileSelection[]>([]);
+  const [uploadResults, setUploadResults] = useState<MultipleFileUploadResult | null>(null);
 
   useEffect(() => {
     // Load customers (users with CUSTOMER role)
@@ -98,6 +101,20 @@ const CreateOrderScreen: React.FC = () => {
     setShowCustomerModal(false);
   };
 
+  const handleFilesChanged = (files: FileSelection[]) => {
+    setSelectedFiles(files);
+  };
+
+  const handleFileUploadComplete = (result: MultipleFileUploadResult) => {
+    setUploadResults(result);
+    console.log('Files uploaded:', result);
+  };
+
+  const handleFileUploadError = (error: string) => {
+    console.error('File upload error:', error);
+    Alert.alert(t('common.error'), error);
+  };
+
   const handleSubmit = () => {
     const validationResult = validateOrderForm(formData, t);
     if (!validationResult.isValid) {
@@ -112,16 +129,35 @@ const CreateOrderScreen: React.FC = () => {
       return;
     }
 
+    const orderData = {
+      ...formData,
+      attachments: selectedFiles,
+      attachmentCount: selectedFiles.length,
+    };
+
+    let confirmMessage = t('createOrder.confirmCreate');
+    if (selectedFiles.length > 0) {
+      confirmMessage += `\n\n${t('createOrder.attachmentsWillBeUploaded', { count: selectedFiles.length })}`;
+    }
+
     Alert.alert(
       t('createOrder.title'),
-      t('createOrder.confirmCreate'),
+      confirmMessage,
       [
         {text: t('common.cancel'), style: 'cancel'},
         {
           text: t('common.create'),
           onPress: () => {
             // TODO: Implement order creation logic
-            console.log('Order created:', formData);
+            console.log('Order created:', orderData);
+            
+            // TODO: After order is created, upload attachments if any
+            if (selectedFiles.length > 0) {
+              // Upload files to the created order
+              // This would be handled by the FileUploader component
+              console.log('Files to upload:', selectedFiles);
+            }
+            
             navigation.goBack();
           },
         },
@@ -237,6 +273,22 @@ const CreateOrderScreen: React.FC = () => {
             ))}
           </View>
         </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{t('createOrder.attachments')}</Text>
+        <FileUploader
+          entityType="order"
+          entityId="temp" // Temporal ID, se reemplazará cuando se cree la orden
+          title={t('createOrder.attachments')}
+          subtitle={t('createOrder.attachmentsDescription')}
+          maxFiles={10}
+          allowMultiple={true}
+          showUploadButton={false} // Los archivos se subirán después de crear la orden
+          onFilesChanged={handleFilesChanged}
+          onUploadComplete={handleFileUploadComplete}
+          onUploadError={handleFileUploadError}
+        />
       </View>
 
       <View style={styles.buttonContainer}>
