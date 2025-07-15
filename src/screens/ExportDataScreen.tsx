@@ -23,7 +23,7 @@ interface ExportOption {
 const ExportDataScreen: React.FC = () => {
   const {t} = useTranslation();
   
-  const [isExporting, setIsExporting] = useState(false);
+  const [exportingId, setExportingId] = useState<string | null>(null);
   
   const exportOptions: ExportOption[] = [
     {
@@ -61,7 +61,7 @@ const ExportDataScreen: React.FC = () => {
   ];
 
   const handleExport = async (option: ExportOption) => {
-    setIsExporting(true);
+    setExportingId(option.id);
     
     try {
       // Implement actual export
@@ -108,7 +108,7 @@ const ExportDataScreen: React.FC = () => {
         ]
       );
     } finally {
-      setIsExporting(false);
+      setExportingId(null);
     }
   };
 
@@ -117,11 +117,11 @@ const ExportDataScreen: React.FC = () => {
       key={option.id}
       style={[styles.exportCard, {borderLeftColor: option.color}]}
       onPress={() => handleExport(option)}
-      disabled={isExporting}
+      disabled={exportingId !== null}
       accessibilityRole="button"
       accessibilityLabel={`${t('userManagement.export.exportOption')} ${option.title} ${t('common.as')} ${option.format}`}
       accessibilityHint={option.description}
-      accessibilityState={{disabled: isExporting}}
+      accessibilityState={{disabled: exportingId !== null}}
     >
       <View style={styles.exportHeader}>
         <View style={styles.exportIcon}>
@@ -135,7 +135,7 @@ const ExportDataScreen: React.FC = () => {
           <Text style={styles.formatText}>{option.format}</Text>
         </View>
       </View>
-      {isExporting && (
+      {exportingId === option.id && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="small" color={option.color} />
           <Text style={styles.loadingText}>{t('userManagement.export.exporting')}</Text>
