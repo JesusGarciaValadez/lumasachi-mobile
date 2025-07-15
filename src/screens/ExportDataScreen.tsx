@@ -74,18 +74,18 @@ const ExportDataScreen: React.FC = () => {
     
     try {
       // Implement actual export
-      const exportResult = await exportService.exportData(option.format, option.id);
+      const exportResult = await exportService.exportData(option.format, option.id, t);
       
       if (!exportResult.success) {
-        throw new Error(exportResult.error || 'Export failed');
+        throw new Error(exportResult.error || t('userManagement.export.errors.exportFailed'));
       }
       
       // Save to device
       const filename = `${option.title.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.${option.format.toLowerCase()}`;
-      const saveResult = await exportService.saveToDevice(exportResult.filePath!, filename);
+      const saveResult = await exportService.saveToDevice(exportResult.filePath!, filename, t);
       
       if (!saveResult.success) {
-        throw new Error(saveResult.error || 'Save failed');
+        throw new Error(saveResult.error || t('userManagement.export.errors.saveFailed'));
       }
       
       Alert.alert(
