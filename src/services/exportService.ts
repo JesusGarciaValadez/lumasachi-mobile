@@ -1,6 +1,6 @@
 import RNFS from 'react-native-fs';
 import {Alert, Platform} from 'react-native';
-import {UserRole} from '../types'
+import {UserRole, User} from '../types'
 
 type TranslationFunction = (key: string, options?: any) => string;
 
@@ -20,7 +20,7 @@ export const DATA_TYPES = {
 } as const;
 
 export interface ExportData {
-  userData: any[];
+  userData: User[];
   orderData: any[];
   systemLogs: any[];
   analytics: any[];
@@ -34,22 +34,55 @@ export interface ExportResult {
 }
 
 class ExportService {
-  private async getUserData(t: TranslationFunction): Promise<any[]> {
+  private async getUserData(t: TranslationFunction): Promise<User[]> {
     // Mock user data - replace with actual API call
     return [
       {
         id: '1',
-        name: t('userManagement.export.mockData.users.johnDoe'),
-        email: t('userManagement.export.mockData.users.johnEmail'),
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john.doe@example.com',
         role: UserRole.ADMINISTRATOR,
-        createdAt: new Date().toISOString(),
+        company: 'Lumasachi',
+        isActive: true,
+        languagePreference: 'en',
+        isCustomer: false,
+        isEmployee: true,
+        createdAt: new Date('2024-01-01T10:00:00Z'),
+        updatedAt: new Date('2024-01-15T14:30:00Z'),
       },
       {
         id: '2',
-        name: t('userManagement.export.mockData.users.janeSmith'),
-        email: t('userManagement.export.mockData.users.janeEmail'),
+        firstName: 'Jane',
+        lastName: 'Smith',
+        email: 'jane.smith@example.com',
         role: UserRole.CUSTOMER,
-        createdAt: new Date().toISOString(),
+        company: 'Customer Corp',
+        phoneNumber: '+1234567890',
+        address: '123 Main St',
+        isActive: true,
+        languagePreference: 'en',
+        customerType: 'corporate',
+        customerNotes: 'VIP customer',
+        isCustomer: true,
+        isEmployee: false,
+        createdAt: new Date('2024-01-01T10:00:00Z'),
+        updatedAt: new Date('2024-01-15T14:30:00Z'),
+      },
+      {
+        id: '3',
+        firstName: 'Bob',
+        lastName: 'Johnson',
+        email: 'bob.johnson@example.com',
+        role: UserRole.EMPLOYEE,
+        company: 'Lumasachi',
+        phoneNumber: '+0987654321',
+        isActive: true,
+        languagePreference: 'es',
+        isCustomer: false,
+        isEmployee: true,
+        createdAt: new Date('2024-01-01T10:00:00Z'),
+        updatedAt: new Date('2024-01-15T14:30:00Z'),
       },
     ];
   }
@@ -59,17 +92,27 @@ class ExportService {
     return [
       {
         id: '1',
-        customerId: '1',
-        amount: 99.99,
-        status: t('userManagement.export.mockData.orders.statusCompleted'),
-        createdAt: new Date().toISOString(),
+        customerId: '2', // Jane Smith (Customer)
+        customerName: 'Jane Smith',
+        title: 'Equipment Repair',
+        description: 'Repair industrial equipment',
+        status: 'In Progress',
+        priority: 'High',
+        category: 'Repair',
+        createdAt: new Date('2024-01-15T10:30:00Z').toISOString(),
+        updatedAt: new Date('2024-01-20T14:45:00Z').toISOString(),
       },
       {
         id: '2',
-        customerId: '2',
-        amount: 149.99,
-        status: t('userManagement.export.mockData.orders.statusPending'),
-        createdAt: new Date().toISOString(),
+        customerId: '2', // Jane Smith (Customer)
+        customerName: 'Jane Smith',
+        title: 'Part Replacement',
+        description: 'Replace damaged part',
+        status: 'Delivered',
+        priority: 'Normal',
+        category: 'Replacement',
+        createdAt: new Date('2024-01-10T09:15:00Z').toISOString(),
+        updatedAt: new Date('2024-01-18T16:30:00Z').toISOString(),
       },
     ];
   }
@@ -79,14 +122,16 @@ class ExportService {
     return [
       {
         id: '1',
-        level: t('userManagement.export.mockData.systemLogs.levelInfo'),
-        message: t('userManagement.export.mockData.systemLogs.userLoggedIn'),
+        level: 'INFO',
+        message: 'User logged in successfully',
+        userId: '1',
+        userEmail: 'john.doe@example.com',
         timestamp: new Date().toISOString(),
       },
       {
         id: '2',
-        level: t('userManagement.export.mockData.systemLogs.levelError'),
-        message: t('userManagement.export.mockData.systemLogs.databaseConnectionFailed'),
+        level: 'ERROR',
+        message: 'Database connection failed',
         timestamp: new Date().toISOString(),
       },
     ];
@@ -98,14 +143,18 @@ class ExportService {
       {
         date: '2024-01-01',
         totalOrders: 150,
-        revenue: 12500,
-        activeUsers: 45,
+        totalUsers: 45,
+        activeCustomers: 30,
+        completedOrders: 120,
+        pendingOrders: 30,
       },
       {
         date: '2024-01-02',
         totalOrders: 180,
-        revenue: 15200,
-        activeUsers: 52,
+        totalUsers: 52,
+        activeCustomers: 35,
+        completedOrders: 145,
+        pendingOrders: 35,
       },
     ];
   }

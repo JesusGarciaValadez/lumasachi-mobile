@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { format } from 'date-fns';
 import {OrderDetailsScreenProps} from '../types/navigation';
-import {Order, Status, Customer} from '../types';
+import {Order, Status, User, UserRole} from '../types';
 import {useTranslation} from 'react-i18next';
 import DetailRow from '../components/DetailRow';
 
@@ -21,7 +21,7 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
   const {t} = useTranslation();
   const [order, setOrder] = useState<Order | null>(null);
   const [orderStatus, setOrderStatus] = useState<Status | null>(null);
-  const [customer, setCustomer] = useState<Customer | null>(null);
+  const [customer, setCustomer] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -31,7 +31,7 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
         // TODO: Uncomment when backend is implemented
         // const orderData = await fetchOrder(orderId);
         // const statusData = await fetchOrderStatus(orderData.statusId);
-        // const customerData = await fetchCustomer(orderData.customerId);
+        // const customerData = await fetchUser(orderData.customerId);
         // setOrder(orderData);
         // setOrderStatus(statusData);
         // setCustomer(customerData);
@@ -40,7 +40,28 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
         setOrder({
           id: orderId,
           customerId: 'customer-123',
+          customer: {
+            id: 'customer-123',
+            firstName: 'Cliente',
+            lastName: 'Demo',
+            email: 'demo@example.com',
+            role: UserRole.CUSTOMER,
+            address: '123 Demo Street',
+            phoneNumber: '+1234567890',
+            company: 'Demo Company',
+            isActive: true,
+            languagePreference: 'es',
+            customerNotes: 'Cliente VIP',
+            customerType: 'corporate',
+            isCustomer: true,
+            isEmployee: false,
+            createdAt: new Date('2024-01-10T10:00:00Z'),
+            updatedAt: new Date('2024-01-15T14:30:00Z'),
+          },
+          title: 'Orden de Prueba',
+          description: 'Descripción de la orden de prueba',
           status: 'In Progress',
+          priority: 'Normal',
           createdAt: new Date('2024-01-15T10:30:00Z'),
           updatedAt: new Date('2024-01-20T14:45:00Z'),
           createdBy: 'admin',
@@ -54,10 +75,19 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
           id: 'customer-123',
           firstName: 'Cliente',
           lastName: 'Demo',
+          email: 'demo@example.com',
+          role: UserRole.CUSTOMER,
           address: '123 Demo Street',
           phoneNumber: '+1234567890',
-          email: 'demo@example.com',
           company: 'Demo Company',
+          isActive: true,
+          languagePreference: 'es',
+          customerNotes: 'Cliente VIP',
+          customerType: 'corporate',
+          isCustomer: true,
+          isEmployee: false,
+          createdAt: new Date('2024-01-10T10:00:00Z'),
+          updatedAt: new Date('2024-01-15T14:30:00Z'),
         });
       } catch (error) {
         console.error('Error loading order data:', error);
@@ -101,9 +131,23 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
     return `${customer.firstName} ${customer.lastName}`;
   };
 
+  const getCustomerInfo = () => {
+    if (!customer) return null;
+    return {
+      name: `${customer.firstName} ${customer.lastName}`,
+      email: customer.email,
+      company: customer.company,
+      phone: customer.phoneNumber,
+      type: customer.customerType,
+      notes: customer.customerNotes,
+    };
+  };
+
   const formatDate = (date: Date) => {
     return format(date, 'dd/MM/yyyy');
   };
+
+  const customerInfo = getCustomerInfo();
 
   return (
     <ScrollView style={styles.container}>
@@ -135,6 +179,10 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
                 value={getCustomerName()} 
               />
               <DetailRow 
+                label={t('orders.priority')} 
+                value={order?.priority || '-'} 
+              />
+              <DetailRow 
                 label={t('orders.createdAt')} 
                 value={order?.createdAt ? formatDate(order.createdAt) : '-'} 
               />
@@ -145,11 +193,51 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
             </View>
           </View>
 
+          {customerInfo && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>{t('orders.customerInfo')}</Text>
+              <View style={styles.card}>
+                <DetailRow 
+                  label={t('common.name')} 
+                  value={customerInfo.name} 
+                />
+                <DetailRow 
+                  label={t('common.email')} 
+                  value={customerInfo.email} 
+                />
+                {customerInfo.company && (
+                  <DetailRow 
+                    label={t('common.company')} 
+                    value={customerInfo.company} 
+                  />
+                )}
+                {customerInfo.phone && (
+                  <DetailRow 
+                    label={t('common.phone')} 
+                    value={customerInfo.phone} 
+                  />
+                )}
+                {customerInfo.type && (
+                  <DetailRow 
+                    label={t('orders.customerType')} 
+                    value={customerInfo.type} 
+                  />
+                )}
+                {customerInfo.notes && (
+                  <DetailRow 
+                    label={t('orders.customerNotes')} 
+                    value={customerInfo.notes} 
+                  />
+                )}
+              </View>
+            </View>
+          )}
+
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t('orders.description')}</Text>
             <View style={styles.card}>
               <Text style={styles.description}>
-                {t('orders.descriptionPlaceholder')}
+                {order?.description || t('orders.descriptionPlaceholder')}
               </Text>
             </View>
           </View>

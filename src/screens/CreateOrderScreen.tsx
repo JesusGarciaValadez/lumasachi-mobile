@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -7,26 +7,94 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  Modal,
+  FlatList,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
+import {User, UserRole} from '../types';
 
 const CreateOrderScreen: React.FC = () => {
   const navigation = useNavigation();
   const {t} = useTranslation();
   const [formData, setFormData] = useState({
-    customer: '',
+    customerId: '',
+    customerName: '',
+    title: '',
     description: '',
-    priority: t('orders.priorities.normal'),
+    priority: 'Normal' as 'Low' | 'Normal' | 'High' | 'Urgent',
     category: '',
   });
+  const [customers, setCustomers] = useState<User[]>([]);
+  const [showCustomerModal, setShowCustomerModal] = useState(false);
+
+  useEffect(() => {
+    // Load customers (users with CUSTOMER role)
+    const loadCustomers = async () => {
+      try {
+        // TODO: Replace with actual API call
+        // const customersData = await fetchUsers({ role: UserRole.CUSTOMER });
+        
+        // Temporary mock data
+        const mockCustomers: User[] = [
+          {
+            id: '1',
+            firstName: 'Juan',
+            lastName: 'Pérez',
+            email: 'juan@example.com',
+            role: UserRole.CUSTOMER,
+            company: 'Empresa ABC',
+            phoneNumber: '+1234567890',
+            isActive: true,
+            languagePreference: 'es',
+            customerType: 'corporate',
+            customerNotes: 'Cliente frecuente',
+            isCustomer: true,
+            isEmployee: false,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+          {
+            id: '2',
+            firstName: 'María',
+            lastName: 'González',
+            email: 'maria@example.com',
+            role: UserRole.CUSTOMER,
+            company: 'Empresa XYZ',
+            phoneNumber: '+0987654321',
+            isActive: true,
+            languagePreference: 'es',
+            customerType: 'individual',
+            isCustomer: true,
+            isEmployee: false,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        ];
+        setCustomers(mockCustomers);
+      } catch (error) {
+        console.error('Error loading customers:', error);
+      }
+    };
+
+    loadCustomers();
+  }, []);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({...prev, [field]: value}));
   };
 
+  const handleCustomerSelect = (customer: User) => {
+    setFormData(prev => ({
+      ...prev,
+      customerId: customer.id,
+      customerName: `${customer.firstName} ${customer.lastName}`,
+    }));
+    setShowCustomerModal(false);
+  };
+
   const handleSubmit = () => {
-    if (!formData.customer || !formData.description) {
+    if (!formData.customerId || !formData.title || !formData.description) {
       Alert.alert(t('common.error'), t('createOrder.errors.missingFields'));
       return;
     }
@@ -39,8 +107,8 @@ const CreateOrderScreen: React.FC = () => {
         {
           text: t('common.create'),
           onPress: () => {
-            // Aquí iría la lógica para crear la orden
-            console.log('Orden creada:', formData);
+            // TODO: Implement order creation logic
+            console.log('Order created:', formData);
             navigation.goBack();
           },
         },
@@ -48,12 +116,30 @@ const CreateOrderScreen: React.FC = () => {
     );
   };
 
-  const priorities = [
-    {key: 'low', label: t('orders.priorities.low')},
-    {key: 'normal', label: t('orders.priorities.normal')},
-    {key: 'high', label: t('orders.priorities.high')},
-    {key: 'urgent', label: t('orders.priorities.urgent')},
+  const priorities: Array<{key: string; label: string; value: 'Low' | 'Normal' | 'High' | 'Urgent'}> = [
+    {key: 'low', label: t('orders.priorities.low'), value: 'Low'},
+    {key: 'normal', label: t('orders.priorities.normal'), value: 'Normal'},
+    {key: 'high', label: t('orders.priorities.high'), value: 'High'},
+    {key: 'urgent', label: t('orders.priorities.urgent'), value: 'Urgent'},
   ];
+
+  const renderCustomerItem = ({item}: {item: User}) => (
+    <TouchableOpacity
+      style={styles.customerItem}
+      onPress={() => handleCustomerSelect(item)}>
+      <Text style={styles.customerName}>
+        {item.firstName} {item.lastName}
+      </Text>
+      <Text style={styles.customerDetails}>
+        {item.email} • {item.company || 'Sin empresa'}
+      </Text>
+      {item.customerType && (
+        <Text style={styles.customerType}>
+          {item.customerType === 'corporate' ? 'Corporativo' : 'Individual'}
+        </Text>
+      )}
+    </TouchableOpacity>
+  );
 
   return (
     <ScrollView style={styles.container}>
@@ -61,18 +147,27 @@ const CreateOrderScreen: React.FC = () => {
         <Text style={styles.sectionTitle}>{t('createOrder.customerInfo')}</Text>
         <View style={styles.card}>
           <Text style={styles.label}>{t('orders.customer')} *</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.customer}
-            onChangeText={(value) => handleInputChange('customer', value)}
-            placeholder={t('createOrder.customerName')}
-          />
+          <TouchableOpacity
+            style={styles.customerSelector}
+            onPress={() => setShowCustomerModal(true)}>
+            <Text style={[styles.customerSelectorText, !formData.customerName && styles.placeholder]}>
+              {formData.customerName || t('createOrder.selectCustomer')}
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t('createOrder.orderDetails')}</Text>
         <View style={styles.card}>
+          <Text style={styles.label}>{t('orders.title')} *</Text>
+          <TextInput
+            style={styles.input}
+            value={formData.title}
+            onChangeText={(value) => handleInputChange('title', value)}
+            placeholder={t('createOrder.orderTitle')}
+          />
+
           <Text style={styles.label}>{t('orders.description')} *</Text>
           <TextInput
             style={[styles.input, styles.textArea]}
@@ -98,13 +193,13 @@ const CreateOrderScreen: React.FC = () => {
                 key={priority.key}
                 style={[
                   styles.priorityButton,
-                  formData.priority === priority.label && styles.priorityButtonActive,
+                  formData.priority === priority.value && styles.priorityButtonActive,
                 ]}
-                onPress={() => handleInputChange('priority', priority.label)}>
+                onPress={() => handleInputChange('priority', priority.value)}>
                 <Text
                   style={[
                     styles.priorityButtonText,
-                    formData.priority === priority.label && styles.priorityButtonTextActive,
+                    formData.priority === priority.value && styles.priorityButtonTextActive,
                   ]}>
                   {priority.label}
                 </Text>
@@ -121,6 +216,29 @@ const CreateOrderScreen: React.FC = () => {
           <Text style={styles.submitButtonText}>{t('createOrder.title')}</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Customer Selection Modal */}
+      <Modal
+        visible={showCustomerModal}
+        animationType="slide"
+        presentationStyle="pageSheet">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>{t('createOrder.selectCustomer')}</Text>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setShowCustomerModal(false)}>
+              <Text style={styles.closeButtonText}>{t('common.close')}</Text>
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            data={customers}
+            renderItem={renderCustomerItem}
+            keyExtractor={(item) => item.id}
+            style={styles.customerList}
+          />
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
@@ -171,6 +289,21 @@ const styles = StyleSheet.create({
     height: 100,
     textAlignVertical: 'top',
   },
+  customerSelector: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 6,
+    padding: 12,
+    backgroundColor: '#f9f9f9',
+    marginBottom: 20,
+  },
+  customerSelectorText: {
+    fontSize: 16,
+    color: '#333333',
+  },
+  placeholder: {
+    color: '#999999',
+  },
   priorityContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -210,6 +343,54 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333333',
+  },
+  closeButton: {
+    padding: 8,
+  },
+  closeButtonText: {
+    color: '#007AFF',
+    fontSize: 16,
+  },
+  customerList: {
+    flex: 1,
+  },
+  customerItem: {
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  customerName: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#333333',
+    marginBottom: 4,
+  },
+  customerDetails: {
+    fontSize: 14,
+    color: '#666666',
+    marginBottom: 4,
+  },
+  customerType: {
+    fontSize: 12,
+    color: '#999999',
+    fontStyle: 'italic',
   },
 });
 
