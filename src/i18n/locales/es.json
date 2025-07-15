@@ -58,6 +58,7 @@
     "description": "Descripción",
     "priority": "Prioridad",
     "category": "Categoría",
+    "orderTitle": "Título",
     "createdAt": "Fecha de Creación",
     "updatedAt": "Última Actualización",
     "editingOrder": "Editando Orden",
