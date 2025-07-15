@@ -78,6 +78,7 @@ export const ORDER_STATUSES = {
   DELIVERED: 'Delivered',
   PAID: 'Paid',
   RETURNED: 'Returned',
+  NOT_PAID: 'Not paid',
   CANCELLED: 'Cancelled',
 } as const;
 

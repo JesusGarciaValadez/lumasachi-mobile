@@ -12,6 +12,7 @@ import {OrderDetailsScreenProps} from '../types/navigation';
 import {Order, Status, User, UserRole} from '../types';
 import {useTranslation} from 'react-i18next';
 import DetailRow from '../components/DetailRow';
+import {getStatusTranslation} from '../utils/roleTranslations';
 
 const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
   navigation,
@@ -103,28 +104,7 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
     navigation.navigate('EditOrder', {orderId});
   };
 
-  const getStatusTranslation = (statusName: string) => {
-    switch (statusName) {
-      case 'Open':
-        return t('orders.statuses.open');
-      case 'In Progress':
-        return t('orders.statuses.inProgress');
-      case 'Ready for delivery':
-        return t('orders.statuses.readyForDelivery');
-      case 'Delivered':
-        return t('orders.statuses.delivered');
-      case 'Paid':
-        return t('orders.statuses.paid');
-      case 'Returned':
-        return t('orders.statuses.returned');
-      case 'Not paid':
-        return t('orders.statuses.notPaid');
-      case 'Cancelled':
-        return t('orders.statuses.cancelled');
-      default:
-        return statusName;
-    }
-  };
+
 
   const getCustomerName = () => {
     if (!customer) return '-';
@@ -172,7 +152,7 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
             <View style={styles.card}>
               <DetailRow 
                 label={t('orders.status')} 
-                value={orderStatus ? getStatusTranslation(orderStatus.statusName) : '-'} 
+                value={orderStatus ? t(getStatusTranslation(orderStatus.statusName)) : '-'} 
               />
               <DetailRow 
                 label={t('orders.customer')} 
