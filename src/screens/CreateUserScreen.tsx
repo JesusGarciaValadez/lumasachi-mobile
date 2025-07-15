@@ -119,10 +119,24 @@ const CreateUserScreen: React.FC = () => {
   };
 
   const getRoleOptions = () => {
-    return Object.values(USER_ROLES).map(role => ({
-      label: role.displayName,
-      value: role.key,
-    }));
+    return [
+      {
+        label: t('userManagement.roles.superAdministrator'),
+        value: UserRole.SUPER_ADMINISTRATOR,
+      },
+      {
+        label: t('userManagement.roles.administrator'),
+        value: UserRole.ADMINISTRATOR,
+      },
+      {
+        label: t('userManagement.roles.employee'),
+        value: UserRole.EMPLOYEE,
+      },
+      {
+        label: t('userManagement.roles.customer'),
+        value: UserRole.CUSTOMER,
+      },
+    ];
   };
 
   return (

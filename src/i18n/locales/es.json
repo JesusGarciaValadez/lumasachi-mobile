@@ -184,8 +184,10 @@
       }
     },
     "roles": {
+      "superAdministrator": "Super Administrador",
       "administrator": "Administrador",
       "employee": "Empleado",
+      "customer": "Cliente",
       "permissions": {
         "createUsers": "Crear Usuarios",
         "editUsers": "Editar Usuarios",

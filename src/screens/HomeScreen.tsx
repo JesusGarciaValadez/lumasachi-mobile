@@ -11,6 +11,7 @@ import {HomeScreenProps} from '../types/navigation';
 import {useAuth} from '../hooks/useAuth';
 import {useOrderStats} from '../hooks/useOrderStats';
 import {useTranslation} from 'react-i18next';
+import {translateRole} from '../utils/roleTranslations';
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const {user} = useAuth();
@@ -43,7 +44,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
           {getWelcomeMessage()}, {user?.firstName || t('home.user')}
         </Text>
         <Text style={styles.roleText}>
-          {user?.role || t('home.user')}
+          {user?.role ? translateRole(user.role, t) : t('home.user')}
         </Text>
       </View>
 

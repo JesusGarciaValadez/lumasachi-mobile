@@ -11,6 +11,7 @@ import {ProfileScreenProps} from '../types/navigation';
 import {useAuth} from '../hooks/useAuth';
 import {useTranslation} from 'react-i18next';
 import DetailRow from '../components/DetailRow';
+import {translateRole} from '../utils/roleTranslations';
 
 const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
   const {user, logout, isLoading} = useAuth();
@@ -57,7 +58,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
         <Text style={styles.userName}>
           {user?.firstName} {user?.lastName}
         </Text>
-        <Text style={styles.userRole}>{user?.role}</Text>
+        <Text style={styles.userRole}>{user?.role ? translateRole(user.role, t) : ''}</Text>
       </View>
 
       <View style={styles.section}>
