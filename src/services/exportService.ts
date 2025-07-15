@@ -119,9 +119,9 @@ class ExportService {
     return JSON.stringify(data, null, 2);
   }
 
-  private convertToExcel(data: any[]): string {
-    // For Excel format, we'll use CSV format with .xlsx extension
-    // In a real app, you might want to use a library like xlsx
+  private convertToExcelCompatibleCSV(data: any[]): string {
+    // CSV format compatible with Excel import
+    // For true Excel (.xlsx) format, consider using a library like xlsx or react-native-xlsx
     return this.convertToCSV(data);
   }
 
@@ -167,7 +167,7 @@ class ExportService {
           exportedContent = this.convertToCSV(data);
           break;
         case 'excel':
-          exportedContent = this.convertToExcel(data);
+          exportedContent = this.convertToExcelCompatibleCSV(data);
           break;
         case 'json':
           exportedContent = this.convertToJSON(data);
