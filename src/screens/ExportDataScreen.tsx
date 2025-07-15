@@ -9,15 +9,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import {useTranslation} from 'react-i18next';
-import {useNavigation} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {RootStackParamList} from '../types/navigation';
 import {exportService} from '../services/exportService';
-
-type ExportDataScreenNavigationProp = StackNavigationProp<
-  RootStackParamList,
-  'ExportData'
->;
 
 interface ExportOption {
   id: string;
@@ -30,7 +22,6 @@ interface ExportOption {
 
 const ExportDataScreen: React.FC = () => {
   const {t} = useTranslation();
-  const navigation = useNavigation<ExportDataScreenNavigationProp>();
   
   const [isExporting, setIsExporting] = useState(false);
   
