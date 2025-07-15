@@ -16,7 +16,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../types/navigation';
 import {UserRole} from '../types';
 import {httpClient} from '../utils/httpClient';
-import {API_ENDPOINTS, USER_ROLES} from '../constants';
+import {API_ENDPOINTS} from '../constants';
 
 type CreateUserScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
