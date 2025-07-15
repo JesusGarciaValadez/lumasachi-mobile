@@ -18,6 +18,7 @@ export type RootStackParamList = {
   CreateUser: undefined;
   ManageRoles: undefined;
   ViewReports: undefined;
+  ReportDetails: {reportId: string};
   ExportData: undefined;
 };
 
