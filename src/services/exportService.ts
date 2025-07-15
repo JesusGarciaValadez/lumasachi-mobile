@@ -1,5 +1,8 @@
 import RNFS from 'react-native-fs';
 import {Alert, Platform} from 'react-native';
+import {UserRole} from '../types'
+
+type TranslationFunction = (key: string, options?: any) => string;
 
 export interface ExportData {
   userData: any[];
@@ -15,59 +18,59 @@ export interface ExportResult {
 }
 
 class ExportService {
-  private async getUserData(): Promise<any[]> {
+  private async getUserData(t: TranslationFunction): Promise<any[]> {
     // Mock user data - replace with actual API call
     return [
       {
         id: '1',
-        name: 'John Doe',
-        email: 'john@example.com',
-        role: 'admin',
+        name: t('userManagement.export.mockData.users.johnDoe'),
+        email: t('userManagement.export.mockData.users.johnEmail'),
+        role: UserRole.ADMINISTRATOR,
         createdAt: new Date().toISOString(),
       },
       {
         id: '2',
-        name: 'Jane Smith',
-        email: 'jane@example.com',
-        role: 'user',
+        name: t('userManagement.export.mockData.users.janeSmith'),
+        email: t('userManagement.export.mockData.users.janeEmail'),
+        role: UserRole.CUSTOMER,
         createdAt: new Date().toISOString(),
       },
     ];
   }
 
-  private async getOrderData(): Promise<any[]> {
+  private async getOrderData(t: TranslationFunction): Promise<any[]> {
     // Mock order data - replace with actual API call
     return [
       {
         id: '1',
         customerId: '1',
         amount: 99.99,
-        status: 'completed',
+        status: t('userManagement.export.mockData.orders.statusCompleted'),
         createdAt: new Date().toISOString(),
       },
       {
         id: '2',
         customerId: '2',
         amount: 149.99,
-        status: 'pending',
+        status: t('userManagement.export.mockData.orders.statusPending'),
         createdAt: new Date().toISOString(),
       },
     ];
   }
 
-  private async getSystemLogs(): Promise<any[]> {
+  private async getSystemLogs(t: TranslationFunction): Promise<any[]> {
     // Mock system logs - replace with actual API call
     return [
       {
         id: '1',
-        level: 'info',
-        message: 'User logged in',
+        level: t('userManagement.export.mockData.systemLogs.levelInfo'),
+        message: t('userManagement.export.mockData.systemLogs.userLoggedIn'),
         timestamp: new Date().toISOString(),
       },
       {
         id: '2',
-        level: 'error',
-        message: 'Database connection failed',
+        level: t('userManagement.export.mockData.systemLogs.levelError'),
+        message: t('userManagement.export.mockData.systemLogs.databaseConnectionFailed'),
         timestamp: new Date().toISOString(),
       },
     ];
@@ -130,51 +133,46 @@ class ExportService {
     return content;
   }
 
-  async exportData(format: string, dataType: string): Promise<ExportResult> {
+  async exportData(format: string, dataType: string, t: TranslationFunction): Promise<ExportResult> {
     try {
       let data: any[] = [];
       
       // Get the appropriate data based on type
       switch (dataType) {
         case '1': // userData
-          data = await this.getUserData();
+          data = await this.getUserData(t);
           break;
         case '2': // orderData
-          data = await this.getOrderData();
+          data = await this.getOrderData(t);
           break;
         case '3': // systemLogs
-          data = await this.getSystemLogs();
+          data = await this.getSystemLogs(t);
           break;
         case '4': // analytics
           data = await this.getAnalytics();
           break;
         default:
-          throw new Error('Invalid data type');
+          throw new Error(t('userManagement.export.errors.invalidDataType'));
       }
 
       // Convert data to the requested format
       let exportedContent: string;
-      let fileExtension: string;
       
       switch (format.toLowerCase()) {
         case 'csv':
           exportedContent = this.convertToCSV(data);
-          fileExtension = 'csv';
           break;
         case 'excel':
           exportedContent = this.convertToExcel(data);
-          fileExtension = 'xlsx';
           break;
         case 'json':
           exportedContent = this.convertToJSON(data);
-          fileExtension = 'json';
           break;
         case 'pdf':
           exportedContent = this.convertToPDF(data);
-          fileExtension = 'pdf';
           break;
         default:
-          throw new Error('Unsupported format');
+          throw new Error(t('userManagement.export.errors.unsupportedFormat'));
       }
 
       return {
@@ -184,12 +182,12 @@ class ExportService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Export failed',
+        error: error instanceof Error ? error.message : t('userManagement.export.errors.exportFailed'),
       };
     }
   }
 
-  async saveToDevice(content: string, filename: string): Promise<ExportResult> {
+  async saveToDevice(content: string, filename: string, t: TranslationFunction): Promise<ExportResult> {
     try {
       const documentsPath = RNFS.DocumentDirectoryPath;
       const filePath = `${documentsPath}/${filename}`;
@@ -203,7 +201,7 @@ class ExportService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Save failed',
+        error: error instanceof Error ? error.message : t('userManagement.export.errors.saveFailed'),
       };
     }
   }
