@@ -34,7 +34,7 @@ export interface ExportResult {
 }
 
 class ExportService {
-  private async getUserData(t: TranslationFunction): Promise<User[]> {
+  private async getUserData(_t: TranslationFunction): Promise<User[]> {
     // Mock user data - replace with actual API call
     return [
       {
@@ -87,7 +87,7 @@ class ExportService {
     ];
   }
 
-  private async getOrderData(t: TranslationFunction): Promise<any[]> {
+  private async getOrderData(_t: TranslationFunction): Promise<any[]> {
     // Mock order data - replace with actual API call
     return [
       {
@@ -117,7 +117,7 @@ class ExportService {
     ];
   }
 
-  private async getSystemLogs(t: TranslationFunction): Promise<any[]> {
+  private async getSystemLogs(_t: TranslationFunction): Promise<any[]> {
     // Mock system logs - replace with actual API call
     return [
       {
