@@ -5,7 +5,7 @@
  * @format
  */
 
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {StatusBar, ActivityIndicator, View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import {QueryClientProvider} from '@tanstack/react-query';
 import {AuthProvider} from './hooks/useAuth';
@@ -25,7 +25,7 @@ const App: React.FC = () => {
   const MAX_RETRY_ATTEMPTS = 3;
   const RETRY_DELAY = 1000; // 1 second
 
-  const initializeApp = async (attempt: number = 1) => {
+  const initializeApp = useCallback(async (attempt: number = 1) => {
     try {
       await initializeI18n();
       setAppState('ready');
@@ -45,11 +45,11 @@ const App: React.FC = () => {
         setError('Failed to initialize application. Please check your internet connection and try again.');
       }
     }
-  };
+  }, [MAX_RETRY_ATTEMPTS, RETRY_DELAY]);
 
   useEffect(() => {
     initializeApp();
-  }, []);
+  }, [initializeApp]);
 
   const handleRetry = () => {
     setAppState('loading');
