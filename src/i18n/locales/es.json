@@ -234,6 +234,7 @@
       "exporting": "Exportando...",
       "exportedSuccessfully": "{{title}} exportado exitosamente como {{format}}",
       "exportFailed": "Error al exportar los datos. Por favor intente de nuevo.",
+      "savedTo": "Guardado en",
       "infoText": "• Todas las exportaciones se generan en tiempo real\n• Los archivos exportados estarán disponibles para descarga\n• Los datos se filtran según sus permisos\n• Los conjuntos de datos grandes pueden tardar unos momentos en procesarse",
       "footerText": "Para requisitos de exportación personalizados o conjuntos de datos grandes, por favor contacte a su administrador del sistema."
     }
