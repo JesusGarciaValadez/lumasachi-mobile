@@ -83,6 +83,8 @@
       "high": "High",
       "urgent": "Urgent"
     },
+    "customerType": "Customer Type",
+    "customerNotes": "Customer Notes",
     "descriptionPlaceholder": "This is an example description for the order. Here would be shown detailed information about what is requested in the order."
   },
   "createOrder": {
@@ -253,6 +255,7 @@
       },
       "infoTitle": "Export Information",
       "availableOptions": "Available Export Options",
+      "exportOption": "Export option",
       "exporting": "Exporting...",
       "exportedSuccessfully": "{{title}} exported successfully as {{format}}",
       "exportFailed": "Failed to export data. Please try again.",
@@ -325,6 +328,11 @@
     "ok": "OK",
     "close": "Close",
     "closeModal": "Close modal",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "company": "Company",
+    "as": "as",
     "unauthorized": "Access Denied",
     "unauthorizedMessage": "You don't have permission to access this section. Please contact your administrator if you believe this is an error.",
     "errors": {

@@ -83,6 +83,8 @@
       "high": "Alta",
       "urgent": "Urgente"
     },
+    "customerType": "Tipo de Cliente",
+    "customerNotes": "Notas del Cliente",
     "descriptionPlaceholder": "Esta es una descripción de ejemplo para la orden. Aquí se mostraría información detallada sobre lo que se solicita en la orden."
   },
   "createOrder": {
@@ -183,7 +185,7 @@
     "createUserForm": {
       "firstName": "Nombre",
       "lastName": "Apellido",
-      "email": "Correo Electrónico",
+      "email": "Email",
       "role": "Rol",
       "company": "Empresa",
       "phoneNumber": "Número de Teléfono",
@@ -253,6 +255,7 @@
       },
       "infoTitle": "Información de Exportación",
       "availableOptions": "Opciones de Exportación Disponibles",
+      "exportOption": "Opción de exportación",
       "exporting": "Exportando...",
       "exportedSuccessfully": "{{title}} exportado exitosamente como {{format}}",
       "exportFailed": "Error al exportar los datos. Por favor intente de nuevo.",
@@ -325,6 +328,11 @@
     "ok": "OK",
     "close": "Cerrar",
     "closeModal": "Cerrar modal",
+    "name": "Nombre",
+    "email": "Email",
+    "phone": "Teléfono",
+    "company": "Empresa",
+    "as": "como",
     "unauthorized": "Acceso Denegado",
     "unauthorizedMessage": "No tienes permisos para acceder a esta sección. Por favor contacta a tu administrador si crees que esto es un error.",
     "errors": {
