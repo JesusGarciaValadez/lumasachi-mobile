@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   FlatList,
+  Alert,
 } from 'react-native';
 import {useTranslation} from 'react-i18next';
 import {useNavigation} from '@react-navigation/native';
@@ -76,8 +77,8 @@ const ViewReportsScreen: React.FC = () => {
   };
 
   const handleViewReport = (report: ReportItem) => {
-    // Navigate to report details screen
-    navigation.navigate('ReportDetails', { reportId: report.id });
+    // Show alert with report info instead of navigating to non-existent screen
+    Alert.alert(t('common.info'), `Viewing ${report.title}`);
   };
 
   const renderReportItem = ({item}: {item: ReportItem}) => (
