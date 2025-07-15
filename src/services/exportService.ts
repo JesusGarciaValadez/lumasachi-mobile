@@ -103,7 +103,11 @@ class ExportService {
       ...data.map(row => 
         headers.map(header => {
           const value = row[header];
-          return typeof value === 'string' ? `"${value}"` : value;
+          if (typeof value === 'string') {
+            // Escape quotes by doubling them and wrap in quotes
+            return `"${value.replace(/"/g, '""')}"`;
+          }
+          return value;
         }).join(',')
       )
     ].join('\n');
