@@ -63,7 +63,18 @@ src/
 - **Gestión de Órdenes**: Crear, editar, y seguimiento de órdenes
 - **Timeline de Cambios**: Historial completo con documentos adjuntos
 - **Notificaciones**: Email con QR codes para acceso rápido
-- **Exportación PDF**: Timeline exportable a PDF
+- **Exportación de Datos**: Exportación completa de usuarios, órdenes, logs del sistema y análisis en formato PDF
+
+### 📋 Exportación de Datos
+
+La aplicación soporta exportación de datos en formato PDF únicamente (MVP):
+
+- **Datos de Usuario**: Exportar información completa de usuarios
+- **Datos de Órdenes**: Exportar historial y detalles de órdenes
+- **Logs del Sistema**: Exportar registros de actividad del sistema
+- **Análisis**: Exportar datos de análisis y rendimiento
+
+> **Nota**: En el MVP solo se soporta exportación en PDF. Para formatos adicionales (Excel, CSV, JSON), contactar al administrador del sistema.
 
 ## 🛠️ Stack Tecnológico
 

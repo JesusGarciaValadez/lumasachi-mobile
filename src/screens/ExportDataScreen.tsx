@@ -30,23 +30,23 @@ const ExportDataScreen: React.FC = () => {
       id: '1',
       title: t('userManagement.export.titles.userData'),
       description: t('userManagement.export.descriptions.userData'),
-      format: 'CSV',
-      color: '#28a745',
+      format: 'PDF',
+      color: '#dc3545',
       icon: '👥',
     },
     {
       id: '2',
       title: t('userManagement.export.titles.orderData'),
       description: t('userManagement.export.descriptions.orderData'),
-      format: 'Excel',
-      color: '#17a2b8',
+      format: 'PDF',
+      color: '#007bff',
       icon: '📋',
     },
     {
       id: '3',
       title: t('userManagement.export.titles.systemLogs'),
       description: t('userManagement.export.descriptions.systemLogs'),
-      format: 'JSON',
+      format: 'PDF',
       color: '#6f42c1',
       icon: '⚙️',
     },
@@ -54,7 +54,7 @@ const ExportDataScreen: React.FC = () => {
       id: '4',
       title: t('userManagement.export.titles.analytics'),
       description: t('userManagement.export.descriptions.analytics'),
-      format: 'TXT',
+      format: 'PDF',
       color: '#fd7e14',
       icon: '📊',
     },
@@ -64,7 +64,7 @@ const ExportDataScreen: React.FC = () => {
     setExportingId(option.id);
     
     try {
-      // Implement actual export
+      // Implement actual export - only PDF format supported
       const exportResult = await exportService.exportData(option.format, option.id, t);
       
       if (!exportResult.success) {
@@ -76,7 +76,7 @@ const ExportDataScreen: React.FC = () => {
         throw new Error(t('userManagement.export.errors.noContentToSave'));
       }
       
-      const filename = `${option.title.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.${option.format.toLowerCase()}`;
+      const filename = `${option.title.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
       const saveResult = await exportService.saveToDevice(exportResult.content, filename, t);
       
       if (!saveResult.success) {
