@@ -24,7 +24,7 @@ interface Permission {
   enabled: boolean;
 }
 
-interface Role {
+interface RoleWithPermissions {
   id: string;
   name: string;
   permissions: Permission[];
@@ -34,7 +34,7 @@ const ManageRolesScreen: React.FC = () => {
   const {t} = useTranslation();
   const navigation = useNavigation<ManageRolesScreenNavigationProp>();
   
-  const [roles, setRoles] = useState<Role[]>([
+  const [roles, setRoles] = useState<RoleWithPermissions[]>([
     {
       id: '1',
       name: t('userManagement.roles.administrator'),
