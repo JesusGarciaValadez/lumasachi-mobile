@@ -54,7 +54,8 @@ const UsersScreen: React.FC<UsersScreenProps> = ({navigation}) => {
       <TouchableOpacity 
         style={styles.userItem}
         accessibilityRole="button"
-        accessibilityLabel={`User: ${item.firstName} ${item.lastName}, Email: ${item.email}, Role: ${translatedRole}`}>
+        accessibilityLabel={`User: ${item.firstName} ${item.lastName}, Email: ${item.email}, Role: ${translatedRole}`}
+        onPress={() => handleEditUser(item.id)}>
         <View style={styles.userInfo}>
           <Text style={styles.userName}>
             {item.firstName} {item.lastName}
