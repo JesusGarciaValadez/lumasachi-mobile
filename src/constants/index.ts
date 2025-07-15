@@ -24,6 +24,10 @@ export const API_ENDPOINTS = {
   USERS: {
     PROFILE: '/users/profile',
     UPDATE_PROFILE: '/users/profile',
+    CREATE: '/users',
+    LIST: '/users',
+    UPDATE: '/users',
+    DELETE: '/users',
   },
 } as const;
 

@@ -165,15 +165,23 @@
       "role": "Rol",
       "company": "Empresa",
       "phoneNumber": "Número de Teléfono",
+      "address": "Dirección",
       "placeholders": {
         "firstName": "Ingrese el nombre",
         "lastName": "Ingrese el apellido",
         "email": "Ingrese el correo electrónico",
-        "role": "Ingrese el rol del usuario",
+        "role": "Seleccione el rol del usuario",
         "company": "Ingrese el nombre de la empresa",
-        "phoneNumber": "Ingrese el número de teléfono"
+        "phoneNumber": "Ingrese el número de teléfono",
+        "address": "Ingrese la dirección"
       },
-      "userCreatedSuccess": "¡Usuario creado exitosamente!"
+      "userCreatedSuccess": "¡Usuario creado exitosamente!",
+      "errors": {
+        "missingFields": "Por favor complete todos los campos requeridos",
+        "invalidEmail": "Por favor ingrese un correo electrónico válido",
+        "invalidPhone": "Por favor ingrese un número de teléfono válido",
+        "createFailed": "Error al crear usuario. Por favor inténtelo de nuevo."
+      }
     },
     "roles": {
       "administrator": "Administrador",

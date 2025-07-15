@@ -165,15 +165,23 @@
       "role": "Role",
       "company": "Company",
       "phoneNumber": "Phone Number",
+      "address": "Address",
       "placeholders": {
         "firstName": "Enter first name",
         "lastName": "Enter last name",
         "email": "Enter email address",
-        "role": "Enter user role",
+        "role": "Select user role",
         "company": "Enter company name",
-        "phoneNumber": "Enter phone number"
+        "phoneNumber": "Enter phone number",
+        "address": "Enter address"
       },
-      "userCreatedSuccess": "User created successfully!"
+      "userCreatedSuccess": "User created successfully!",
+      "errors": {
+        "missingFields": "Please complete all required fields",
+        "invalidEmail": "Please enter a valid email address",
+        "invalidPhone": "Please enter a valid phone number",
+        "createFailed": "Failed to create user. Please try again."
+      }
     },
     "roles": {
       "administrator": "Administrator",
