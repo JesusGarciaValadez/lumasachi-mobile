@@ -10,6 +10,7 @@ import {
 import {OrdersScreenProps} from '../types/navigation';
 import {Order} from '../types/index';
 import {useTranslation} from 'react-i18next';
+import {getStatusTranslation} from '../utils/roleTranslations';
 
 const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
   const {t} = useTranslation();
@@ -44,7 +45,7 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
       </View>
       <View style={styles.orderDetails}>
         <Text style={styles.orderCustomer}>{t('orders.customer')}: {item.customerId}</Text>
-        <Text style={styles.orderStatus}>{t('orders.status')}: {t(`orders.statuses.${item.status}`)}</Text>
+        <Text style={styles.orderStatus}>{t('orders.status')}: {t(getStatusTranslation(item.status))}</Text>
       </View>
     </TouchableOpacity>
   );
