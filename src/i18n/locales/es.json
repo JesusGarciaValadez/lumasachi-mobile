@@ -93,7 +93,9 @@
     "workCategory": "Categoría del trabajo",
     "confirmCreate": "¿Estás seguro de que quieres crear esta orden?",
     "errors": {
-      "missingFields": "Por favor completa todos los campos obligatorios"
+      "missingFields": "Por favor completa todos los campos obligatorios",
+      "titleTooShort": "El título de la orden debe tener al menos 3 caracteres",
+      "descriptionTooShort": "La descripción de la orden debe tener al menos 10 caracteres"
     }
   },
   "editOrder": {
@@ -103,7 +105,12 @@
     "loadingOrder": "Cargando orden...",
     "loadError": "No se pudo cargar la orden",
     "updateSuccess": "Orden actualizada correctamente",
-    "updateError": "No se pudo actualizar la orden"
+    "updateError": "No se pudo actualizar la orden",
+    "errors": {
+      "missingFields": "Por favor completa todos los campos obligatorios",
+      "titleTooShort": "El título de la orden debe tener al menos 3 caracteres",
+      "descriptionTooShort": "La descripción de la orden debe tener al menos 10 caracteres"
+    }
   },
   "profile": {
     "title": "Perfil",

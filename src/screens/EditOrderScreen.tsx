@@ -14,6 +14,7 @@ import {
 import {EditOrderScreenProps} from '../types/navigation';
 import {useTranslation} from 'react-i18next';
 import {User, UserRole, Order} from '../types';
+import {validateOrderForm} from '../utils/orderValidation';
 
 const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
   navigation,
@@ -130,8 +131,9 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
   };
 
   const handleSubmit = () => {
-    if (!formData.customerId || !formData.title || !formData.description) {
-      Alert.alert(t('common.error'), t('editOrder.errors.missingFields'));
+    const validationResult = validateOrderForm(formData);
+    if (!validationResult.isValid) {
+      Alert.alert(t('common.error'), t(`editOrder.errors.${validationResult.errorMessage}`));
       return;
     }
 

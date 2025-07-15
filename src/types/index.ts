@@ -20,12 +20,12 @@ export interface User {
   lastLoginAt?: Date;
   languagePreference: 'en' | 'es';
   
-  // Campos específicos para usuarios con rol Customer
+  // Specific fields for users with the Customer role
   customerNotes?: string;
   customerType?: 'individual' | 'corporate';
   customerPreferences?: string;
   
-  // Helpers para facilitar el uso
+  // Helper flags for easier usage
   isCustomer?: boolean;
   isEmployee?: boolean;
   
@@ -63,7 +63,7 @@ export interface Status {
 export interface Order {
   id: string;
   customerId: string;
-  customer?: User; // Referencia al usuario customer
+  customer?: User; // Reference to the customer user
   title: string;
   description: string;
   status: Status['statusName'];
@@ -73,7 +73,7 @@ export interface Order {
   actualCompletion?: Date;
   notes?: string;
   assignedTo?: string;
-  assignedUser?: User; // Referencia al usuario asignado
+  assignedUser?: User; // Reference to the assigned user
   createdAt: Date;
   updatedAt: Date;
   createdBy: string;
@@ -97,13 +97,13 @@ export interface OrderHistory {
   updatedBy: string;
 }
 
-// Tipos para autenticación
+// Types for authentication
 export interface AuthUser extends User {
   permissions: string[];
   roleLabel: string;
 }
 
-// Tipos para navegación
+// Types for navigation
 export type RootStackParamList = {
   Login: undefined;
   Dashboard: undefined;
@@ -119,7 +119,7 @@ export type RootStackParamList = {
   Export: undefined;
 };
 
-// Tipos para filtros
+// Types for filters
 export interface OrderFilters {
   status?: Status['statusName'];
   priority?: Order['priority'];

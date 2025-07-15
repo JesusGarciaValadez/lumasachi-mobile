@@ -93,7 +93,9 @@
     "workCategory": "Work category",
     "confirmCreate": "Are you sure you want to create this order?",
     "errors": {
-      "missingFields": "Please complete all required fields"
+      "missingFields": "Please complete all required fields",
+      "titleTooShort": "Order title must be at least 3 characters long",
+      "descriptionTooShort": "Order description must be at least 10 characters long"
     }
   },
   "editOrder": {
@@ -103,7 +105,12 @@
     "loadingOrder": "Loading order...",
     "loadError": "Failed to load order",
     "updateSuccess": "Order updated successfully",
-    "updateError": "Failed to update order"
+    "updateError": "Failed to update order",
+    "errors": {
+      "missingFields": "Please complete all required fields",
+      "titleTooShort": "Order title must be at least 3 characters long",
+      "descriptionTooShort": "Order description must be at least 10 characters long"
+    }
   },
   "profile": {
     "title": "Profile",
