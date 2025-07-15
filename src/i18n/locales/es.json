@@ -299,6 +299,8 @@
     "retry": "Reintentar",
     "resetAndRetry": "Reiniciar y Reintentar",
     "ok": "OK",
+    "unauthorized": "Acceso Denegado",
+    "unauthorizedMessage": "No tienes permisos para acceder a esta sección. Por favor contacta a tu administrador si crees que esto es un error.",
     "errors": {
       "networkError": "Error de conexión a la red. Por favor verifica tu conexión a internet e inténtalo nuevamente.",
       "unexpectedError": "Ocurrió un error inesperado. Por favor inténtalo nuevamente.",

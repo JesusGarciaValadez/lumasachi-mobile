@@ -299,6 +299,8 @@
     "retry": "Retry",
     "resetAndRetry": "Reset & Retry",
     "ok": "OK",
+    "unauthorized": "Access Denied",
+    "unauthorizedMessage": "You don't have permission to access this section. Please contact your administrator if you believe this is an error.",
     "errors": {
       "networkError": "Network connection error. Please check your internet connection and try again.",
       "unexpectedError": "An unexpected error occurred. Please try again.",
