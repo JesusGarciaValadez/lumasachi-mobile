@@ -93,6 +93,12 @@
     "orderDescription": "Describe the order details",
     "workCategory": "Work category",
     "confirmCreate": "Are you sure you want to create this order?",
+    "selectCustomer": "Select Customer",
+    "selectCustomerAccessibility": "Select customer for this order",
+    "orderTitle": "Order Title",
+    "priorityButtonAccessibility": "Set priority to {{priority}}",
+    "submitButtonAccessibility": "Create order with current details",
+    "customerItemAccessibility": "Select {{customerName}} from {{company}}",
     "errors": {
       "missingFields": "Please complete all required fields",
       "titleTooShort": "Order title must be at least 3 characters long",
@@ -310,6 +316,8 @@
     "retry": "Retry",
     "resetAndRetry": "Reset & Retry",
     "ok": "OK",
+    "close": "Close",
+    "closeModal": "Close modal",
     "unauthorized": "Access Denied",
     "unauthorizedMessage": "You don't have permission to access this section. Please contact your administrator if you believe this is an error.",
     "errors": {

@@ -135,7 +135,12 @@ const CreateOrderScreen: React.FC = () => {
   const renderCustomerItem = ({item}: {item: User}) => (
     <TouchableOpacity
       style={styles.customerItem}
-      onPress={() => handleCustomerSelect(item)}>
+      onPress={() => handleCustomerSelect(item)}
+      accessibilityLabel={t('createOrder.customerItemAccessibility', { 
+        customerName: `${item.firstName} ${item.lastName}`, 
+        company: item.company || 'Sin empresa' 
+      })}
+      accessibilityRole="button">
       <Text style={styles.customerName}>
         {item.firstName} {item.lastName}
       </Text>
@@ -158,7 +163,10 @@ const CreateOrderScreen: React.FC = () => {
           <Text style={styles.label}>{t('orders.customer')} *</Text>
           <TouchableOpacity
             style={styles.customerSelector}
-            onPress={() => setShowCustomerModal(true)}>
+            onPress={() => setShowCustomerModal(true)}
+            accessibilityLabel={t('createOrder.selectCustomerAccessibility')}
+            accessibilityRole="button"
+            accessibilityHint={formData.customerName ? `${t('createOrder.customerName')}: ${formData.customerName}` : undefined}>
             <Text style={[styles.customerSelectorText, !formData.customerName && styles.placeholder]}>
               {formData.customerName || t('createOrder.selectCustomer')}
             </Text>
@@ -175,6 +183,8 @@ const CreateOrderScreen: React.FC = () => {
             value={formData.title}
             onChangeText={(value) => handleInputChange('title', value)}
             placeholder={t('createOrder.orderTitle')}
+            accessibilityLabel={t('orders.orderTitle')}
+            accessibilityHint={t('createOrder.orderTitle')}
           />
 
           <Text style={styles.label}>{t('orders.description')} *</Text>
@@ -185,6 +195,8 @@ const CreateOrderScreen: React.FC = () => {
             placeholder={t('createOrder.orderDescription')}
             multiline
             numberOfLines={4}
+            accessibilityLabel={t('orders.description')}
+            accessibilityHint={t('createOrder.orderDescription')}
           />
 
           <Text style={styles.label}>{t('orders.category')}</Text>
@@ -193,10 +205,12 @@ const CreateOrderScreen: React.FC = () => {
             value={formData.category}
             onChangeText={(value) => handleInputChange('category', value)}
             placeholder={t('createOrder.workCategory')}
+            accessibilityLabel={t('orders.category')}
+            accessibilityHint={t('createOrder.workCategory')}
           />
 
           <Text style={styles.label}>{t('orders.priority')}</Text>
-          <View style={styles.priorityContainer}>
+          <View style={styles.priorityContainer} accessibilityRole="radiogroup">
             {priorities.map((priority) => (
               <TouchableOpacity
                 key={priority.key}
@@ -204,7 +218,10 @@ const CreateOrderScreen: React.FC = () => {
                   styles.priorityButton,
                   formData.priority === priority.value && styles.priorityButtonActive,
                 ]}
-                onPress={() => handleInputChange('priority', priority.value)}>
+                onPress={() => handleInputChange('priority', priority.value)}
+                accessibilityLabel={t('createOrder.priorityButtonAccessibility', { priority: priority.label })}
+                accessibilityRole="button"
+                accessibilityState={{ selected: formData.priority === priority.value }}>
                 <Text
                   style={[
                     styles.priorityButtonText,
@@ -221,7 +238,9 @@ const CreateOrderScreen: React.FC = () => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.submitButton}
-          onPress={handleSubmit}>
+          onPress={handleSubmit}
+          accessibilityLabel={t('createOrder.submitButtonAccessibility')}
+          accessibilityRole="button">
           <Text style={styles.submitButtonText}>{t('createOrder.title')}</Text>
         </TouchableOpacity>
       </View>
@@ -230,13 +249,16 @@ const CreateOrderScreen: React.FC = () => {
       <Modal
         visible={showCustomerModal}
         animationType="slide"
-        presentationStyle="pageSheet">
+        presentationStyle="pageSheet"
+        accessibilityViewIsModal={true}>
         <View style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>{t('createOrder.selectCustomer')}</Text>
             <TouchableOpacity
               style={styles.closeButton}
-              onPress={() => setShowCustomerModal(false)}>
+              onPress={() => setShowCustomerModal(false)}
+              accessibilityLabel={t('common.closeModal')}
+              accessibilityRole="button">
               <Text style={styles.closeButtonText}>{t('common.close')}</Text>
             </TouchableOpacity>
           </View>
@@ -245,6 +267,8 @@ const CreateOrderScreen: React.FC = () => {
             renderItem={renderCustomerItem}
             keyExtractor={(item) => item.id}
             style={styles.customerList}
+            accessibilityLabel={t('createOrder.selectCustomer')}
+            accessibilityRole="list"
           />
         </View>
       </Modal>
