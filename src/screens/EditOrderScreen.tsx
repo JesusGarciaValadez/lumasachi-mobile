@@ -8,9 +8,12 @@ import {
   TouchableOpacity,
   Alert,
   ActivityIndicator,
+  Modal,
+  FlatList,
 } from 'react-native';
 import {EditOrderScreenProps} from '../types/navigation';
 import {useTranslation} from 'react-i18next';
+import {User, UserRole, Order} from '../types';
 
 const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
   navigation,
@@ -20,33 +23,89 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
   const {t} = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
-    customer: '',
+    customerId: '',
+    customerName: '',
+    title: '',
     description: '',
-    priority: t('orders.priorities.normal'),
+    priority: 'Normal' as 'Low' | 'Normal' | 'High' | 'Urgent',
     category: '',
-    status: t('orders.statuses.open'),
+    status: 'Open' as any,
   });
+  const [customers, setCustomers] = useState<User[]>([]);
+  const [showCustomerModal, setShowCustomerModal] = useState(false);
+  const [originalOrder, setOriginalOrder] = useState<Order | null>(null);
 
   useEffect(() => {
     const loadOrderData = async () => {
       try {
         // TODO: Uncomment when backend is implemented
         // const order = await fetchOrder(orderId);
-        // setFormData({
-        //   customer: order.customer,
-        //   description: order.description,
-        //   priority: order.priority,
-        //   category: order.category,
-        //   status: order.status,
-        // });
+        // const customersData = await fetchUsers({ role: UserRole.CUSTOMER });
+        // setCustomers(customersData);
         
         // Temporary placeholder data until backend is ready
-        setFormData({
-          customer: 'Cliente Demo',
-          description: 'Descripción de la orden existente',
-          priority: t('orders.priorities.normal'),
+        const mockCustomers: User[] = [
+          {
+            id: '1',
+            firstName: 'Juan',
+            lastName: 'Pérez',
+            email: 'juan@example.com',
+            role: UserRole.CUSTOMER,
+            company: 'Empresa ABC',
+            phoneNumber: '+1234567890',
+            isActive: true,
+            languagePreference: 'es',
+            customerType: 'corporate',
+            customerNotes: 'Cliente frecuente',
+            isCustomer: true,
+            isEmployee: false,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+          {
+            id: '2',
+            firstName: 'María',
+            lastName: 'González',
+            email: 'maria@example.com',
+            role: UserRole.CUSTOMER,
+            company: 'Empresa XYZ',
+            phoneNumber: '+0987654321',
+            isActive: true,
+            languagePreference: 'es',
+            customerType: 'individual',
+            isCustomer: true,
+            isEmployee: false,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        ];
+        setCustomers(mockCustomers);
+        
+        // Mock order data
+        const mockOrder: Order = {
+          id: orderId,
+          customerId: '1',
+          customer: mockCustomers[0],
+          title: 'Orden de Reparación',
+          description: 'Reparación de equipo industrial',
+          status: 'In Progress',
+          priority: 'High',
           category: 'Reparación',
-          status: t('orders.statuses.inProgress'),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          createdBy: 'admin',
+          updatedBy: 'admin',
+        };
+        
+        setOriginalOrder(mockOrder);
+        setFormData({
+          customerId: mockOrder.customerId,
+          customerName: mockOrder.customer ? `${mockOrder.customer.firstName} ${mockOrder.customer.lastName}` : '',
+          title: mockOrder.title,
+          description: mockOrder.description,
+          priority: mockOrder.priority,
+          category: mockOrder.category || '',
+          status: mockOrder.status,
         });
       } catch (error) {
         Alert.alert(t('common.error'), t('editOrder.loadError'));
@@ -61,7 +120,21 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
     setFormData(prev => ({...prev, [field]: value}));
   };
 
+  const handleCustomerSelect = (customer: User) => {
+    setFormData(prev => ({
+      ...prev,
+      customerId: customer.id,
+      customerName: `${customer.firstName} ${customer.lastName}`,
+    }));
+    setShowCustomerModal(false);
+  };
+
   const handleSubmit = () => {
+    if (!formData.customerId || !formData.title || !formData.description) {
+      Alert.alert(t('common.error'), t('editOrder.errors.missingFields'));
+      return;
+    }
+
     Alert.alert(
       t('editOrder.saveChanges'),
       t('editOrder.confirmSave'),
@@ -74,6 +147,7 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
               try {
                 // TODO: Uncomment when backend is implemented
                 // await updateOrderAPI(orderId, formData);
+                console.log('Order updated:', formData);
                 Alert.alert(t('common.success'), t('editOrder.updateSuccess'));
                 navigation.goBack();
               } catch (error) {
@@ -87,17 +161,41 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
     );
   };
 
-  const statuses = Object.keys(t('orders.statuses', {returnObjects: true})).map(key => ({
-    key,
-    label: t(`orders.statuses.${key}`),
-  }));
-
-  const priorities = [
-    {key: 'low', label: t('orders.priorities.low')},
-    {key: 'normal', label: t('orders.priorities.normal')},
-    {key: 'high', label: t('orders.priorities.high')},
-    {key: 'urgent', label: t('orders.priorities.urgent')},
+  const statuses = [
+    {key: 'open', label: t('orders.statuses.open'), value: 'Open'},
+    {key: 'inProgress', label: t('orders.statuses.inProgress'), value: 'In Progress'},
+    {key: 'readyForDelivery', label: t('orders.statuses.readyForDelivery'), value: 'Ready for delivery'},
+    {key: 'delivered', label: t('orders.statuses.delivered'), value: 'Delivered'},
+    {key: 'paid', label: t('orders.statuses.paid'), value: 'Paid'},
+    {key: 'returned', label: t('orders.statuses.returned'), value: 'Returned'},
+    {key: 'notPaid', label: t('orders.statuses.notPaid'), value: 'Not paid'},
+    {key: 'cancelled', label: t('orders.statuses.cancelled'), value: 'Cancelled'},
   ];
+
+  const priorities: Array<{key: string; label: string; value: 'Low' | 'Normal' | 'High' | 'Urgent'}> = [
+    {key: 'low', label: t('orders.priorities.low'), value: 'Low'},
+    {key: 'normal', label: t('orders.priorities.normal'), value: 'Normal'},
+    {key: 'high', label: t('orders.priorities.high'), value: 'High'},
+    {key: 'urgent', label: t('orders.priorities.urgent'), value: 'Urgent'},
+  ];
+
+  const renderCustomerItem = ({item}: {item: User}) => (
+    <TouchableOpacity
+      style={styles.customerItem}
+      onPress={() => handleCustomerSelect(item)}>
+      <Text style={styles.customerName}>
+        {item.firstName} {item.lastName}
+      </Text>
+      <Text style={styles.customerDetails}>
+        {item.email} • {item.company || 'Sin empresa'}
+      </Text>
+      {item.customerType && (
+        <Text style={styles.customerType}>
+          {item.customerType === 'corporate' ? 'Corporativo' : 'Individual'}
+        </Text>
+      )}
+    </TouchableOpacity>
+  );
 
   if (isLoading) {
     return (
@@ -118,18 +216,27 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
         <Text style={styles.sectionTitle}>{t('createOrder.customerInfo')}</Text>
         <View style={styles.card}>
           <Text style={styles.label}>{t('orders.customer')} *</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.customer}
-            onChangeText={(value) => handleInputChange('customer', value)}
-            placeholder={t('createOrder.customerName')}
-          />
+          <TouchableOpacity
+            style={styles.customerSelector}
+            onPress={() => setShowCustomerModal(true)}>
+            <Text style={[styles.customerSelectorText, !formData.customerName && styles.placeholder]}>
+              {formData.customerName || t('createOrder.selectCustomer')}
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t('createOrder.orderDetails')}</Text>
         <View style={styles.card}>
+          <Text style={styles.label}>{t('orders.title')} *</Text>
+          <TextInput
+            style={styles.input}
+            value={formData.title}
+            onChangeText={(value) => handleInputChange('title', value)}
+            placeholder={t('createOrder.orderTitle')}
+          />
+
           <Text style={styles.label}>{t('orders.description')} *</Text>
           <TextInput
             style={[styles.input, styles.textArea]}
@@ -155,13 +262,13 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
                 key={status.key}
                 style={[
                   styles.statusButton,
-                  formData.status === status.label && styles.statusButtonActive,
+                  formData.status === status.value && styles.statusButtonActive,
                 ]}
-                onPress={() => handleInputChange('status', status.label)}>
+                onPress={() => handleInputChange('status', status.value)}>
                 <Text
                   style={[
                     styles.statusButtonText,
-                    formData.status === status.label && styles.statusButtonTextActive,
+                    formData.status === status.value && styles.statusButtonTextActive,
                   ]}>
                   {status.label}
                 </Text>
@@ -176,13 +283,13 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
                 key={priority.key}
                 style={[
                   styles.priorityButton,
-                  formData.priority === priority.label && styles.priorityButtonActive,
+                  formData.priority === priority.value && styles.priorityButtonActive,
                 ]}
-                onPress={() => handleInputChange('priority', priority.label)}>
+                onPress={() => handleInputChange('priority', priority.value)}>
                 <Text
                   style={[
                     styles.priorityButtonText,
-                    formData.priority === priority.label && styles.priorityButtonTextActive,
+                    formData.priority === priority.value && styles.priorityButtonTextActive,
                   ]}>
                   {priority.label}
                 </Text>
@@ -199,6 +306,29 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
           <Text style={styles.submitButtonText}>{t('editOrder.saveChanges')}</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Customer Selection Modal */}
+      <Modal
+        visible={showCustomerModal}
+        animationType="slide"
+        presentationStyle="pageSheet">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>{t('createOrder.selectCustomer')}</Text>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setShowCustomerModal(false)}>
+              <Text style={styles.closeButtonText}>{t('common.close')}</Text>
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            data={customers}
+            renderItem={renderCustomerItem}
+            keyExtractor={(item) => item.id}
+            style={styles.customerList}
+          />
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
@@ -271,6 +401,21 @@ const styles = StyleSheet.create({
     height: 100,
     textAlignVertical: 'top',
   },
+  customerSelector: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 6,
+    padding: 12,
+    backgroundColor: '#f9f9f9',
+    marginBottom: 20,
+  },
+  customerSelectorText: {
+    fontSize: 16,
+    color: '#333333',
+  },
+  placeholder: {
+    color: '#999999',
+  },
   statusContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -338,6 +483,54 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333333',
+  },
+  closeButton: {
+    padding: 8,
+  },
+  closeButtonText: {
+    color: '#007AFF',
+    fontSize: 16,
+  },
+  customerList: {
+    flex: 1,
+  },
+  customerItem: {
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  customerName: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#333333',
+    marginBottom: 4,
+  },
+  customerDetails: {
+    fontSize: 14,
+    color: '#666666',
+    marginBottom: 4,
+  },
+  customerType: {
+    fontSize: 12,
+    color: '#999999',
+    fontStyle: 'italic',
   },
 });
 
