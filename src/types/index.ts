@@ -103,21 +103,8 @@ export interface AuthUser extends User {
   roleLabel: string;
 }
 
-// Types for navigation
-export type RootStackParamList = {
-  Login: undefined;
-  Dashboard: undefined;
-  Orders: undefined;
-  CreateOrder: undefined;
-  EditOrder: { orderId: string };
-  OrderDetail: { orderId: string };
-  Users: undefined;
-  CreateUser: undefined;
-  EditUser: { userId: string };
-  Profile: undefined;
-  Settings: undefined;
-  Export: undefined;
-};
+// Re-export navigation types
+export type { RootStackParamList } from './navigation';
 
 // Types for filters
 export interface OrderFilters {
