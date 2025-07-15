@@ -7,12 +7,14 @@ import ProfileScreen from '../screens/ProfileScreen';
 import UsersScreen from '../screens/UsersScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import {useAuth} from '../hooks/useAuth';
+import {useTranslationSafe} from '../hooks/useTranslationSafe';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 const MainNavigator: React.FC = () => {
   const {user} = useAuth();
+  const {t} = useTranslationSafe();
   
   if (!user) {
     // This shouldn't happen in MainNavigator since it's only rendered for authenticated users
@@ -69,16 +71,16 @@ const MainNavigator: React.FC = () => {
         name="Home"
         component={HomeScreen}
         options={{
-          title: 'Inicio',
-          tabBarLabel: 'Inicio',
+          title: t('navigation.home.title') as string,
+          tabBarLabel: t('navigation.home.tab') as string,
         }}
       />
       <Tab.Screen
         name="Orders"
         component={OrdersScreen}
         options={{
-          title: 'Órdenes',
-          tabBarLabel: 'Órdenes',
+          title: t('navigation.orders.title') as string,
+          tabBarLabel: t('navigation.orders.tab') as string,
         }}
       />
       {navigationConfig.showUsersTab && (
@@ -86,8 +88,8 @@ const MainNavigator: React.FC = () => {
           name="Users"
           component={UsersScreen}
           options={{
-            title: 'Usuarios',
-            tabBarLabel: 'Usuarios',
+            title: t('navigation.users.title') as string,
+            tabBarLabel: t('navigation.users.tab') as string,
           }}
         />
       )}
@@ -95,16 +97,16 @@ const MainNavigator: React.FC = () => {
         name="Profile"
         component={ProfileScreen}
         options={{
-          title: 'Perfil',
-          tabBarLabel: 'Perfil',
+          title: t('navigation.profile.title') as string,
+          tabBarLabel: t('navigation.profile.tab') as string,
         }}
       />
       <Tab.Screen
         name="Settings"
         component={SettingsScreen}
         options={{
-          title: 'Configuración',
-          tabBarLabel: 'Config',
+          title: t('navigation.settings.title') as string,
+          tabBarLabel: t('navigation.settings.tab') as string,
         }}
       />
     </Tab.Navigator>
