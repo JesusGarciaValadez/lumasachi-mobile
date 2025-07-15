@@ -54,7 +54,7 @@ const ExportDataScreen: React.FC = () => {
       id: '4',
       title: t('userManagement.export.titles.analytics'),
       description: t('userManagement.export.descriptions.analytics'),
-      format: 'PDF',
+      format: 'TXT',
       color: '#fd7e14',
       icon: '📊',
     },

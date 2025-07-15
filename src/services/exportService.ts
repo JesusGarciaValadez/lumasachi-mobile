@@ -121,9 +121,9 @@ class ExportService {
     return this.convertToCSV(data);
   }
 
-  private convertToPDF(data: any[]): string {
-    // For PDF format, we'll create a simple text representation
-    // In a real app, you'd use a PDF generation library
+  private convertToPlainText(data: any[]): string {
+    // Plain text representation (not actual PDF format)
+    // In a real app, you'd use a PDF generation library like react-native-pdf-lib
     const content = data.map(item => 
       Object.entries(item)
         .map(([key, value]) => `${key}: ${value}`)
@@ -169,7 +169,11 @@ class ExportService {
           exportedContent = this.convertToJSON(data);
           break;
         case 'pdf':
-          exportedContent = this.convertToPDF(data);
+          // Note: This generates plain text, not actual PDF
+          exportedContent = this.convertToPlainText(data);
+          break;
+        case 'txt':
+          exportedContent = this.convertToPlainText(data);
           break;
         default:
           throw new Error(t('userManagement.export.errors.unsupportedFormat'));
