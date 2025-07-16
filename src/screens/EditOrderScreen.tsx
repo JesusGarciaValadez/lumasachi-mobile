@@ -12,17 +12,22 @@ import {
   FlatList,
 } from 'react-native';
 import {EditOrderScreenProps} from '../types/navigation';
-import {useTranslation} from 'react-i18next';
+import {useTranslationSafe} from '../hooks/useTranslationSafe';
 import {User, UserRole, Order, FileSelection, MultipleFileUploadResult} from '../types';
 import {validateOrderForm} from '../utils/orderValidation';
 import {FileUploader} from '../components/ui';
+import ErrorBoundary from '../components/ErrorBoundary';
+import ErrorMessage from '../components/ErrorMessage';
+import {useErrorHandler} from '../hooks/useErrorHandler';
+import {errorService} from '../services/errorService';
 
 const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
   navigation,
   route,
 }) => {
   const {orderId} = route.params;
-  const {t} = useTranslation();
+  const {t} = useTranslationSafe();
+  const {handleError, clearError, hasError, error} = useErrorHandler();
   const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
     customerId: '',
@@ -42,6 +47,7 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
   useEffect(() => {
     const loadOrderData = async () => {
       try {
+        clearError();
         // TODO: Uncomment when backend is implemented
         // const order = await fetchOrder(orderId);
         // const customersData = await fetchUsers({ role: UserRole.CUSTOMER });
@@ -55,12 +61,12 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
             lastName: 'Pérez',
             email: 'juan@example.com',
             role: UserRole.CUSTOMER,
-            company: 'Empresa ABC',
+            company: t('common.mockData.companyABC') as string,
             phoneNumber: '+1234567890',
             isActive: true,
             languagePreference: 'es',
             customerType: 'corporate',
-            customerNotes: 'Cliente frecuente',
+            customerNotes: t('common.mockData.frequentCustomer') as string,
             isCustomer: true,
             isEmployee: false,
             createdAt: new Date(),
@@ -72,7 +78,7 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
             lastName: 'González',
             email: 'maria@example.com',
             role: UserRole.CUSTOMER,
-            company: 'Empresa XYZ',
+            company: t('common.mockData.companyXYZ') as string,
             phoneNumber: '+0987654321',
             isActive: true,
             languagePreference: 'es',
@@ -90,11 +96,11 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
           id: orderId,
           customerId: '1',
           customer: mockCustomers[0],
-          title: 'Orden de Reparación',
-          description: 'Reparación de equipo industrial',
+          title: t('common.mockData.repairOrder') as string,
+          description: t('common.mockData.industrialRepair') as string,
           status: 'In Progress',
           priority: 'High',
-          category: 'Reparación',
+          category: t('common.mockData.repair') as string,
           createdAt: new Date(),
           updatedAt: new Date(),
           createdBy: 'admin',
@@ -111,14 +117,28 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
           category: mockOrder.category || '',
           status: mockOrder.status,
         });
+        
+        await errorService.logError(null, {
+          component: 'EditOrderScreen',
+          operation: 'loadOrderData',
+          success: true,
+          orderId,
+          customerCount: mockCustomers.length,
+        });
       } catch (error) {
-        Alert.alert(t('common.error'), t('editOrder.loadError'));
+        const errorMessage = t('editOrder.loadError') as string;
+        await errorService.logError(error as Error, {
+          component: 'EditOrderScreen',
+          operation: 'loadOrderData',
+          orderId,
+        });
+        handleError(error as Error);
       } finally {
         setIsLoading(false);
       }
     };
     loadOrderData();
-  }, [orderId, t]);
+  }, [orderId, t, handleError, clearError]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({...prev, [field]: value}));
@@ -144,19 +164,19 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
 
   const handleFileUploadError = (error: string) => {
     console.error('File upload error:', error);
-    Alert.alert(t('common.error'), error);
+    handleError(new Error(error));
   };
 
   const handleReset = () => {
     if (!originalOrder) return;
     
     Alert.alert(
-      t('editOrder.resetChanges'),
-      t('editOrder.confirmReset'),
+      t('editOrder.resetChanges') as string,
+      t('editOrder.confirmReset') as string,
       [
-        {text: t('common.cancel'), style: 'cancel'},
+        {text: t('common.cancel') as string, style: 'cancel'},
         {
-          text: t('common.reset'),
+          text: t('common.reset') as string,
           style: 'destructive',
           onPress: () => {
             setFormData({
@@ -168,6 +188,13 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
               category: originalOrder.category || '',
               status: originalOrder.status,
             });
+            clearError();
+            errorService.logError(null, {
+              component: 'EditOrderScreen',
+              operation: 'resetForm',
+              success: true,
+              orderId: originalOrder.id,
+            });
           },
         },
       ]
@@ -175,36 +202,70 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
   };
 
   const handleSubmit = () => {
-    const validationResult = validateOrderForm(formData, t);
+    const translateString = (key: string) => t(key) as string;
+    const validationResult = validateOrderForm(formData, translateString);
     if (!validationResult.isValid) {
-      let errorMessage = t(`editOrder.errors.${validationResult.errorMessage}`);
+      let errorMessage = t(`editOrder.errors.${validationResult.errorMessage}`) as string;
       
       // Add specific missing fields information
       if (validationResult.errorMessage === 'missingFields' && validationResult.missingFields) {
         errorMessage = `${errorMessage}: ${validationResult.missingFields.join(', ')}`;
       }
       
-      Alert.alert(t('common.error'), errorMessage);
+              const validationError = new Error(errorMessage);
+        errorService.logError(validationError, {
+          component: 'EditOrderScreen',
+          operation: 'formValidation',
+          orderId,
+          validationResult,
+          formData,
+        });
+        handleError(validationError);
       return;
     }
 
     Alert.alert(
-      t('editOrder.saveChanges'),
-      t('editOrder.confirmSave'),
+      t('editOrder.saveChanges') as string,
+      t('editOrder.confirmSave') as string,
       [
-        {text: t('common.cancel'), style: 'cancel'},
+        {text: t('common.cancel') as string, style: 'cancel'},
         {
-          text: t('common.save'),
+          text: t('common.save') as string,
           onPress: () => {
             const updateOrder = async () => {
               try {
+                clearError();
                 // TODO: Uncomment when backend is implemented
                 // await updateOrderAPI(orderId, formData);
                 console.log('Order updated:', formData);
-                Alert.alert(t('common.success'), t('editOrder.updateSuccess'));
-                navigation.goBack();
+                
+                await errorService.logError(null, {
+                  component: 'EditOrderScreen',
+                  operation: 'updateOrder',
+                  success: true,
+                  orderId,
+                  formData,
+                });
+                
+                Alert.alert(
+                  t('common.success') as string,
+                  t('editOrder.updateSuccess') as string,
+                  [
+                    {
+                      text: t('common.ok') as string,
+                      onPress: () => navigation.goBack(),
+                    },
+                  ]
+                );
               } catch (error) {
-                Alert.alert(t('common.error'), t('editOrder.updateError'));
+                const errorMessage = t('editOrder.updateError') as string;
+                await errorService.logError(error as Error, {
+                  component: 'EditOrderScreen',
+                  operation: 'updateOrder',
+                  orderId,
+                  formData,
+                });
+                handleError(error as Error);
               }
             };
             updateOrder();
@@ -215,21 +276,21 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
   };
 
   const statuses = [
-    {key: 'open', label: t('orders.statuses.open'), value: 'Open'},
-    {key: 'inProgress', label: t('orders.statuses.inProgress'), value: 'In Progress'},
-    {key: 'readyForDelivery', label: t('orders.statuses.readyForDelivery'), value: 'Ready for delivery'},
-    {key: 'delivered', label: t('orders.statuses.delivered'), value: 'Delivered'},
-    {key: 'paid', label: t('orders.statuses.paid'), value: 'Paid'},
-    {key: 'returned', label: t('orders.statuses.returned'), value: 'Returned'},
-    {key: 'notPaid', label: t('orders.statuses.notPaid'), value: 'Not paid'},
-    {key: 'cancelled', label: t('orders.statuses.cancelled'), value: 'Cancelled'},
+    {key: 'open', label: t('orders.statuses.open') as string, value: 'Open'},
+    {key: 'inProgress', label: t('orders.statuses.inProgress') as string, value: 'In Progress'},
+    {key: 'readyForDelivery', label: t('orders.statuses.readyForDelivery') as string, value: 'Ready for delivery'},
+    {key: 'delivered', label: t('orders.statuses.delivered') as string, value: 'Delivered'},
+    {key: 'paid', label: t('orders.statuses.paid') as string, value: 'Paid'},
+    {key: 'returned', label: t('orders.statuses.returned') as string, value: 'Returned'},
+    {key: 'notPaid', label: t('orders.statuses.notPaid') as string, value: 'Not paid'},
+    {key: 'cancelled', label: t('orders.statuses.cancelled') as string, value: 'Cancelled'},
   ];
 
   const priorities: Array<{key: string; label: string; value: 'Low' | 'Normal' | 'High' | 'Urgent'}> = [
-    {key: 'low', label: t('orders.priorities.low'), value: 'Low'},
-    {key: 'normal', label: t('orders.priorities.normal'), value: 'Normal'},
-    {key: 'high', label: t('orders.priorities.high'), value: 'High'},
-    {key: 'urgent', label: t('orders.priorities.urgent'), value: 'Urgent'},
+    {key: 'low', label: t('orders.priorities.low') as string, value: 'Low'},
+    {key: 'normal', label: t('orders.priorities.normal') as string, value: 'Normal'},
+    {key: 'high', label: t('orders.priorities.high') as string, value: 'High'},
+    {key: 'urgent', label: t('orders.priorities.urgent') as string, value: 'Urgent'},
   ];
 
   const renderCustomerItem = ({item}: {item: User}) => (
@@ -240,11 +301,13 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
         {item.firstName} {item.lastName}
       </Text>
       <Text style={styles.customerDetails}>
-        {item.email} • {item.company || 'Sin empresa'}
+        {item.email} • {item.company || t('common.noCompany') as string}
       </Text>
       {item.customerType && (
         <Text style={styles.customerType}>
-          {item.customerType === 'corporate' ? 'Corporativo' : 'Individual'}
+          {item.customerType === 'corporate' 
+            ? t('common.customerTypes.corporate') as string 
+            : t('common.customerTypes.individual') as string}
         </Text>
       )}
     </TouchableOpacity>
@@ -254,156 +317,166 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#007AFF" />
-        <Text style={styles.loadingText}>{t('editOrder.loadingOrder')}</Text>
+        <Text style={styles.loadingText}>{t('editOrder.loadingOrder') as string}</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.orderId}>{t('orders.editingOrder')} #{orderId}</Text>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('createOrder.customerInfo')}</Text>
-        <View style={styles.card}>
-          <Text style={styles.label}>{t('orders.customer')} *</Text>
-          <TouchableOpacity
-            style={styles.customerSelector}
-            onPress={() => setShowCustomerModal(true)}>
-            <Text style={[styles.customerSelectorText, !formData.customerName && styles.placeholder]}>
-              {formData.customerName || t('createOrder.selectCustomer')}
-            </Text>
-          </TouchableOpacity>
+    <ErrorBoundary>
+      <ScrollView style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.orderId}>{t('orders.editingOrder') as string} #{orderId}</Text>
         </View>
-      </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('createOrder.orderDetails')}</Text>
-        <View style={styles.card}>
-          <Text style={styles.label}>{t('orders.orderTitle')} *</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.title}
-            onChangeText={(value) => handleInputChange('title', value)}
-            placeholder={t('createOrder.orderTitle')}
+        {hasError && (
+          <ErrorMessage 
+            error={error}
+            onRetry={clearError}
+            onDismiss={clearError}
           />
+        )}
 
-          <Text style={styles.label}>{t('orders.description')} *</Text>
-          <TextInput
-            style={[styles.input, styles.textArea]}
-            value={formData.description}
-            onChangeText={(value) => handleInputChange('description', value)}
-            placeholder={t('createOrder.orderDescription')}
-            multiline
-            numberOfLines={4}
-          />
-
-          <Text style={styles.label}>{t('orders.category')}</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.category}
-            onChangeText={(value) => handleInputChange('category', value)}
-            placeholder={t('createOrder.workCategory')}
-          />
-
-          <Text style={styles.label}>{t('orders.status')}</Text>
-          <View style={styles.statusContainer}>
-            {statuses.map((status) => (
-              <TouchableOpacity
-                key={status.key}
-                style={[
-                  styles.statusButton,
-                  formData.status === status.value && styles.statusButtonActive,
-                ]}
-                onPress={() => handleInputChange('status', status.value)}>
-                <Text
-                  style={[
-                    styles.statusButtonText,
-                    formData.status === status.value && styles.statusButtonTextActive,
-                  ]}>
-                  {status.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          <Text style={styles.label}>{t('orders.priority')}</Text>
-          <View style={styles.priorityContainer}>
-            {priorities.map((priority) => (
-              <TouchableOpacity
-                key={priority.key}
-                style={[
-                  styles.priorityButton,
-                  formData.priority === priority.value && styles.priorityButtonActive,
-                ]}
-                onPress={() => handleInputChange('priority', priority.value)}>
-                <Text
-                  style={[
-                    styles.priorityButtonText,
-                    formData.priority === priority.value && styles.priorityButtonTextActive,
-                  ]}>
-                  {priority.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('editOrder.attachments')}</Text>
-        <FileUploader
-          entityType="order"
-          entityId={orderId}
-          title={t('editOrder.attachments')}
-          subtitle={t('editOrder.attachmentsDescription')}
-          maxFiles={10}
-          allowMultiple={true}
-          showUploadButton={true}
-          onFilesChanged={handleFilesChanged}
-          onUploadComplete={handleFileUploadComplete}
-          onUploadError={handleFileUploadError}
-        />
-      </View>
-
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.resetButton}
-          onPress={handleReset}>
-          <Text style={styles.resetButtonText}>{t('editOrder.resetChanges')}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.submitButton}
-          onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>{t('editOrder.saveChanges')}</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Customer Selection Modal */}
-      <Modal
-        visible={showCustomerModal}
-        animationType="slide"
-        presentationStyle="pageSheet">
-        <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>{t('createOrder.selectCustomer')}</Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('createOrder.customerInfo') as string}</Text>
+          <View style={styles.card}>
+            <Text style={styles.label}>{t('orders.customer') as string} *</Text>
             <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setShowCustomerModal(false)}>
-              <Text style={styles.closeButtonText}>{t('common.close')}</Text>
+              style={styles.customerSelector}
+              onPress={() => setShowCustomerModal(true)}>
+              <Text style={[styles.customerSelectorText, !formData.customerName && styles.placeholder]}>
+                {formData.customerName || t('createOrder.selectCustomer') as string}
+              </Text>
             </TouchableOpacity>
           </View>
-          <FlatList
-            data={customers}
-            renderItem={renderCustomerItem}
-            keyExtractor={(item) => item.id}
-            style={styles.customerList}
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('createOrder.orderDetails') as string}</Text>
+          <View style={styles.card}>
+            <Text style={styles.label}>{t('orders.orderTitle') as string} *</Text>
+            <TextInput
+              style={styles.input}
+              value={formData.title}
+              onChangeText={(value) => handleInputChange('title', value)}
+              placeholder={t('createOrder.orderTitle') as string}
+            />
+
+            <Text style={styles.label}>{t('orders.description') as string} *</Text>
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              value={formData.description}
+              onChangeText={(value) => handleInputChange('description', value)}
+              placeholder={t('createOrder.orderDescription') as string}
+              multiline
+              numberOfLines={4}
+            />
+
+            <Text style={styles.label}>{t('orders.category') as string}</Text>
+            <TextInput
+              style={styles.input}
+              value={formData.category}
+              onChangeText={(value) => handleInputChange('category', value)}
+              placeholder={t('createOrder.workCategory') as string}
+            />
+
+            <Text style={styles.label}>{t('orders.status') as string}</Text>
+            <View style={styles.statusContainer}>
+              {statuses.map((status) => (
+                <TouchableOpacity
+                  key={status.key}
+                  style={[
+                    styles.statusButton,
+                    formData.status === status.value && styles.statusButtonActive,
+                  ]}
+                  onPress={() => handleInputChange('status', status.value)}>
+                  <Text
+                    style={[
+                      styles.statusButtonText,
+                      formData.status === status.value && styles.statusButtonTextActive,
+                    ]}>
+                    {status.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={styles.label}>{t('orders.priority') as string}</Text>
+            <View style={styles.priorityContainer}>
+              {priorities.map((priority) => (
+                <TouchableOpacity
+                  key={priority.key}
+                  style={[
+                    styles.priorityButton,
+                    formData.priority === priority.value && styles.priorityButtonActive,
+                  ]}
+                  onPress={() => handleInputChange('priority', priority.value)}>
+                  <Text
+                    style={[
+                      styles.priorityButtonText,
+                      formData.priority === priority.value && styles.priorityButtonTextActive,
+                    ]}>
+                    {priority.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('editOrder.attachments') as string}</Text>
+          <FileUploader
+            entityType="order"
+            entityId={orderId}
+            title={t('editOrder.attachments') as string}
+            subtitle={t('editOrder.attachmentsDescription') as string}
+            maxFiles={10}
+            allowMultiple={true}
+            showUploadButton={true}
+            onFilesChanged={handleFilesChanged}
+            onUploadComplete={handleFileUploadComplete}
+            onUploadError={handleFileUploadError}
           />
         </View>
-      </Modal>
-    </ScrollView>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.resetButton}
+            onPress={handleReset}>
+            <Text style={styles.resetButtonText}>{t('editOrder.resetChanges') as string}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={handleSubmit}>
+            <Text style={styles.submitButtonText}>{t('editOrder.saveChanges') as string}</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Customer Selection Modal */}
+        <Modal
+          visible={showCustomerModal}
+          animationType="slide"
+          presentationStyle="pageSheet">
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>{t('createOrder.selectCustomer') as string}</Text>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setShowCustomerModal(false)}>
+                <Text style={styles.closeButtonText}>{t('common.close') as string}</Text>
+              </TouchableOpacity>
+            </View>
+            <FlatList
+              data={customers}
+              renderItem={renderCustomerItem}
+              keyExtractor={(item) => item.id}
+              style={styles.customerList}
+            />
+          </View>
+        </Modal>
+      </ScrollView>
+    </ErrorBoundary>
   );
 };
 

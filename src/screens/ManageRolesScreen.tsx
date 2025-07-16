@@ -8,10 +8,14 @@ import {
   Switch,
   Alert,
 } from 'react-native';
-import {useTranslation} from 'react-i18next';
+import {useTranslationSafe} from '../hooks/useTranslationSafe';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../types/navigation';
+import ErrorBoundary from '../components/ErrorBoundary';
+import ErrorMessage from '../components/ErrorMessage';
+import {useErrorHandler} from '../hooks/useErrorHandler';
+import {errorService} from '../services/errorService';
 
 type ManageRolesScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -31,99 +35,168 @@ interface RoleWithPermissions {
 }
 
 const ManageRolesScreen: React.FC = () => {
-  const {t} = useTranslation();
+  const {t} = useTranslationSafe();
   const navigation = useNavigation<ManageRolesScreenNavigationProp>();
+  const {handleError, clearError, hasError, error} = useErrorHandler();
   
   const [roles, setRoles] = useState<RoleWithPermissions[]>([]);
 
   useEffect(() => {
-    setRoles([
-      {
-        id: '1',
-        name: t('userManagement.roles.administrator'),
-        permissions: [
-          {id: '1', name: t('userManagement.roles.permissions.createUsers'), enabled: true},
-          {id: '2', name: t('userManagement.roles.permissions.editUsers'), enabled: true},
-          {id: '3', name: t('userManagement.roles.permissions.deleteUsers'), enabled: false},
-          {id: '4', name: t('userManagement.roles.permissions.viewReports'), enabled: true},
-        ],
-      },
-      {
-        id: '2',
-        name: t('userManagement.roles.employee'),
-        permissions: [
-          {id: '1', name: t('userManagement.roles.permissions.createUsers'), enabled: false},
-          {id: '2', name: t('userManagement.roles.permissions.editUsers'), enabled: false},
-          {id: '3', name: t('userManagement.roles.permissions.deleteUsers'), enabled: false},
-          {id: '4', name: t('userManagement.roles.permissions.viewReports'), enabled: false},
-        ],
-      },
-    ]);
-  }, [t]);
+    const loadRoles = async () => {
+      try {
+        clearError();
+        
+        setRoles([
+          {
+            id: '1',
+            name: t('userManagement.roles.administrator') as string,
+            permissions: [
+              {id: '1', name: t('userManagement.roles.permissions.createUsers') as string, enabled: true},
+              {id: '2', name: t('userManagement.roles.permissions.editUsers') as string, enabled: true},
+              {id: '3', name: t('userManagement.roles.permissions.deleteUsers') as string, enabled: false},
+              {id: '4', name: t('userManagement.roles.permissions.viewReports') as string, enabled: true},
+            ],
+          },
+          {
+            id: '2',
+            name: t('userManagement.roles.employee') as string,
+            permissions: [
+              {id: '1', name: t('userManagement.roles.permissions.createUsers') as string, enabled: false},
+              {id: '2', name: t('userManagement.roles.permissions.editUsers') as string, enabled: false},
+              {id: '3', name: t('userManagement.roles.permissions.deleteUsers') as string, enabled: false},
+              {id: '4', name: t('userManagement.roles.permissions.viewReports') as string, enabled: false},
+            ],
+          },
+        ]);
+        
+        await errorService.logError(null, {
+          component: 'ManageRolesScreen',
+          operation: 'loadRoles',
+          success: true,
+          rolesCount: 2,
+        });
+      } catch (error) {
+        await errorService.logError(error as Error, {
+          component: 'ManageRolesScreen',
+          operation: 'loadRoles',
+        });
+        handleError(error as Error);
+      }
+    };
+    
+    loadRoles();
+  }, [t, handleError, clearError]);
 
-  const handlePermissionToggle = (roleId: string, permissionId: string) => {
-    setRoles(prevRoles =>
-      prevRoles.map(role =>
-        role.id === roleId
-          ? {
-              ...role,
-              permissions: role.permissions.map(permission =>
-                permission.id === permissionId
-                  ? {...permission, enabled: !permission.enabled}
-                  : permission
-              ),
-            }
-          : role
-      )
-    );
+  const handlePermissionToggle = async (roleId: string, permissionId: string) => {
+    try {
+      clearError();
+      
+      setRoles(prevRoles =>
+        prevRoles.map(role =>
+          role.id === roleId
+            ? {
+                ...role,
+                permissions: role.permissions.map(permission =>
+                  permission.id === permissionId
+                    ? {...permission, enabled: !permission.enabled}
+                    : permission
+                ),
+              }
+            : role
+        )
+      );
+      
+      await errorService.logError(null, {
+        component: 'ManageRolesScreen',
+        operation: 'permissionToggle',
+        success: true,
+        roleId,
+        permissionId,
+      });
+    } catch (error) {
+      await errorService.logError(error as Error, {
+        component: 'ManageRolesScreen',
+        operation: 'permissionToggle',
+        roleId,
+        permissionId,
+      });
+      handleError(error as Error);
+    }
   };
 
-  const handleSaveChanges = () => {
-    // TODO: Implement actual role saving logic here
-    Alert.alert(
-      t('common.success'),
-      t('userManagement.roles.permissionsUpdatedSuccess'),
-      [
-        {
-          text: t('common.ok'),
-          onPress: () => navigation.goBack(),
-        },
-      ]
-    );
+  const handleSaveChanges = async () => {
+    try {
+      clearError();
+      
+      // TODO: Implement actual role saving logic here
+      await errorService.logError(null, {
+        component: 'ManageRolesScreen',
+        operation: 'saveChanges',
+        success: true,
+        rolesCount: roles.length,
+      });
+      
+      Alert.alert(
+        t('common.success') as string,
+        t('userManagement.roles.permissionsUpdatedSuccess') as string,
+        [
+          {
+            text: t('common.ok') as string,
+            onPress: () => navigation.goBack(),
+          },
+        ]
+      );
+    } catch (error) {
+      await errorService.logError(error as Error, {
+        component: 'ManageRolesScreen',
+        operation: 'saveChanges',
+      });
+      handleError(error as Error);
+    }
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>{t('userManagement.manageRoles')}</Text>
-        <Text style={styles.headerSubtitle}>{t('userManagement.manageRolesDesc')}</Text>
-      </View>
+    <ErrorBoundary>
+      <ScrollView style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>{t('userManagement.manageRoles') as string}</Text>
+          <Text style={styles.headerSubtitle}>{t('userManagement.manageRolesDesc') as string}</Text>
+        </View>
 
-      <View style={styles.content}>
-        {roles.map(role => (
-          <View key={role.id} style={styles.roleCard}>
-            <Text style={styles.roleTitle}>{role.name}</Text>
-            <View style={styles.permissionsContainer}>
-              {role.permissions.map(permission => (
-                <View key={permission.id} style={styles.permissionRow}>
-                  <Text style={styles.permissionName}>{permission.name}</Text>
-                  <Switch
-                    value={permission.enabled}
-                    onValueChange={() => handlePermissionToggle(role.id, permission.id)}
-                    trackColor={{false: '#767577', true: '#81b0ff'}}
-                    thumbColor={permission.enabled ? '#007AFF' : '#f4f3f4'}
-                  />
-                </View>
-              ))}
+        {hasError && (
+          <ErrorMessage 
+            error={error}
+            onRetry={clearError}
+            onDismiss={clearError}
+          />
+        )}
+
+        <View style={styles.content}>
+          {roles.map(role => (
+            <View key={role.id} style={styles.roleCard}>
+              <Text style={styles.roleTitle}>{role.name}</Text>
+              <View style={styles.permissionsContainer}>
+                {role.permissions.map(permission => (
+                  <View key={permission.id} style={styles.permissionRow}>
+                    <Text style={styles.permissionName}>{permission.name}</Text>
+                    <Switch
+                      value={permission.enabled}
+                      onValueChange={() => handlePermissionToggle(role.id, permission.id)}
+                      trackColor={{false: '#767577', true: '#81b0ff'}}
+                      thumbColor={permission.enabled ? '#007AFF' : '#f4f3f4'}
+                    />
+                  </View>
+                ))}
+              </View>
             </View>
-          </View>
-        ))}
+          ))}
 
-        <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
-          <Text style={styles.saveButtonText}>{t('common.save')}</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+          <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
+            <Text style={styles.saveButtonText}>{t('common.save') as string}</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </ErrorBoundary>
   );
 };
 

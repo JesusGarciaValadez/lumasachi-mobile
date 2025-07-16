@@ -10,16 +10,21 @@ import {
 import { format } from 'date-fns';
 import {OrderDetailsScreenProps} from '../types/navigation';
 import {Order, Status, User, UserRole} from '../types';
-import {useTranslation} from 'react-i18next';
+import {useTranslationSafe} from '../hooks/useTranslationSafe';
 import DetailRow from '../components/DetailRow';
 import {getStatusTranslation} from '../utils/roleTranslations';
+import ErrorBoundary from '../components/ErrorBoundary';
+import ErrorMessage from '../components/ErrorMessage';
+import {useErrorHandler} from '../hooks/useErrorHandler';
+import {errorService} from '../services/errorService';
 
 const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
   navigation,
   route,
 }) => {
   const {orderId} = route.params;
-  const {t} = useTranslation();
+  const {t} = useTranslationSafe();
+  const {handleError, clearError, hasError, error} = useErrorHandler();
   const [order, setOrder] = useState<Order | null>(null);
   const [orderStatus, setOrderStatus] = useState<Status | null>(null);
   const [customer, setCustomer] = useState<User | null>(null);
@@ -28,6 +33,7 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
   useEffect(() => {
     const loadOrderData = async () => {
       try {
+        clearError();
         setLoading(true);
         // TODO: Uncomment when backend is implemented
         // const orderData = await fetchOrder(orderId);
@@ -43,24 +49,24 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
           customerId: 'customer-123',
           customer: {
             id: 'customer-123',
-            firstName: 'Cliente',
-            lastName: 'Demo',
-            email: 'demo@example.com',
+            firstName: t('common.mockData.customerFirstName') as string,
+            lastName: t('common.mockData.customerLastName') as string,
+            email: t('common.mockData.customerEmail') as string,
             role: UserRole.CUSTOMER,
-            address: '123 Demo Street',
+            address: t('common.mockData.customerAddress') as string,
             phoneNumber: '+1234567890',
-            company: 'Demo Company',
+            company: t('common.mockData.demoCompany') as string,
             isActive: true,
             languagePreference: 'es',
-            customerNotes: 'Cliente VIP',
+            customerNotes: t('common.mockData.vipCustomer') as string,
             customerType: 'corporate',
             isCustomer: true,
             isEmployee: false,
             createdAt: new Date('2024-01-10T10:00:00Z'),
             updatedAt: new Date('2024-01-15T14:30:00Z'),
           },
-          title: 'Orden de Prueba',
-          description: 'Descripción de la orden de prueba',
+          title: t('common.mockData.testOrder') as string,
+          description: t('common.mockData.testOrderDescription') as string,
           status: 'In Progress',
           priority: 'Normal',
           createdAt: new Date('2024-01-15T10:30:00Z'),
@@ -74,37 +80,62 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
         });
         setCustomer({
           id: 'customer-123',
-          firstName: 'Cliente',
-          lastName: 'Demo',
-          email: 'demo@example.com',
+          firstName: t('common.mockData.customerFirstName') as string,
+          lastName: t('common.mockData.customerLastName') as string,
+          email: t('common.mockData.customerEmail') as string,
           role: UserRole.CUSTOMER,
-          address: '123 Demo Street',
+          address: t('common.mockData.customerAddress') as string,
           phoneNumber: '+1234567890',
-          company: 'Demo Company',
+          company: t('common.mockData.demoCompany') as string,
           isActive: true,
           languagePreference: 'es',
-          customerNotes: 'Cliente VIP',
+          customerNotes: t('common.mockData.vipCustomer') as string,
           customerType: 'corporate',
           isCustomer: true,
           isEmployee: false,
           createdAt: new Date('2024-01-10T10:00:00Z'),
           updatedAt: new Date('2024-01-15T14:30:00Z'),
         });
+        
+        await errorService.logError(null, {
+          component: 'OrderDetailsScreen',
+          operation: 'loadOrderData',
+          success: true,
+          orderId,
+        });
       } catch (error) {
-        console.error('Error loading order data:', error);
+        await errorService.logError(error as Error, {
+          component: 'OrderDetailsScreen',
+          operation: 'loadOrderData',
+          orderId,
+        });
+        handleError(error as Error);
       } finally {
         setLoading(false);
       }
     };
 
     loadOrderData();
-  }, [orderId]);
+  }, [orderId, t, handleError, clearError]);
 
   const handleEditOrder = () => {
-    navigation.navigate('EditOrder', {orderId});
+    try {
+      navigation.navigate('EditOrder', {orderId});
+      errorService.logError(null, {
+        component: 'OrderDetailsScreen',
+        operation: 'navigateToEdit',
+        success: true,
+        orderId,
+      });
+    } catch (error) {
+      errorService.logError(error as Error, {
+        component: 'OrderDetailsScreen',
+        operation: 'navigateToEdit',
+        orderId,
+      });
+      handleError(error as Error);
+    }
   };
-
-
 
   const getCustomerName = () => {
     if (!customer) return '-';
@@ -130,100 +161,112 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
   const customerInfo = getCustomerInfo();
 
   return (
-    <ScrollView style={styles.container}>
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#007AFF" />
-          <Text style={styles.loadingText}>{t('common.loading')}</Text>
-        </View>
-      ) : (
-        <>
-          <View style={styles.header}>
-            <Text style={styles.orderId}>{t('orders.order')} #{orderId}</Text>
-            <TouchableOpacity
-              style={styles.editButton}
-              onPress={handleEditOrder}>
-              <Text style={styles.editButtonText}>{t('common.edit')}</Text>
-            </TouchableOpacity>
+    <ErrorBoundary>
+      <ScrollView style={styles.container}>
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#007AFF" />
+            <Text style={styles.loadingText}>{t('common.loading') as string}</Text>
           </View>
+        ) : (
+          <>
+            {hasError && (
+              <ErrorMessage 
+                error={error}
+                onRetry={clearError}
+                onDismiss={clearError}
+              />
+            )}
 
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('orders.generalInfo')}</Text>
-            <View style={styles.card}>
-              <DetailRow 
-                label={t('orders.status')} 
-                value={orderStatus ? t(getStatusTranslation(orderStatus.statusName)) : '-'} 
-              />
-              <DetailRow 
-                label={t('orders.customer')} 
-                value={getCustomerName()} 
-              />
-              <DetailRow 
-                label={t('orders.priority')} 
-                value={order?.priority || '-'} 
-              />
-              <DetailRow 
-                label={t('orders.createdAt')} 
-                value={order?.createdAt ? formatDate(order.createdAt) : '-'} 
-              />
-              <DetailRow 
-                label={t('orders.updatedAt')} 
-                value={order?.updatedAt ? formatDate(order.updatedAt) : '-'} 
-              />
+            <View style={styles.header}>
+              <Text style={styles.orderId}>{t('orders.order') as string} #{orderId}</Text>
+              <TouchableOpacity
+                style={styles.editButton}
+                onPress={handleEditOrder}>
+                <Text style={styles.editButtonText}>{t('common.edit') as string}</Text>
+              </TouchableOpacity>
             </View>
-          </View>
 
-          {customerInfo && (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>{t('orders.customerInfo')}</Text>
+              <Text style={styles.sectionTitle}>{t('orders.generalInfo') as string}</Text>
               <View style={styles.card}>
                 <DetailRow 
-                  label={t('common.name')} 
-                  value={customerInfo.name} 
+                  label={t('orders.status') as string} 
+                  value={orderStatus ? t(getStatusTranslation(orderStatus.statusName)) as string : '-'} 
                 />
                 <DetailRow 
-                  label={t('common.email')} 
-                  value={customerInfo.email} 
+                  label={t('orders.customer') as string} 
+                  value={getCustomerName()} 
                 />
-                {customerInfo.company && (
-                  <DetailRow 
-                    label={t('common.company')} 
-                    value={customerInfo.company} 
-                  />
-                )}
-                {customerInfo.phone && (
-                  <DetailRow 
-                    label={t('common.phone')} 
-                    value={customerInfo.phone} 
-                  />
-                )}
-                {customerInfo.type && (
-                  <DetailRow 
-                    label={t('orders.customerType')} 
-                    value={customerInfo.type} 
-                  />
-                )}
-                {customerInfo.notes && (
-                  <DetailRow 
-                    label={t('orders.customerNotes')} 
-                    value={customerInfo.notes} 
-                  />
-                )}
+                <DetailRow 
+                  label={t('orders.priority') as string} 
+                  value={order?.priority || '-'} 
+                />
+                <DetailRow 
+                  label={t('orders.createdAt') as string} 
+                  value={order?.createdAt ? formatDate(order.createdAt) : '-'} 
+                />
+                <DetailRow 
+                  label={t('orders.updatedAt') as string} 
+                  value={order?.updatedAt ? formatDate(order.updatedAt) : '-'} 
+                />
               </View>
             </View>
-          )}
 
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('orders.description')}</Text>
-            <View style={styles.card}>
-              <Text style={styles.description}>
-                {order?.description || t('orders.descriptionPlaceholder')}
-              </Text>
+            {customerInfo && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>{t('orders.customerInfo') as string}</Text>
+                <View style={styles.card}>
+                  <DetailRow 
+                    label={t('common.name') as string} 
+                    value={customerInfo.name} 
+                  />
+                  <DetailRow 
+                    label={t('common.email') as string} 
+                    value={customerInfo.email} 
+                  />
+                  {customerInfo.company && (
+                    <DetailRow 
+                      label={t('common.company') as string} 
+                      value={customerInfo.company} 
+                    />
+                  )}
+                  {customerInfo.phone && (
+                    <DetailRow 
+                      label={t('common.phone') as string} 
+                      value={customerInfo.phone} 
+                    />
+                  )}
+                  {customerInfo.type && (
+                    <DetailRow 
+                      label={t('orders.customerType') as string} 
+                      value={customerInfo.type === 'corporate' 
+                        ? t('common.customerTypes.corporate') as string 
+                        : t('common.customerTypes.individual') as string} 
+                    />
+                  )}
+                  {customerInfo.notes && (
+                    <DetailRow 
+                      label={t('orders.customerNotes') as string} 
+                      value={customerInfo.notes} 
+                    />
+                  )}
+                </View>
+              </View>
+            )}
+
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>{t('orders.description') as string}</Text>
+              <View style={styles.card}>
+                <Text style={styles.description}>
+                  {order?.description || t('orders.descriptionPlaceholder') as string}
+                </Text>
+              </View>
             </View>
-          </View>
-        </>
-      )}
-    </ScrollView>
+          </>
+        )}
+      </ScrollView>
+    </ErrorBoundary>
   );
 };
 

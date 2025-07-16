@@ -11,6 +11,10 @@ import {
   MultipleFileUploadResult,
   Attachment 
 } from '../types';
+import { errorService } from '../services/errorService';
+import { retryService } from '../services/retryService';
+import { networkService } from '../services/networkService';
+import { useTranslationSafe } from './useTranslationSafe';
 
 export interface UseFileUploadOptions {
   entityType?: string;
@@ -55,6 +59,7 @@ export const useFileUpload = (options: UseFileUploadOptions = {}): UseFileUpload
   const [uploadProgress, setUploadProgress] = useState<FileUploadProgress[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<MultipleFileUploadResult | null>(null);
+  const { t } = useTranslationSafe();
 
   const selectFiles = useCallback(async () => {
     if (!allowMultiple) {
@@ -63,27 +68,45 @@ export const useFileUpload = (options: UseFileUploadOptions = {}): UseFileUpload
     }
 
     try {
-      const files = await FileService.pickMultipleFiles();
-      
-      if (files.length === 0) {
-        return; // User cancelled
-      }
+      const result = await retryService.executeWithRetry(
+        async () => {
+          const files = await FileService.pickMultipleFiles();
+          
+          if (files.length === 0) {
+            return null; // User cancelled
+          }
 
-      // Check file limit
-      if (files.length > maxFiles) {
-        Alert.alert(
-          'Límite de archivos',
-          `Solo se pueden seleccionar hasta ${maxFiles} archivos`
-        );
-        return;
-      }
+          // Check file limit
+          if (files.length > maxFiles) {
+            throw new Error(t('fileUpload.errors.maxFilesExceeded', { maxFiles }) as string);
+          }
 
-      setSelectedFiles(files);
-      setUploadProgress([]);
-      setUploadResult(null);
+          return files;
+        },
+        {
+          maxRetries: 2,
+          baseDelay: 500,
+        }
+      );
+
+      if (result.success && result.result) {
+        setSelectedFiles(result.result);
+        setUploadProgress([]);
+        setUploadResult(null);
+      } else if (result.error) {
+        throw result.error;
+      }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-      Alert.alert('Error', errorMessage);
+      const errorMessage = error instanceof Error ? error.message : (t('fileUpload.errors.unknownError') as string);
+      
+      await errorService.logError(error as Error, {
+        context: 'selectFiles',
+        action: 'file-selection',
+        maxFiles,
+        allowMultiple,
+      });
+
+      Alert.alert(t('common.error') as string, errorMessage);
       
       if (onUploadError) {
         onUploadError(errorMessage);
@@ -93,18 +116,38 @@ export const useFileUpload = (options: UseFileUploadOptions = {}): UseFileUpload
 
   const selectSingleFile = useCallback(async () => {
     try {
-      const file = await FileService.pickSingleFile();
-      
-      if (!file) {
-        return; // User cancelled
-      }
+      const result = await retryService.executeWithRetry(
+        async () => {
+          const file = await FileService.pickSingleFile();
+          
+          if (!file) {
+            return null; // User cancelled
+          }
 
-      setSelectedFiles([file]);
-      setUploadProgress([]);
-      setUploadResult(null);
+          return file;
+        },
+        {
+          maxRetries: 2,
+          baseDelay: 500,
+        }
+      );
+
+      if (result.success && result.result) {
+        setSelectedFiles([result.result]);
+        setUploadProgress([]);
+        setUploadResult(null);
+      } else if (result.error) {
+        throw result.error;
+      }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-      Alert.alert('Error', errorMessage);
+      const errorMessage = error instanceof Error ? error.message : (t('fileUpload.errors.unknownError') as string);
+      
+      await errorService.logError(error as Error, {
+        context: 'selectSingleFile',
+        action: 'single-file-selection',
+      });
+
+      Alert.alert(t('common.error') as string, errorMessage);
       
       if (onUploadError) {
         onUploadError(errorMessage);
@@ -114,7 +157,13 @@ export const useFileUpload = (options: UseFileUploadOptions = {}): UseFileUpload
 
   const uploadFiles = useCallback(async (entityType: string, entityId: string) => {
     if (selectedFiles.length === 0) {
-      Alert.alert('Error', 'No hay archivos seleccionados');
+      Alert.alert(t('common.error') as string, t('fileUpload.errors.noFilesSelected') as string);
+      return;
+    }
+
+    // Check network connectivity
+    if (networkService.isOffline()) {
+      Alert.alert(t('common.error') as string, t('fileUpload.errors.noInternetConnection') as string);
       return;
     }
 
@@ -122,36 +171,77 @@ export const useFileUpload = (options: UseFileUploadOptions = {}): UseFileUpload
     setUploadResult(null);
 
     try {
-      const result = await FileService.uploadMultipleFiles(
-        selectedFiles,
-        entityType,
-        entityId,
-        (progress) => {
-          setUploadProgress(progress);
+      const result = await retryService.executeWithRetry(
+        async () => {
+          // Wait for network connection if needed
+          if (networkService.isOffline()) {
+            const connected = await networkService.waitForConnection(10000);
+            if (!connected) {
+              throw new Error(t('fileUpload.errors.couldNotEstablishConnection'));
+            }
+          }
+
+          return await FileService.uploadMultipleFiles(
+            selectedFiles,
+            entityType,
+            entityId,
+            (progress) => {
+              setUploadProgress(progress);
+            }
+          );
+        },
+        {
+          maxRetries: 3,
+          baseDelay: 2000,
+          backoffFactor: 2,
+          retryCondition: (error) => {
+            // Retry on network errors but not on validation errors
+            return networkService.shouldTriggerOfflineHandling(error) ||
+                   error.message?.includes('server') ||
+                   error.message?.includes('timeout');
+          },
         }
       );
 
-      setUploadResult(result);
+      if (result.success && result.result) {
+        setUploadResult(result.result);
 
-      if (result.failedCount > 0) {
-        const failedNames = result.failedFiles.map(f => f.name).join(', ');
-        Alert.alert(
-          'Upload parcialmente exitoso',
-          `Se subieron ${result.successfulFiles} de ${result.totalFiles} archivos.\n\nArchivos fallidos: ${failedNames}`
-        );
+        if (result.result.failedCount > 0) {
+          const failedNames = result.result.failedFiles.map(f => f.name).join(', ');
+          Alert.alert(
+            t('fileUpload.success.partiallySuccessful') as string,
+            t('fileUpload.success.uploadedPartial', { 
+              successfulFiles: result.result.successfulFiles, 
+              totalFiles: result.result.totalFiles, 
+              failedNames 
+            }) as string
+          );
+        } else {
+          Alert.alert(
+            t('fileUpload.success.uploadSuccessful') as string,
+            t('fileUpload.success.uploadedFiles', { successfulFiles: result.result.successfulFiles }) as string
+          );
+        }
+
+        if (onUploadComplete) {
+          onUploadComplete(result.result);
+        }
       } else {
-        Alert.alert(
-          'Upload exitoso',
-          `Se subieron ${result.successfulFiles} archivos correctamente`
-        );
-      }
-
-      if (onUploadComplete) {
-        onUploadComplete(result);
+        throw result.error || new Error('Upload failed');
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-      Alert.alert('Error', `Error subiendo archivos: ${errorMessage}`);
+      const errorMessage = error instanceof Error ? error.message : (t('fileUpload.errors.unknownError') as string);
+      
+      await errorService.logError(error as Error, {
+        context: 'uploadFiles',
+        action: 'file-upload',
+        entityType,
+        entityId,
+        fileCount: selectedFiles.length,
+        totalSize: selectedFiles.reduce((sum, f) => sum + f.size, 0),
+      });
+
+      Alert.alert(t('common.error') as string, t('fileUpload.errors.uploadError', { errorMessage }) as string);
       
       if (onUploadError) {
         onUploadError(errorMessage);
@@ -159,7 +249,7 @@ export const useFileUpload = (options: UseFileUploadOptions = {}): UseFileUpload
     } finally {
       setUploading(false);
     }
-  }, [selectedFiles, onUploadComplete, onUploadError]);
+  }, [selectedFiles, onUploadComplete, onUploadError, t]);
 
   const removeFile = useCallback((fileName: string) => {
     setSelectedFiles(prev => prev.filter(file => file.name !== fileName));
@@ -181,44 +271,88 @@ export const useFileUpload = (options: UseFileUploadOptions = {}): UseFileUpload
       );
 
       if (filesToRetry.length > 0) {
+        // Check network connectivity
+        if (networkService.isOffline()) {
+          Alert.alert(t('common.error') as string, t('fileUpload.errors.noInternetConnection') as string);
+          return;
+        }
+
         setUploading(true);
         
         try {
-          const result = await FileService.uploadMultipleFiles(
-            filesToRetry,
-            entityType,
-            entityId,
-            (progress) => {
-              setUploadProgress(progress);
+          const result = await retryService.executeWithRetry(
+            async () => {
+              // Wait for network connection if needed
+              if (networkService.isOffline()) {
+                const connected = await networkService.waitForConnection(10000);
+                if (!connected) {
+                  throw new Error(t('fileUpload.errors.couldNotEstablishConnection') as string);
+                }
+              }
+
+              return await FileService.uploadMultipleFiles(
+                filesToRetry,
+                entityType,
+                entityId,
+                (progress) => {
+                  setUploadProgress(progress);
+                }
+              );
+            },
+            {
+              maxRetries: 5,
+              baseDelay: 3000,
+              backoffFactor: 2,
+              retryCondition: (error) => {
+                // More aggressive retry for retry attempts
+                return networkService.shouldTriggerOfflineHandling(error) ||
+                       error.message?.includes('server') ||
+                       error.message?.includes('timeout') ||
+                       error.message?.includes('failed');
+              },
             }
           );
 
-          // Merge results
-          const mergedResult: MultipleFileUploadResult = {
-            attachments: [...(uploadResult.attachments || []), ...result.attachments],
-            failedFiles: result.failedFiles,
-            totalFiles: uploadResult.totalFiles,
-            successfulFiles: (uploadResult.successfulFiles || 0) + result.successfulFiles,
-            failedCount: result.failedCount,
-          };
+          if (result.success && result.result) {
+            // Merge results
+            const mergedResult: MultipleFileUploadResult = {
+              attachments: [...(uploadResult.attachments || []), ...result.result.attachments],
+              failedFiles: result.result.failedFiles,
+              totalFiles: uploadResult.totalFiles,
+              successfulFiles: (uploadResult.successfulFiles || 0) + result.result.successfulFiles,
+              failedCount: result.result.failedCount,
+            };
 
-          setUploadResult(mergedResult);
+            setUploadResult(mergedResult);
 
-          if (result.failedCount === 0) {
-            Alert.alert('Reintento exitoso', 'Todos los archivos se subieron correctamente');
+            if (result.result.failedCount === 0) {
+              Alert.alert(t('fileUpload.success.retrySuccessful') as string, t('fileUpload.success.allFilesUploaded') as string);
+            } else {
+              Alert.alert(
+                t('fileUpload.success.retryPartiallySuccessful') as string,
+                t('fileUpload.success.additionalFilesUploaded', { successfulFiles: result.result.successfulFiles }) as string
+              );
+            }
+
+            if (onUploadComplete) {
+              onUploadComplete(mergedResult);
+            }
           } else {
-            Alert.alert(
-              'Reintento parcialmente exitoso',
-              `Se subieron ${result.successfulFiles} archivos adicionales`
-            );
-          }
-
-          if (onUploadComplete) {
-            onUploadComplete(mergedResult);
+            throw result.error || new Error('Retry upload failed');
           }
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-          Alert.alert('Error', `Error reintentando upload: ${errorMessage}`);
+          const errorMessage = error instanceof Error ? error.message : (t('fileUpload.errors.unknownError') as string);
+          
+          await errorService.logError(error as Error, {
+            context: 'retryUpload',
+            action: 'file-upload-retry',
+            entityType,
+            entityId,
+            failedFileCount: filesToRetry.length,
+            originalFailedCount: uploadResult.failedCount,
+          });
+
+          Alert.alert(t('common.error') as string, t('fileUpload.errors.retryError', { errorMessage }) as string);
           
           if (onUploadError) {
             onUploadError(errorMessage);
@@ -228,7 +362,7 @@ export const useFileUpload = (options: UseFileUploadOptions = {}): UseFileUpload
         }
       }
     }
-  }, [selectedFiles, uploadResult, onUploadComplete, onUploadError]);
+  }, [selectedFiles, uploadResult, onUploadComplete, onUploadError, t]);
 
   const getTotalSize = useCallback(() => {
     return selectedFiles.reduce((total, file) => total + file.size, 0);

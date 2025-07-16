@@ -239,7 +239,8 @@
         "system": "System"
       },
       "generated": "Generated:",
-      "viewReport": "View Report"
+      "viewReport": "View Report",
+      "viewing": "Viewing"
     },
     "export": {
       "titles": {
@@ -338,6 +339,30 @@
     "unauthorizedMessage": "You don't have permission to access this section. Please contact your administrator if you believe this is an error.",
     "noPermission": "No permission",
     "loadingPermissions": "Loading permissions...",
+    "noCompany": "No company",
+    "noCompanyAvailable": "No company available",
+    "customerTypes": {
+      "corporate": "Corporate",
+      "individual": "Individual"
+    },
+    "mockData": {
+      "companyABC": "Company ABC",
+      "companyXYZ": "Company XYZ",
+      "demoCompany": "Demo Company",
+      "frequentCustomer": "Frequent customer",
+      "vipCustomer": "VIP customer",
+      "testOrder": "Test Order",
+      "testOrderDescription": "Test order description",
+      "repairOrder": "Repair Order",
+      "repairOrderDescription": "Industrial equipment repair",
+      "demoCustomer": "Demo Customer",
+      "customerFirstName": "Customer",
+      "customerLastName": "Demo",
+      "customerEmail": "demo@example.com",
+      "customerAddress": "123 Demo Street",
+      "industrialRepair": "Industrial equipment repair",
+      "repair": "Repair"
+    },
     "errors": {
       "networkError": "Network connection error. Please check your internet connection and try again.",
       "unexpectedError": "An unexpected error occurred. Please try again.",
@@ -366,5 +391,31 @@
       "backOnline": "Back online"
     },
     "dismiss": "Dismiss"
+  },
+  "fileUpload": {
+    "errors": {
+      "maxFilesExceeded": "Only up to {{maxFiles}} files can be selected",
+      "unknownError": "Unknown error",
+      "noFilesSelected": "No files selected",
+      "noInternetConnection": "No internet connection. Please check your connection and try again.",
+      "couldNotEstablishConnection": "Could not establish internet connection",
+      "uploadError": "Error uploading files: {{errorMessage}}",
+      "retryError": "Error retrying upload: {{errorMessage}}"
+    },
+    "success": {
+      "uploadSuccessful": "Upload successful",
+      "uploadedFiles": "{{successfulFiles}} files uploaded successfully",
+      "partiallySuccessful": "Partially successful upload",
+      "uploadedPartial": "Uploaded {{successfulFiles}} of {{totalFiles}} files.\n\nFailed files: {{failedNames}}",
+      "retrySuccessful": "Retry successful",
+      "allFilesUploaded": "All files uploaded successfully",
+      "retryPartiallySuccessful": "Retry partially successful",
+      "additionalFilesUploaded": "{{successfulFiles}} additional files uploaded"
+    }
+  },
+  "orderStats": {
+    "errors": {
+      "noInternetConnection": "No internet connection"
+    }
   }
 } 

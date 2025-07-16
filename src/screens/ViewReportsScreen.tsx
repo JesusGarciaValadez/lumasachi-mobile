@@ -8,10 +8,14 @@ import {
   FlatList,
   Alert,
 } from 'react-native';
-import {useTranslation} from 'react-i18next';
+import {useTranslationSafe} from '../hooks/useTranslationSafe';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../types/navigation';
+import ErrorBoundary from '../components/ErrorBoundary';
+import ErrorMessage from '../components/ErrorMessage';
+import {useErrorHandler} from '../hooks/useErrorHandler';
+import {errorService} from '../services/errorService';
 
 type ViewReportsScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -27,37 +31,38 @@ interface ReportItem {
 }
 
 const ViewReportsScreen: React.FC = () => {
-  const {t} = useTranslation();
+  const {t} = useTranslationSafe();
   const navigation = useNavigation<ViewReportsScreenNavigationProp>();
+  const {handleError, clearError, hasError, error} = useErrorHandler();
   
   const [selectedType, setSelectedType] = useState<'all' | 'user' | 'order' | 'system'>('all');
   
   const reports: ReportItem[] = [
     {
       id: '1',
-      title: t('userManagement.reports.userActivity'),
-      description: t('userManagement.reports.descriptions.userActivity'),
+      title: t('userManagement.reports.userActivity') as string,
+      description: t('userManagement.reports.descriptions.userActivity') as string,
       date: '2024-01-15',
       type: 'user',
     },
     {
       id: '2',
-      title: t('userManagement.reports.orderProcessing'),
-      description: t('userManagement.reports.descriptions.orderProcessing'),
+      title: t('userManagement.reports.orderProcessing') as string,
+      description: t('userManagement.reports.descriptions.orderProcessing') as string,
       date: '2024-01-14',
       type: 'order',
     },
     {
       id: '3',
-      title: t('userManagement.reports.systemPerformance'),
-      description: t('userManagement.reports.descriptions.systemPerformance'),
+      title: t('userManagement.reports.systemPerformance') as string,
+      description: t('userManagement.reports.descriptions.systemPerformance') as string,
       date: '2024-01-13',
       type: 'system',
     },
     {
       id: '4',
-      title: t('userManagement.reports.userRegistration'),
-      description: t('userManagement.reports.descriptions.userRegistration'),
+      title: t('userManagement.reports.userRegistration') as string,
+      description: t('userManagement.reports.descriptions.userRegistration') as string,
       date: '2024-01-12',
       type: 'user',
     },
@@ -76,9 +81,49 @@ const ViewReportsScreen: React.FC = () => {
     }
   };
 
-  const handleViewReport = (report: ReportItem) => {
-    // Show alert with report info instead of navigating to non-existent screen
-    Alert.alert(t('common.info'), `Viewing ${report.title}`);
+  const handleViewReport = async (report: ReportItem) => {
+    try {
+      clearError();
+      // Show alert with report info instead of navigating to non-existent screen
+      Alert.alert(t('common.info') as string, `${t('userManagement.reports.viewing') as string} ${report.title}`);
+      
+      await errorService.logError(null, {
+        component: 'ViewReportsScreen',
+        operation: 'viewReport',
+        success: true,
+        reportId: report.id,
+        reportType: report.type,
+      });
+    } catch (error) {
+      await errorService.logError(error as Error, {
+        component: 'ViewReportsScreen',
+        operation: 'viewReport',
+        reportId: report.id,
+        reportType: report.type,
+      });
+      handleError(error as Error);
+    }
+  };
+
+  const handleFilterChange = async (type: 'all' | 'user' | 'order' | 'system') => {
+    try {
+      clearError();
+      setSelectedType(type);
+      
+      await errorService.logError(null, {
+        component: 'ViewReportsScreen',
+        operation: 'filterChange',
+        success: true,
+        filterType: type,
+      });
+    } catch (error) {
+      await errorService.logError(error as Error, {
+        component: 'ViewReportsScreen',
+        operation: 'filterChange',
+        filterType: type,
+      });
+      handleError(error as Error);
+    }
   };
 
   const renderReportItem = ({item}: {item: ReportItem}) => (
@@ -90,55 +135,65 @@ const ViewReportsScreen: React.FC = () => {
         </View>
       </View>
       <Text style={styles.reportDescription}>{item.description}</Text>
-      <Text style={styles.reportDate}>{t('userManagement.reports.generated')} {item.date}</Text>
+      <Text style={styles.reportDate}>{t('userManagement.reports.generated') as string} {item.date}</Text>
       <TouchableOpacity 
         style={styles.viewButton}
         onPress={() => handleViewReport(item)}
       >
-        <Text style={styles.viewButtonText}>{t('userManagement.reports.viewReport')}</Text>
+        <Text style={styles.viewButtonText}>{t('userManagement.reports.viewReport') as string}</Text>
       </TouchableOpacity>
     </View>
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>{t('userManagement.viewReports')}</Text>
-        <Text style={styles.headerSubtitle}>{t('userManagement.viewReportsDesc')}</Text>
-      </View>
+    <ErrorBoundary>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>{t('userManagement.viewReports') as string}</Text>
+          <Text style={styles.headerSubtitle}>{t('userManagement.viewReportsDesc') as string}</Text>
+        </View>
 
-      <View style={styles.filterContainer}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {(['all', 'user', 'order', 'system'] as Array<'all' | 'user' | 'order' | 'system'>).map(type => (
-            <TouchableOpacity
-              key={type}
-              style={[
-                styles.filterButton,
-                selectedType === type && styles.filterButtonActive,
-              ]}
-              onPress={() => setSelectedType(type)}
-            >
-              <Text
+        {hasError && (
+          <ErrorMessage 
+            error={error}
+            onRetry={clearError}
+            onDismiss={clearError}
+          />
+        )}
+
+        <View style={styles.filterContainer}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {(['all', 'user', 'order', 'system'] as Array<'all' | 'user' | 'order' | 'system'>).map(type => (
+              <TouchableOpacity
+                key={type}
                 style={[
-                  styles.filterButtonText,
-                  selectedType === type && styles.filterButtonTextActive,
+                  styles.filterButton,
+                  selectedType === type && styles.filterButtonActive,
                 ]}
+                onPress={() => handleFilterChange(type)}
               >
-                {t(`userManagement.reports.filters.${type}`)}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
+                <Text
+                  style={[
+                    styles.filterButtonText,
+                    selectedType === type && styles.filterButtonTextActive,
+                  ]}
+                >
+                  {t(`userManagement.reports.filters.${type}`) as string}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
 
-      <FlatList
-        data={filteredReports}
-        renderItem={renderReportItem}
-        keyExtractor={item => item.id}
-        contentContainerStyle={styles.reportsList}
-        showsVerticalScrollIndicator={false}
-      />
-    </View>
+        <FlatList
+          data={filteredReports}
+          renderItem={renderReportItem}
+          keyExtractor={item => item.id}
+          contentContainerStyle={styles.reportsList}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
+    </ErrorBoundary>
   );
 };
 

@@ -7,165 +7,292 @@ import {
   Alert,
 } from 'react-native';
 import {useState} from 'react';
-import {useTranslation} from 'react-i18next';
+import {useTranslationSafe} from '../hooks/useTranslationSafe';
 import {changeLanguage} from '../i18n';
 import {version} from '../../package.json';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {queryClient} from '../services/queryClient';
 import {STORAGE_KEYS} from '../constants';
 import {SettingRow} from '../components';
+import ErrorBoundary from '../components/ErrorBoundary';
+import ErrorMessage from '../components/ErrorMessage';
+import {useErrorHandler} from '../hooks/useErrorHandler';
+import {errorService} from '../services/errorService';
 
 const SettingsScreen: React.FC = () => {
-  const {t, i18n} = useTranslation();
+  const {t, i18n} = useTranslationSafe();
+  const {handleError, clearError, hasError, error} = useErrorHandler();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
 
-  const handleNotificationToggle = (value: boolean) => {
-    setNotificationsEnabled(value);
+  const handleNotificationToggle = async (value: boolean) => {
+    try {
+      clearError();
+      setNotificationsEnabled(value);
+      
+      await errorService.logError(null, {
+        component: 'SettingsScreen',
+        operation: 'notificationToggle',
+        success: true,
+        value,
+      });
+    } catch (error) {
+      await errorService.logError(error as Error, {
+        component: 'SettingsScreen',
+        operation: 'notificationToggle',
+        value,
+      });
+      handleError(error as Error);
+    }
   };
 
-  const handleDarkModeToggle = (value: boolean) => {
-    setDarkModeEnabled(value);
+  const handleDarkModeToggle = async (value: boolean) => {
+    try {
+      clearError();
+      setDarkModeEnabled(value);
+      
+      await errorService.logError(null, {
+        component: 'SettingsScreen',
+        operation: 'darkModeToggle',
+        success: true,
+        value,
+      });
+    } catch (error) {
+      await errorService.logError(error as Error, {
+        component: 'SettingsScreen',
+        operation: 'darkModeToggle',
+        value,
+      });
+      handleError(error as Error);
+    }
   };
 
-  const handleLanguageChange = () => {
-    const currentLanguage = i18n.language;
-    const newLanguage = currentLanguage === 'es' ? 'en' : 'es';
-    const languageName = newLanguage === 'es' ? 'Español' : 'English';
-    
-    Alert.alert(
-      t('settings.language'),
-      `${t('settings.languageDesc')} ${languageName}?`,
-      [
-        {text: t('common.cancel'), style: 'cancel'},
-        {
-          text: t('common.confirm'),
-          onPress: () => {
-            changeLanguage(newLanguage);
+  const handleLanguageChange = async () => {
+    try {
+      clearError();
+      const currentLanguage = i18n.language;
+      const newLanguage = currentLanguage === 'es' ? 'en' : 'es';
+      const languageName = newLanguage === 'es' ? 'Español' : 'English';
+      
+      Alert.alert(
+        t('settings.language') as string,
+        `${t('settings.languageDesc') as string} ${languageName}?`,
+        [
+          {text: t('common.cancel') as string, style: 'cancel'},
+          {
+            text: t('common.confirm') as string,
+            onPress: async () => {
+              try {
+                changeLanguage(newLanguage);
+                
+                await errorService.logError(null, {
+                  component: 'SettingsScreen',
+                  operation: 'languageChange',
+                  success: true,
+                  newLanguage,
+                });
+              } catch (error) {
+                await errorService.logError(error as Error, {
+                  component: 'SettingsScreen',
+                  operation: 'languageChange',
+                  newLanguage,
+                });
+                handleError(error as Error);
+              }
+            },
           },
-        },
-      ]
-    );
+        ]
+      );
+    } catch (error) {
+      await errorService.logError(error as Error, {
+        component: 'SettingsScreen',
+        operation: 'languageChange',
+      });
+      handleError(error as Error);
+    }
   };
 
-  const handleClearCache = () => {
-    Alert.alert(
-      t('settings.clearCache'),
-      t('settings.clearCacheConfirm'),
-      [
-        {text: t('common.cancel'), style: 'cancel'},
-        {
-          text: t('settings.clearCache'), 
-          onPress: async () => {
-            try {
-              // Clear TanStack Query cache
-              await queryClient.clear();
-              
-              // Clear AsyncStorage data (excluding theme and language to preserve user preferences)
-              const keysToRemove = [
-                STORAGE_KEYS.AUTH_TOKEN,
-                STORAGE_KEYS.REFRESH_TOKEN,
-                STORAGE_KEYS.USER_DATA,
-                'user', // Additional key used by useAuth hook
-              ];
-              
-              await AsyncStorage.multiRemove(keysToRemove);
-              
-              // Clear axios cache (if any)
-              // The HTTP client doesn't have persistent cache, but we clear query cache above
-              
-              Alert.alert(
-                t('common.success'),
-                t('settings.clearCacheSuccess')
-              );
-            } catch (error) {
-              console.error('Error clearing cache:', error);
-              Alert.alert(
-                t('common.error'),
-                t('settings.clearCacheError')
-              );
+  const handleClearCache = async () => {
+    try {
+      clearError();
+      
+      Alert.alert(
+        t('settings.clearCache') as string,
+        t('settings.clearCacheConfirm') as string,
+        [
+          {text: t('common.cancel') as string, style: 'cancel'},
+          {
+            text: t('settings.clearCache') as string, 
+            onPress: async () => {
+              try {
+                // Clear TanStack Query cache
+                await queryClient.clear();
+                
+                // Clear AsyncStorage data (excluding theme and language to preserve user preferences)
+                const keysToRemove = [
+                  STORAGE_KEYS.AUTH_TOKEN,
+                  STORAGE_KEYS.REFRESH_TOKEN,
+                  STORAGE_KEYS.USER_DATA,
+                  'user', // Additional key used by useAuth hook
+                ];
+                
+                await AsyncStorage.multiRemove(keysToRemove);
+                
+                // Clear axios cache (if any)
+                // The HTTP client doesn't have persistent cache, but we clear query cache above
+                
+                await errorService.logError(null, {
+                  component: 'SettingsScreen',
+                  operation: 'clearCache',
+                  success: true,
+                  keysRemoved: keysToRemove.length,
+                });
+                
+                Alert.alert(
+                  t('common.success') as string,
+                  t('settings.clearCacheSuccess') as string
+                );
+              } catch (error) {
+                await errorService.logError(error as Error, {
+                  component: 'SettingsScreen',
+                  operation: 'clearCache',
+                });
+                handleError(error as Error);
+              }
             }
-          }
-        },
-      ]
-    );
+          },
+        ]
+      );
+    } catch (error) {
+      await errorService.logError(error as Error, {
+        component: 'SettingsScreen',
+        operation: 'clearCache',
+      });
+      handleError(error as Error);
+    }
   };
 
   const getCurrentLanguageLabel = () => {
     return i18n.language === 'es' ? 'Español' : 'English';
   };
 
+  const handleTermsPress = async () => {
+    try {
+      clearError();
+      console.log('Terms pressed');
+      
+      await errorService.logError(null, {
+        component: 'SettingsScreen',
+        operation: 'termsPress',
+        success: true,
+      });
+    } catch (error) {
+      await errorService.logError(error as Error, {
+        component: 'SettingsScreen',
+        operation: 'termsPress',
+      });
+      handleError(error as Error);
+    }
+  };
 
+  const handlePrivacyPress = async () => {
+    try {
+      clearError();
+      console.log('Privacy pressed');
+      
+      await errorService.logError(null, {
+        component: 'SettingsScreen',
+        operation: 'privacyPress',
+        success: true,
+      });
+    } catch (error) {
+      await errorService.logError(error as Error, {
+        component: 'SettingsScreen',
+        operation: 'privacyPress',
+      });
+      handleError(error as Error);
+    }
+  };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('settings.notifications')}</Text>
-        <View style={styles.card}>
-          <SettingRow
-            title={t('settings.pushNotifications')}
-            subtitle={t('settings.pushNotificationsDesc')}
-            showSwitch={true}
-            switchValue={notificationsEnabled}
-            onSwitchToggle={handleNotificationToggle}
+    <ErrorBoundary>
+      <ScrollView style={styles.container}>
+        {hasError && (
+          <ErrorMessage 
+            error={error}
+            onRetry={clearError}
+            onDismiss={clearError}
           />
-        </View>
-      </View>
+        )}
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('settings.appearance')}</Text>
-        <View style={styles.card}>
-          <SettingRow
-            title={t('settings.darkMode')}
-            subtitle={t('settings.darkModeDesc')}
-            showSwitch={true}
-            switchValue={darkModeEnabled}
-            onSwitchToggle={handleDarkModeToggle}
-          />
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('settings.notifications') as string}</Text>
+          <View style={styles.card}>
+            <SettingRow
+              title={t('settings.pushNotifications') as string}
+              subtitle={t('settings.pushNotificationsDesc') as string}
+              showSwitch={true}
+              switchValue={notificationsEnabled}
+              onSwitchToggle={handleNotificationToggle}
+            />
+          </View>
         </View>
-      </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('settings.language')}</Text>
-        <View style={styles.card}>
-          <SettingRow
-            title={t('settings.language')}
-            subtitle={t('settings.languageDesc')}
-            onPress={handleLanguageChange}
-            showValue={getCurrentLanguageLabel()}
-          />
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('settings.appearance') as string}</Text>
+          <View style={styles.card}>
+            <SettingRow
+              title={t('settings.darkMode') as string}
+              subtitle={t('settings.darkModeDesc') as string}
+              showSwitch={true}
+              switchValue={darkModeEnabled}
+              onSwitchToggle={handleDarkModeToggle}
+            />
+          </View>
         </View>
-      </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('settings.data')}</Text>
-        <View style={styles.card}>
-          <SettingRow
-            title={t('settings.clearCache')}
-            subtitle={t('settings.clearCacheDesc')}
-            onPress={handleClearCache}
-          />
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('settings.language') as string}</Text>
+          <View style={styles.card}>
+            <SettingRow
+              title={t('settings.language') as string}
+              subtitle={t('settings.languageDesc') as string}
+              onPress={handleLanguageChange}
+              showValue={getCurrentLanguageLabel()}
+            />
+          </View>
         </View>
-      </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('settings.information')}</Text>
-        <View style={styles.card}>
-          <SettingRow
-            title={t('settings.version')}
-            subtitle={version}
-          />
-          <SettingRow
-            title={t('settings.termsAndConditions')}
-            onPress={() => console.log('Terms pressed')}
-          />
-          <SettingRow
-            title={t('settings.privacyPolicy')}
-            onPress={() => console.log('Privacy pressed')}
-          />
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('settings.data') as string}</Text>
+          <View style={styles.card}>
+            <SettingRow
+              title={t('settings.clearCache') as string}
+              subtitle={t('settings.clearCacheDesc') as string}
+              onPress={handleClearCache}
+            />
+          </View>
         </View>
-      </View>
-    </ScrollView>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('settings.information') as string}</Text>
+          <View style={styles.card}>
+            <SettingRow
+              title={t('settings.version') as string}
+              subtitle={version}
+            />
+            <SettingRow
+              title={t('settings.termsAndConditions') as string}
+              onPress={handleTermsPress}
+            />
+            <SettingRow
+              title={t('settings.privacyPolicy') as string}
+              onPress={handlePrivacyPress}
+            />
+          </View>
+        </View>
+      </ScrollView>
+    </ErrorBoundary>
   );
 };
 

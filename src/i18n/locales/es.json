@@ -239,7 +239,8 @@
         "system": "Sistema"
       },
       "generated": "Generado:",
-      "viewReport": "Ver Reporte"
+      "viewReport": "Ver Reporte",
+      "viewing": "Visualizando"
     },
     "export": {
       "titles": {
@@ -338,6 +339,30 @@
     "unauthorizedMessage": "No tienes permisos para acceder a esta sección. Por favor contacta a tu administrador si crees que esto es un error.",
     "noPermission": "Sin permiso",
     "loadingPermissions": "Cargando permisos...",
+    "noCompany": "Sin empresa",
+    "noCompanyAvailable": "Sin empresa disponible",
+    "customerTypes": {
+      "corporate": "Corporativo",
+      "individual": "Individual"
+    },
+    "mockData": {
+      "companyABC": "Empresa ABC",
+      "companyXYZ": "Empresa XYZ",
+      "demoCompany": "Demo Company",
+      "frequentCustomer": "Cliente frecuente",
+      "vipCustomer": "Cliente VIP",
+      "testOrder": "Orden de Prueba",
+      "testOrderDescription": "Descripción de la orden de prueba",
+      "repairOrder": "Orden de Reparación",
+      "repairOrderDescription": "Reparación de equipo industrial",
+      "demoCustomer": "Cliente Demo",
+      "customerFirstName": "Cliente",
+      "customerLastName": "Demo",
+      "customerEmail": "demo@example.com",
+      "customerAddress": "123 Demo Street",
+      "industrialRepair": "Reparación de equipo industrial",
+      "repair": "Reparación"
+    },
     "errors": {
       "networkError": "Error de conexión a la red. Por favor verifica tu conexión a internet e inténtalo nuevamente.",
       "unexpectedError": "Ocurrió un error inesperado. Por favor inténtalo nuevamente.",
@@ -366,5 +391,31 @@
       "backOnline": "Conectado nuevamente"
     },
     "dismiss": "Descartar"
+  },
+  "fileUpload": {
+    "errors": {
+      "maxFilesExceeded": "Solo se pueden seleccionar hasta {{maxFiles}} archivos",
+      "unknownError": "Error desconocido",
+      "noFilesSelected": "No hay archivos seleccionados",
+      "noInternetConnection": "No hay conexión a internet. Verifica tu conexión e inténtalo nuevamente.",
+      "couldNotEstablishConnection": "No se pudo establecer conexión a internet",
+      "uploadError": "Error subiendo archivos: {{errorMessage}}",
+      "retryError": "Error reintentando upload: {{errorMessage}}"
+    },
+    "success": {
+      "uploadSuccessful": "Upload exitoso",
+      "uploadedFiles": "Se subieron {{successfulFiles}} archivos correctamente",
+      "partiallySuccessful": "Upload parcialmente exitoso",
+      "uploadedPartial": "Se subieron {{successfulFiles}} de {{totalFiles}} archivos.\n\nArchivos fallidos: {{failedNames}}",
+      "retrySuccessful": "Reintento exitoso",
+      "allFilesUploaded": "Todos los archivos se subieron correctamente",
+      "retryPartiallySuccessful": "Reintento parcialmente exitoso",
+      "additionalFilesUploaded": "Se subieron {{successfulFiles}} archivos adicionales"
+    }
+  },
+  "orderStats": {
+    "errors": {
+      "noInternetConnection": "No hay conexión a internet"
+    }
   }
 } 
