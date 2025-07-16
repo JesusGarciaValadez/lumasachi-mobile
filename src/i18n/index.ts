@@ -39,7 +39,7 @@ i18n
     debug: __DEV__,
   });
 
-// Función para cambiar idioma y guardarlo en AsyncStorage
+// Function to change language and save it to AsyncStorage
 export const changeLanguage = async (language: string) => {
   try {
     await AsyncStorage.setItem('language', language);
@@ -50,7 +50,7 @@ export const changeLanguage = async (language: string) => {
   }
 };
 
-// Función para cargar el idioma guardado al iniciar la app
+// Function to load saved language when starting the app
 export const loadSavedLanguage = async () => {
   try {
     const savedLanguage = await AsyncStorage.getItem('language');
@@ -66,7 +66,7 @@ export const loadSavedLanguage = async () => {
   }
 };
 
-// Función para reinicializar i18n con configuración por defecto
+// Function to reinitialize i18n with default configuration
 export const reinitializeWithDefaults = async () => {
   try {
     await i18n.changeLanguage('es'); // Fallback to Spanish
@@ -77,7 +77,7 @@ export const reinitializeWithDefaults = async () => {
   }
 };
 
-// Función para verificar si AsyncStorage está disponible
+// Function to check if AsyncStorage is available
 const isAsyncStorageAvailable = async (): Promise<boolean> => {
   try {
     const testKey = '__test__';
@@ -90,7 +90,7 @@ const isAsyncStorageAvailable = async (): Promise<boolean> => {
   }
 };
 
-// Función para inicializar i18n (será llamada desde App.tsx)
+// Function to initialize i18n (will be called from App.tsx)
 export const initializeI18n = async () => {
   try {
     // Verificar si AsyncStorage está disponible
