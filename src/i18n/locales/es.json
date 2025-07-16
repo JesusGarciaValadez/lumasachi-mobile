@@ -344,7 +344,27 @@
       "connectionTitle": "Error de Conexión",
       "errorTitle": "Algo salió mal",
       "maxRetriesReached": "Se alcanzó el número máximo de reintentos. El error se reiniciará y podrás intentarlo nuevamente.",
-      "retryAttempt": "Intento {{count}} de {{max}}"
-    }
+      "retryAttempt": "Intento {{count}} de {{max}}",
+      "timeoutError": "La solicitud ha expirado. Por favor inténtalo nuevamente.",
+      "serverError": "Error del servidor. Por favor inténtalo más tarde.",
+      "clientError": "Error en la solicitud. Por favor verifica tu información.",
+      "validationError": "Error de validación. Por favor verifica tu información.",
+      "permissionError": "No tienes permisos para realizar esta acción.",
+      "authenticationError": "Autenticación requerida. Por favor inicia sesión.",
+      "permissionTitle": "Permiso Denegado",
+      "validationTitle": "Error de Validación",
+      "timeoutTitle": "Tiempo de Espera Agotado",
+      "serverTitle": "Error del Servidor",
+      "clientTitle": "Error de Solicitud",
+      "maxRetriesTitle": "Reintentos Máximos Alcanzados",
+      "maxRetriesMessage": "Se han agotado todos los intentos de reintento. ¿Te gustaría reiniciar e intentar nuevamente?",
+      "reportError": "Reportar Error",
+      "reportTitle": "Reportar Error",
+      "reportSent": "El reporte de error ha sido registrado. Gracias por tu retroalimentación.",
+      "offlineTitle": "Sin Conexión",
+      "offlineMessage": "Actualmente estás sin conexión. Por favor verifica tu conexión a internet.",
+      "backOnline": "Conectado nuevamente"
+    },
+    "dismiss": "Descartar"
   }
 } 
