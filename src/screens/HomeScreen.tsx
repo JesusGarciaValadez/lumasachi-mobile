@@ -12,6 +12,8 @@ import {useAuth} from '../hooks/useAuth';
 import {useOrderStats} from '../hooks/useOrderStats';
 import {useTranslation} from 'react-i18next';
 import {translateRole} from '../utils/roleTranslations';
+import {RequirePermission, RequireAdmin} from '../components/PermissionGuard';
+import {PERMISSIONS} from '../services/permissionsService';
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const {user} = useAuth();
@@ -51,11 +53,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
       <View style={styles.quickActions}>
         <Text style={styles.sectionTitle}>{t('home.quickActions')}</Text>
         
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={handleCreateOrder}>
-          <Text style={styles.actionButtonText}>{t('home.createOrder')}</Text>
-        </TouchableOpacity>
+        <RequirePermission permission={PERMISSIONS.ORDERS.CREATE} hideIfUnauthorized>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={handleCreateOrder}>
+            <Text style={styles.actionButtonText}>{t('home.createOrder')}</Text>
+          </TouchableOpacity>
+        </RequirePermission>
 
         <TouchableOpacity
           style={styles.actionButton}
@@ -68,6 +72,14 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
           onPress={handleViewProfile}>
           <Text style={styles.actionButtonText}>{t('home.viewProfile')}</Text>
         </TouchableOpacity>
+        
+        <RequireAdmin hideIfUnauthorized>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => navigation.navigate('UserManagement' as any)}>
+            <Text style={styles.actionButtonText}>{t('home.adminPanel')}</Text>
+          </TouchableOpacity>
+        </RequireAdmin>
       </View>
 
       <View style={styles.summary}>

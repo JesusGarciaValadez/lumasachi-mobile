@@ -10,6 +10,8 @@ import {useRoute, RouteProp, useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../types/navigation';
 import {ActionCard} from '../components';
+import {RequirePermission, RequireAdmin} from '../components/PermissionGuard';
+import {PERMISSIONS} from '../services/permissionsService';
 
 type UserManagementRouteProp = RouteProp<RootStackParamList, 'UserManagement'>;
 type UserManagementNavigationProp = StackNavigationProp<RootStackParamList, 'UserManagement'>;
@@ -56,33 +58,41 @@ const UserManagementScreen: React.FC = () => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t('userManagement.mainActions')}</Text>
         
-        <ActionCard
-          title={t('userManagement.createUser')}
-          description={t('userManagement.createUserDesc')}
-          onPress={handleCreateUser}
-          color="#28a745"
-        />
+        <RequirePermission permission={PERMISSIONS.USERS.CREATE}>
+          <ActionCard
+            title={t('userManagement.createUser')}
+            description={t('userManagement.createUserDesc')}
+            onPress={handleCreateUser}
+            color="#28a745"
+          />
+        </RequirePermission>
 
-        <ActionCard
-          title={t('userManagement.manageRoles')}
-          description={t('userManagement.manageRolesDesc')}
-          onPress={handleManageRoles}
-          color="#ffc107"
-        />
+        <RequireAdmin>
+          <ActionCard
+            title={t('userManagement.manageRoles')}
+            description={t('userManagement.manageRolesDesc')}
+            onPress={handleManageRoles}
+            color="#ffc107"
+          />
+        </RequireAdmin>
 
-        <ActionCard
-          title={t('userManagement.viewReports')}
-          description={t('userManagement.viewReportsDesc')}
-          onPress={handleViewReports}
-          color="#17a2b8"
-        />
+        <RequirePermission permission={PERMISSIONS.REPORTS.VIEW}>
+          <ActionCard
+            title={t('userManagement.viewReports')}
+            description={t('userManagement.viewReportsDesc')}
+            onPress={handleViewReports}
+            color="#17a2b8"
+          />
+        </RequirePermission>
 
-        <ActionCard
-          title={t('userManagement.exportData')}
-          description={t('userManagement.exportDataDesc')}
-          onPress={handleExportData}
-          color="#6f42c1"
-        />
+        <RequirePermission permission={PERMISSIONS.REPORTS.EXPORT}>
+          <ActionCard
+            title={t('userManagement.exportData')}
+            description={t('userManagement.exportDataDesc')}
+            onPress={handleExportData}
+            color="#6f42c1"
+          />
+        </RequirePermission>
       </View>
 
       <View style={styles.section}>
