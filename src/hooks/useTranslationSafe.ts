@@ -5,13 +5,13 @@ import {useCallback, useMemo} from 'react';
 export const useTranslationSafe = () => {
   const {t, i18n} = useTranslation();
 
-  // Crear una función estable de traducción
+  // Create a stable translation function
   const translate = useCallback((key: string, options?: any) => {
     try {
       return t(key, options);
     } catch (error) {
       console.error('Translation error:', error);
-      return key; // Retornar la clave si hay error
+      return key; // Return the key if there's an error
     }
   }, [t]);
 

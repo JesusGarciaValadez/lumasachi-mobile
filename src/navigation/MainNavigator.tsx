@@ -38,29 +38,29 @@ const MainNavigator: React.FC = () => {
   const {t} = useTranslationSafe();
   
   if (!user) {
-    // Este caso no debería ocurrir ya que MainNavigator solo se renderiza para usuarios autenticados
+    // This case should not occur since MainNavigator is only rendered for authenticated users
     throw new Error('MainNavigator rendered without authenticated user');
   }
   
-  // Función para validar si el usuario puede acceder a una screen usando el nuevo sistema
+  // Function to validate if user can access a screen using the new system
   const canAccessScreen = (screenName: keyof MainTabParamList): boolean => {
     switch (screenName) {
       case 'Home':
-        return true; // Todos los usuarios pueden acceder a Home
+        return true; // All users can access Home
       case 'Orders':
-        return true; // Todos los usuarios pueden ver órdenes (filtradas por rol)
+        return true; // All users can view orders (filtered by role)
       case 'Users':
         return permissions.hasPermission(PERMISSIONS.USERS.READ);
       case 'Profile':
-        return true; // Todos los usuarios pueden acceder a su perfil
+        return true; // All users can access their profile
       case 'Settings':
-        return true; // Todos los usuarios pueden acceder a configuración
+        return true; // All users can access settings
       default:
         return false;
     }
   };
 
-  // Función para obtener el componente correcto basado en permisos
+  // Function to get the correct component based on permissions
   const getScreenComponent = (screenName: keyof MainTabParamList) => {
     if (!canAccessScreen(screenName)) {
       return UnauthorizedScreen;
