@@ -17,6 +17,9 @@ import {RootStackParamList} from '../types/navigation';
 import {UserRole} from '../types';
 import {httpClient} from '../utils/httpClient';
 import {API_ENDPOINTS} from '../constants';
+import {usePermissions} from '../hooks/usePermissions';
+import {RequirePermission, RequireAdmin} from '../components/PermissionGuard';
+import {PERMISSIONS} from '../services/permissionsService';
 
 type CreateUserScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -36,6 +39,7 @@ interface CreateUserRequest {
 const CreateUserScreen: React.FC = () => {
   const {t} = useTranslation();
   const navigation = useNavigation<CreateUserScreenNavigationProp>();
+  const permissions = usePermissions();
   const [isLoading, setIsLoading] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -182,25 +186,27 @@ const CreateUserScreen: React.FC = () => {
           />
         </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>{t('userManagement.createUserForm.role')} *</Text>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={formData.role}
-              style={styles.picker}
-              onValueChange={(itemValue: UserRole) => setFormData({...formData, role: itemValue})}
-              enabled={!isLoading}
-            >
-              {getRoleOptions().map((option) => (
-                <Picker.Item
-                  key={option.value}
-                  label={option.label}
-                  value={option.value}
-                />
-              ))}
-            </Picker>
+        <RequirePermission permission={PERMISSIONS.USERS.CREATE}>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>{t('userManagement.createUserForm.role')} *</Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={formData.role}
+                style={styles.picker}
+                onValueChange={(itemValue: UserRole) => setFormData({...formData, role: itemValue})}
+                enabled={!isLoading}
+              >
+                {getRoleOptions().map((option) => (
+                  <Picker.Item
+                    key={option.value}
+                    label={option.label}
+                    value={option.value}
+                  />
+                ))}
+              </Picker>
+            </View>
           </View>
-        </View>
+        </RequirePermission>
 
         <View style={styles.inputGroup}>
           <Text style={styles.label}>{t('userManagement.createUserForm.company')}</Text>

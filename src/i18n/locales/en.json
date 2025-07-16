@@ -43,6 +43,7 @@
     "createOrder": "Create New Order",
     "viewOrders": "View My Orders",
     "viewProfile": "View Profile",
+    "adminPanel": "Admin Panel",
     "summary": "Summary",
     "activeOrders": "Active Orders",
     "completedOrders": "Completed Orders",
@@ -335,6 +336,8 @@
     "as": "as",
     "unauthorized": "Access Denied",
     "unauthorizedMessage": "You don't have permission to access this section. Please contact your administrator if you believe this is an error.",
+    "noPermission": "No permission",
+    "loadingPermissions": "Loading permissions...",
     "errors": {
       "networkError": "Network connection error. Please check your internet connection and try again.",
       "unexpectedError": "An unexpected error occurred. Please try again.",

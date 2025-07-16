@@ -1,13 +1,15 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {MainTabParamList, getNavigationConfig} from '../types/navigation';
+import {MainTabParamList} from '../types/navigation';
 import HomeScreen from '../screens/HomeScreen';
 import OrdersScreen from '../screens/OrdersScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import UsersScreen from '../screens/UsersScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import {useAuth} from '../hooks/useAuth';
+import {usePermissions} from '../hooks/usePermissions';
 import {useTranslationSafe} from '../hooks/useTranslationSafe';
+import {PERMISSIONS} from '../services/permissionsService';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {View, Text, StyleSheet} from 'react-native';
 
@@ -32,6 +34,7 @@ const UnauthorizedScreen: React.FC = () => {
 
 const MainNavigator: React.FC = () => {
   const {user} = useAuth();
+  const permissions = usePermissions();
   const {t} = useTranslationSafe();
   
   if (!user) {
@@ -39,9 +42,7 @@ const MainNavigator: React.FC = () => {
     throw new Error('MainNavigator rendered without authenticated user');
   }
   
-  const navigationConfig = getNavigationConfig(user.role);
-  
-  // Función para validar si el usuario puede acceder a una screen
+  // Función para validar si el usuario puede acceder a una screen usando el nuevo sistema
   const canAccessScreen = (screenName: keyof MainTabParamList): boolean => {
     switch (screenName) {
       case 'Home':
@@ -49,7 +50,7 @@ const MainNavigator: React.FC = () => {
       case 'Orders':
         return true; // Todos los usuarios pueden ver órdenes (filtradas por rol)
       case 'Users':
-        return navigationConfig.showUsersTab;
+        return permissions.hasPermission(PERMISSIONS.USERS.READ);
       case 'Profile':
         return true; // Todos los usuarios pueden acceder a su perfil
       case 'Settings':
@@ -149,7 +150,7 @@ const MainNavigator: React.FC = () => {
       />
       
       {/* Users - Solo Admin y Super Admin */}
-      {navigationConfig.showUsersTab && (
+      {permissions.hasPermission(PERMISSIONS.USERS.READ) && (
         <Tab.Screen
           name="Users"
           component={getScreenComponent('Users')}

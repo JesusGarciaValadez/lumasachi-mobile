@@ -1,7 +1,7 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {RootStackParamList, getNavigationConfig} from '../types/navigation';
+import {RootStackParamList} from '../types/navigation';
 import AuthNavigator from './AuthNavigator';
 import MainNavigator from './MainNavigator';
 import SplashScreen from '../screens/SplashScreen';
@@ -14,8 +14,9 @@ import ManageRolesScreen from '../screens/ManageRolesScreen';
 import ViewReportsScreen from '../screens/ViewReportsScreen';
 import ExportDataScreen from '../screens/ExportDataScreen';
 import {useAuth} from '../hooks/useAuth';
+import {usePermissions} from '../hooks/usePermissions';
 import {useTranslationSafe} from '../hooks/useTranslationSafe';
-import {UserRole} from '../types';
+import {PERMISSIONS} from '../services/permissionsService';
 import {View, Text, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -38,21 +39,20 @@ const UnauthorizedScreen: React.FC = () => {
   );
 };
 
-// HOC para proteger screens con validación de permisos
+// HOC para proteger screens con validación de permisos usando el nuevo sistema
 const withPermissionCheck = <P extends object>(
   Component: React.ComponentType<P>,
-  checkPermission: (config: ReturnType<typeof getNavigationConfig>) => boolean
+  checkPermission: (permissions: ReturnType<typeof usePermissions>) => boolean
 ) => {
   return (props: P) => {
     const {user} = useAuth();
+    const permissions = usePermissions();
     
     if (!user) {
       return <UnauthorizedScreen />;
     }
     
-    const navigationConfig = getNavigationConfig(user.role);
-    
-    if (!checkPermission(navigationConfig)) {
+    if (!checkPermission(permissions)) {
       return <UnauthorizedScreen />;
     }
     
@@ -60,12 +60,16 @@ const withPermissionCheck = <P extends object>(
   };
 };
 
-// Funciones de validación de permisos
-const canCreateOrder = (config: ReturnType<typeof getNavigationConfig>) => config.showCreateOrder;
-const canManageUsers = (config: ReturnType<typeof getNavigationConfig>) => config.showUserManagement;
-const canEditAllOrders = (config: ReturnType<typeof getNavigationConfig>) => config.canEditAllOrders;
-const canViewReports = (config: ReturnType<typeof getNavigationConfig>) => config.showUserManagement; // Solo admins
-const canExportData = (config: ReturnType<typeof getNavigationConfig>) => config.showUserManagement; // Solo admins
+// Funciones de validación de permisos usando el nuevo sistema
+const canCreateOrder = (permissions: ReturnType<typeof usePermissions>) => permissions.canCreateOrders;
+const canManageUsers = (permissions: ReturnType<typeof usePermissions>) => permissions.hasAnyPermission([
+  PERMISSIONS.USERS.CREATE,
+  PERMISSIONS.USERS.READ,
+  PERMISSIONS.USERS.UPDATE,
+]);
+const canEditAllOrders = (permissions: ReturnType<typeof usePermissions>) => permissions.canEditOrders;
+const canViewReports = (permissions: ReturnType<typeof usePermissions>) => permissions.canViewReports;
+const canExportData = (permissions: ReturnType<typeof usePermissions>) => permissions.canExportData;
 
 // Aplicar protección a las screens
 const ProtectedCreateOrderScreen = withPermissionCheck(CreateOrderScreen, canCreateOrder);

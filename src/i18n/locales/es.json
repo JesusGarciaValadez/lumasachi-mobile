@@ -43,6 +43,7 @@
     "createOrder": "Crear Nueva Orden",
     "viewOrders": "Ver Mis Órdenes",
     "viewProfile": "Ver Perfil",
+    "adminPanel": "Panel de Administración",
     "summary": "Resumen",
     "activeOrders": "Órdenes Activas",
     "completedOrders": "Órdenes Completadas",
@@ -335,6 +336,8 @@
     "as": "como",
     "unauthorized": "Acceso Denegado",
     "unauthorizedMessage": "No tienes permisos para acceder a esta sección. Por favor contacta a tu administrador si crees que esto es un error.",
+    "noPermission": "Sin permiso",
+    "loadingPermissions": "Cargando permisos...",
     "errors": {
       "networkError": "Error de conexión a la red. Por favor verifica tu conexión a internet e inténtalo nuevamente.",
       "unexpectedError": "Ocurrió un error inesperado. Por favor inténtalo nuevamente.",
