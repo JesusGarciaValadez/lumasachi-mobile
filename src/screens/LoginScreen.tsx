@@ -13,13 +13,21 @@ import {
 } from 'react-native';
 import {useAuth} from '../hooks/useAuth';
 import {useTranslation} from 'react-i18next';
+import {useErrorHandler} from '../hooks/useErrorHandler';
+import {useNetworkStatus} from '../hooks/useNetworkStatus';
+import ErrorBoundary from '../components/ErrorBoundary';
+import ErrorMessage from '../components/ErrorMessage';
+import OfflineIndicator from '../components/OfflineIndicator';
 
 const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
   const {login} = useAuth();
   const {t} = useTranslation();
+  const {handleError} = useErrorHandler();
+  const {isOffline} = useNetworkStatus();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -27,14 +35,26 @@ const LoginScreen: React.FC = () => {
       return;
     }
 
+    // Check network connectivity
+    if (isOffline) {
+      const offlineError = new Error(t('common.errors.networkError'));
+      setError(offlineError);
+      handleError(offlineError);
+      return;
+    }
+
     setIsLoading(true);
+    setError(null);
+    
     try {
       await login(email, password);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : t('auth.errors.invalidCredentials');
-      Alert.alert(t('common.error'), errorMessage);
+      const loginError = error instanceof Error 
+        ? error 
+        : new Error(t('auth.errors.invalidCredentials'));
+      
+      setError(loginError);
+      handleError(loginError);
     } finally {
       setIsLoading(false);
     }
@@ -48,13 +68,24 @@ const LoginScreen: React.FC = () => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.formContainer}>
-          <Text style={styles.title}>{t('auth.title')}</Text>
-          <Text style={styles.subtitle}>{t('auth.subtitle')}</Text>
+    <ErrorBoundary>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <OfflineIndicator />
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <View style={styles.formContainer}>
+            <Text style={styles.title}>{t('auth.title')}</Text>
+            <Text style={styles.subtitle}>{t('auth.subtitle')}</Text>
+            
+            {error && (
+              <ErrorMessage
+                error={error}
+                onRetry={handleLogin}
+                onDismiss={() => setError(null)}
+                style={styles.errorMessage}
+              />
+            )}
 
           <View style={styles.inputContainer}>
             <TextInput
@@ -120,6 +151,7 @@ const LoginScreen: React.FC = () => {
         </View>
       )}
     </KeyboardAvoidingView>
+    </ErrorBoundary>
   );
 };
 
@@ -152,6 +184,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 10,
     color: '#007AFF',
+  },
+  errorMessage: {
+    marginBottom: 16,
   },
   subtitle: {
     fontSize: 16,

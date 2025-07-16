@@ -8,8 +8,12 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import {useTranslation} from 'react-i18next';
+import {useTranslationSafe} from '../hooks/useTranslationSafe';
 import {exportService} from '../services/exportService';
+import ErrorBoundary from '../components/ErrorBoundary';
+import ErrorMessage from '../components/ErrorMessage';
+import {useErrorHandler} from '../hooks/useErrorHandler';
+import {errorService} from '../services/errorService';
 
 interface ExportOption {
   id: string;
@@ -21,39 +25,40 @@ interface ExportOption {
 }
 
 const ExportDataScreen: React.FC = () => {
-  const {t} = useTranslation();
+  const {t} = useTranslationSafe();
+  const {handleError, clearError, hasError, error} = useErrorHandler();
   
   const [exportingId, setExportingId] = useState<string | null>(null);
   
   const exportOptions: ExportOption[] = useMemo(() => [
     {
       id: '1',
-      title: t('userManagement.export.titles.userData'),
-      description: t('userManagement.export.descriptions.userData'),
+      title: t('userManagement.export.titles.userData') as string,
+      description: t('userManagement.export.descriptions.userData') as string,
       format: 'PDF',
       color: '#dc3545',
       icon: '👥',
     },
     {
       id: '2',
-      title: t('userManagement.export.titles.orderData'),
-      description: t('userManagement.export.descriptions.orderData'),
+      title: t('userManagement.export.titles.orderData') as string,
+      description: t('userManagement.export.descriptions.orderData') as string,
       format: 'PDF',
       color: '#007bff',
       icon: '📋',
     },
     {
       id: '3',
-      title: t('userManagement.export.titles.systemLogs'),
-      description: t('userManagement.export.descriptions.systemLogs'),
+      title: t('userManagement.export.titles.systemLogs') as string,
+      description: t('userManagement.export.descriptions.systemLogs') as string,
       format: 'PDF',
       color: '#6f42c1',
       icon: '⚙️',
     },
     {
       id: '4',
-      title: t('userManagement.export.titles.analytics'),
-      description: t('userManagement.export.descriptions.analytics'),
+      title: t('userManagement.export.titles.analytics') as string,
+      description: t('userManagement.export.descriptions.analytics') as string,
       format: 'PDF',
       color: '#fd7e14',
       icon: '📊',
@@ -61,52 +66,70 @@ const ExportDataScreen: React.FC = () => {
   ], [t]);
 
   const handleExport = async (option: ExportOption) => {
-    setExportingId(option.id);
-    
     try {
+      clearError();
+      setExportingId(option.id);
+      
+      await errorService.logError(null, {
+        component: 'ExportDataScreen',
+        operation: 'startExport',
+        success: true,
+        optionId: option.id,
+        format: option.format,
+      });
+      
       // Implement actual export - only PDF format supported
-      const exportResult = await exportService.exportData(option.format, option.id, t);
+      const translateString = (key: string) => t(key) as string;
+      const exportResult = await exportService.exportData(option.format, option.id, translateString);
       
       if (!exportResult.success) {
-        throw new Error(exportResult.error || t('userManagement.export.errors.exportFailed'));
+        throw new Error(exportResult.error || t('userManagement.export.errors.exportFailed') as string);
       }
       
       // Save to device
       if (!exportResult.content) {
-        throw new Error(t('userManagement.export.errors.noContentToSave'));
+        throw new Error(t('userManagement.export.errors.noContentToSave') as string);
       }
       
       const filename = `${option.title.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
-      const saveResult = await exportService.saveToDevice(exportResult.content, filename, t);
+      const saveResult = await exportService.saveToDevice(exportResult.content, filename, translateString);
       
       if (!saveResult.success) {
-        throw new Error(saveResult.error || t('userManagement.export.errors.saveFailed'));
+        throw new Error(saveResult.error || t('userManagement.export.errors.saveFailed') as string);
       }
       
+      await errorService.logError(null, {
+        component: 'ExportDataScreen',
+        operation: 'exportComplete',
+        success: true,
+        optionId: option.id,
+        format: option.format,
+        filename,
+        filePath: saveResult.filePath,
+      });
+      
       Alert.alert(
-        t('common.success'),
+        t('common.success') as string,
         `${t('userManagement.export.exportedSuccessfully', {
           title: option.title,
           format: option.format,
-        })}\n\n${t('userManagement.export.savedTo')}: ${saveResult.filePath}`,
+        }) as string}\n\n${t('userManagement.export.savedTo') as string}: ${saveResult.filePath}`,
         [
           {
-            text: t('common.ok'),
+            text: t('common.ok') as string,
             onPress: () => {},
           },
         ]
       );
     } catch (error) {
-      Alert.alert(
-        t('common.error'),
-        `${t('userManagement.export.exportFailed')}\n\n${error instanceof Error ? error.message : 'Unknown error'}`,
-        [
-          {
-            text: t('common.ok'),
-            onPress: () => {},
-          },
-        ]
-      );
+      await errorService.logError(error as Error, {
+        component: 'ExportDataScreen',
+        operation: 'exportFailed',
+        optionId: option.id,
+        format: option.format,
+      });
+      
+      handleError(error as Error);
     } finally {
       setExportingId(null);
     }
@@ -119,7 +142,7 @@ const ExportDataScreen: React.FC = () => {
       onPress={() => handleExport(option)}
       disabled={exportingId !== null}
       accessibilityRole="button"
-      accessibilityLabel={`${t('userManagement.export.exportOption')} ${option.title} ${t('common.as')} ${option.format}`}
+      accessibilityLabel={`${t('userManagement.export.exportOption') as string} ${option.title} ${t('common.as') as string} ${option.format}`}
       accessibilityHint={option.description}
       accessibilityState={{disabled: exportingId !== null}}
     >
@@ -138,39 +161,49 @@ const ExportDataScreen: React.FC = () => {
       {exportingId === option.id && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="small" color={option.color} />
-          <Text style={styles.loadingText}>{t('userManagement.export.exporting')}</Text>
+          <Text style={styles.loadingText}>{t('userManagement.export.exporting') as string}</Text>
         </View>
       )}
     </TouchableOpacity>
   );
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>{t('userManagement.exportData')}</Text>
-        <Text style={styles.headerSubtitle}>{t('userManagement.exportDataDesc')}</Text>
-      </View>
-
-      <View style={styles.content}>
-        <View style={styles.infoCard}>
-          <Text style={styles.infoTitle}>{t('userManagement.export.infoTitle')}</Text>
-          <Text style={styles.infoText}>
-            {t('userManagement.export.infoText')}
-          </Text>
+    <ErrorBoundary>
+      <ScrollView style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>{t('userManagement.exportData') as string}</Text>
+          <Text style={styles.headerSubtitle}>{t('userManagement.exportDataDesc') as string}</Text>
         </View>
 
-        <View style={styles.optionsContainer}>
-          <Text style={styles.sectionTitle}>{t('userManagement.export.availableOptions')}</Text>
-          {exportOptions.map(renderExportOption)}
-        </View>
+        {hasError && (
+          <ErrorMessage 
+            error={error}
+            onRetry={clearError}
+            onDismiss={clearError}
+          />
+        )}
 
-        <View style={styles.footerInfo}>
-          <Text style={styles.footerText}>
-            {t('userManagement.export.footerText')}
-          </Text>
+        <View style={styles.content}>
+          <View style={styles.infoCard}>
+            <Text style={styles.infoTitle}>{t('userManagement.export.infoTitle') as string}</Text>
+            <Text style={styles.infoText}>
+              {t('userManagement.export.infoText') as string}
+            </Text>
+          </View>
+
+          <View style={styles.optionsContainer}>
+            <Text style={styles.sectionTitle}>{t('userManagement.export.availableOptions') as string}</Text>
+            {exportOptions.map(renderExportOption)}
+          </View>
+
+          <View style={styles.footerInfo}>
+            <Text style={styles.footerText}>
+              {t('userManagement.export.footerText') as string}
+            </Text>
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </ErrorBoundary>
   );
 };
 

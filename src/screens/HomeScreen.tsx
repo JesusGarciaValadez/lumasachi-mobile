@@ -14,6 +14,10 @@ import {useTranslation} from 'react-i18next';
 import {translateRole} from '../utils/roleTranslations';
 import {RequirePermission, RequireAdmin} from '../components/PermissionGuard';
 import {PERMISSIONS} from '../services/permissionsService';
+import ErrorBoundary from '../components/ErrorBoundary';
+import ErrorMessage from '../components/ErrorMessage';
+import OfflineIndicator from '../components/OfflineIndicator';
+import {useNetworkStatus} from '../hooks/useNetworkStatus';
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const {user} = useAuth();

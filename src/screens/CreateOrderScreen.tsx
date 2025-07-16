@@ -11,14 +11,19 @@ import {
   FlatList,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {useTranslation} from 'react-i18next';
+import {useTranslationSafe} from '../hooks/useTranslationSafe';
 import {User, UserRole, FileSelection, MultipleFileUploadResult} from '../types';
 import {validateOrderForm} from '../utils/orderValidation';
 import {FileUploader} from '../components/ui';
+import ErrorBoundary from '../components/ErrorBoundary';
+import ErrorMessage from '../components/ErrorMessage';
+import {useErrorHandler} from '../hooks/useErrorHandler';
+import {errorService} from '../services/errorService';
 
 const CreateOrderScreen: React.FC = () => {
   const navigation = useNavigation();
-  const {t} = useTranslation();
+  const {t} = useTranslationSafe();
+  const {handleError, clearError, hasError, error} = useErrorHandler();
   const [formData, setFormData] = useState({
     customerId: '',
     customerName: '',
@@ -31,11 +36,15 @@ const CreateOrderScreen: React.FC = () => {
   const [showCustomerModal, setShowCustomerModal] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<FileSelection[]>([]);
   const [uploadResults, setUploadResults] = useState<MultipleFileUploadResult | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     // Load customers (users with CUSTOMER role)
     const loadCustomers = async () => {
       try {
+        setIsLoading(true);
+        clearError();
+        
         // TODO: Replace with actual API call
         // const customersData = await fetchUsers({ role: UserRole.CUSTOMER });
         
@@ -47,12 +56,12 @@ const CreateOrderScreen: React.FC = () => {
             lastName: 'Pérez',
             email: 'juan@example.com',
             role: UserRole.CUSTOMER,
-            company: 'Empresa ABC',
+            company: t('common.mockData.companyABC') as string,
             phoneNumber: '+1234567890',
             isActive: true,
             languagePreference: 'es',
             customerType: 'corporate',
-            customerNotes: 'Cliente frecuente',
+            customerNotes: t('common.mockData.frequentCustomer') as string,
             isCustomer: true,
             isEmployee: false,
             createdAt: new Date(),
@@ -64,7 +73,7 @@ const CreateOrderScreen: React.FC = () => {
             lastName: 'González',
             email: 'maria@example.com',
             role: UserRole.CUSTOMER,
-            company: 'Empresa XYZ',
+            company: t('common.mockData.companyXYZ') as string,
             phoneNumber: '+0987654321',
             isActive: true,
             languagePreference: 'es',
@@ -77,16 +86,27 @@ const CreateOrderScreen: React.FC = () => {
         ];
         setCustomers(mockCustomers);
       } catch (error) {
-        console.error('Error loading customers:', error);
+        const errorMessage = t('createOrder.errors.loadCustomersFailed') as string;
+        errorService.logError(error, {
+          context: 'CreateOrderScreen.loadCustomers',
+          action: 'load_customers',
+          metadata: {
+            timestamp: new Date().toISOString(),
+          },
+        });
+        
+        await handleError(error);
         Alert.alert(
-          t('common.error'),
-          t('createOrder.errors.loadCustomersFailed')
+          t('common.error') as string,
+          errorMessage
         );
+      } finally {
+        setIsLoading(false);
       }
     };
 
     loadCustomers();
-  }, []);
+  }, [handleError, clearError, t]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({...prev, [field]: value}));
@@ -112,20 +132,20 @@ const CreateOrderScreen: React.FC = () => {
 
   const handleFileUploadError = (error: string) => {
     console.error('File upload error:', error);
-    Alert.alert(t('common.error'), error);
+    Alert.alert(t('common.error') as string, error);
   };
 
   const handleSubmit = () => {
-    const validationResult = validateOrderForm(formData, t);
+    const validationResult = validateOrderForm(formData, (key: string) => t(key) as string);
     if (!validationResult.isValid) {
-      let errorMessage = t(`createOrder.errors.${validationResult.errorMessage}`);
+      let errorMessage = t(`createOrder.errors.${validationResult.errorMessage}`) as string;
       
       // Add specific missing fields information
       if (validationResult.errorMessage === 'missingFields' && validationResult.missingFields) {
         errorMessage = `${errorMessage}: ${validationResult.missingFields.join(', ')}`;
       }
       
-      Alert.alert(t('common.error'), errorMessage);
+      Alert.alert(t('common.error') as string, errorMessage);
       return;
     }
 
@@ -135,18 +155,18 @@ const CreateOrderScreen: React.FC = () => {
       attachmentCount: selectedFiles.length,
     };
 
-    let confirmMessage = t('createOrder.confirmCreate');
+    let confirmMessage = t('createOrder.confirmCreate') as string;
     if (selectedFiles.length > 0) {
-      confirmMessage += `\n\n${t('createOrder.attachmentsWillBeUploaded', { count: selectedFiles.length })}`;
+      confirmMessage += `\n\n${t('createOrder.attachmentsWillBeUploaded', { count: selectedFiles.length }) as string}`;
     }
 
     Alert.alert(
-      t('createOrder.title'),
+      t('createOrder.title') as string,
       confirmMessage,
       [
-        {text: t('common.cancel'), style: 'cancel'},
+        {text: t('common.cancel') as string, style: 'cancel'},
         {
-          text: t('common.create'),
+          text: t('common.create') as string,
           onPress: () => {
             // TODO: Implement order creation logic
             console.log('Order created:', orderData);
@@ -166,10 +186,10 @@ const CreateOrderScreen: React.FC = () => {
   };
 
   const priorities: Array<{key: string; label: string; value: 'Low' | 'Normal' | 'High' | 'Urgent'}> = [
-    {key: 'low', label: t('orders.priorities.low'), value: 'Low'},
-    {key: 'normal', label: t('orders.priorities.normal'), value: 'Normal'},
-    {key: 'high', label: t('orders.priorities.high'), value: 'High'},
-    {key: 'urgent', label: t('orders.priorities.urgent'), value: 'Urgent'},
+    {key: 'low', label: t('orders.priorities.low') as string, value: 'Low'},
+    {key: 'normal', label: t('orders.priorities.normal') as string, value: 'Normal'},
+    {key: 'high', label: t('orders.priorities.high') as string, value: 'High'},
+    {key: 'urgent', label: t('orders.priorities.urgent') as string, value: 'Urgent'},
   ];
 
   const renderCustomerItem = ({item}: {item: User}) => (
@@ -178,157 +198,167 @@ const CreateOrderScreen: React.FC = () => {
       onPress={() => handleCustomerSelect(item)}
       accessibilityLabel={t('createOrder.customerItemAccessibility', { 
         customerName: `${item.firstName} ${item.lastName}`, 
-        company: item.company || 'Sin empresa' 
-      })}
+        company: item.company || t('common.noCompany') as string 
+      }) as string}
       accessibilityRole="button">
       <Text style={styles.customerName}>
         {item.firstName} {item.lastName}
       </Text>
       <Text style={styles.customerDetails}>
-        {item.email} • {item.company || 'Sin empresa'}
+        {item.email} • {item.company || t('common.noCompany') as string}
       </Text>
       {item.customerType && (
         <Text style={styles.customerType}>
-          {item.customerType === 'corporate' ? 'Corporativo' : 'Individual'}
+          {item.customerType === 'corporate' ? t('common.customerTypes.corporate') as string : t('common.customerTypes.individual') as string}
         </Text>
       )}
     </TouchableOpacity>
   );
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('createOrder.customerInfo')}</Text>
-        <View style={styles.card}>
-          <Text style={styles.label}>{t('orders.customer')} *</Text>
+    <ErrorBoundary>
+      <ScrollView style={styles.container}>
+        <ErrorMessage 
+          error={error} 
+          visible={hasError} 
+          onRetry={clearError}
+          style={styles.errorMessage}
+        />
+        
+        <View style={styles.header}>
+          <Text style={styles.title}>{t('createOrder.title') as string}</Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('createOrder.customerInfo') as string}</Text>
+          
           <TouchableOpacity
             style={styles.customerSelector}
             onPress={() => setShowCustomerModal(true)}
-            accessibilityLabel={t('createOrder.selectCustomerAccessibility')}
-            accessibilityRole="button"
-            accessibilityHint={formData.customerName ? `${t('createOrder.customerName')}: ${formData.customerName}` : undefined}>
-            <Text style={[styles.customerSelectorText, !formData.customerName && styles.placeholder]}>
-              {formData.customerName || t('createOrder.selectCustomer')}
+            accessibilityLabel={t('createOrder.selectCustomerAccessibility') as string}
+            accessibilityRole="button">
+            <Text style={styles.selectorLabel}>{t('createOrder.selectCustomer') as string}</Text>
+            <Text style={styles.selectorValue}>
+              {formData.customerName || t('createOrder.selectCustomer') as string}
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('createOrder.orderDetails')}</Text>
-        <View style={styles.card}>
-          <Text style={styles.label}>{t('orders.orderTitle')} *</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.title}
-            onChangeText={(value) => handleInputChange('title', value)}
-            placeholder={t('createOrder.orderTitle')}
-            accessibilityLabel={t('orders.orderTitle')}
-            accessibilityHint={t('createOrder.orderTitle')}
-          />
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('createOrder.orderDetails') as string}</Text>
+          
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>{t('createOrder.orderTitle') as string}</Text>
+            <TextInput
+              style={styles.input}
+              value={formData.title}
+              onChangeText={(value) => handleInputChange('title', value)}
+              placeholder={t('createOrder.orderTitle') as string}
+              editable={!isLoading}
+            />
+          </View>
 
-          <Text style={styles.label}>{t('orders.description')} *</Text>
-          <TextInput
-            style={[styles.input, styles.textArea]}
-            value={formData.description}
-            onChangeText={(value) => handleInputChange('description', value)}
-            placeholder={t('createOrder.orderDescription')}
-            multiline
-            numberOfLines={4}
-            accessibilityLabel={t('orders.description')}
-            accessibilityHint={t('createOrder.orderDescription')}
-          />
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>{t('createOrder.orderDescription') as string}</Text>
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              value={formData.description}
+              onChangeText={(value) => handleInputChange('description', value)}
+              placeholder={t('createOrder.orderDescription') as string}
+              multiline
+              numberOfLines={4}
+              editable={!isLoading}
+            />
+          </View>
 
-          <Text style={styles.label}>{t('orders.category')}</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.category}
-            onChangeText={(value) => handleInputChange('category', value)}
-            placeholder={t('createOrder.workCategory')}
-            accessibilityLabel={t('orders.category')}
-            accessibilityHint={t('createOrder.workCategory')}
-          />
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>{t('createOrder.workCategory') as string}</Text>
+            <TextInput
+              style={styles.input}
+              value={formData.category}
+              onChangeText={(value) => handleInputChange('category', value)}
+              placeholder={t('createOrder.workCategory') as string}
+              editable={!isLoading}
+            />
+          </View>
 
-          <Text style={styles.label}>{t('orders.priority')}</Text>
-          <View style={styles.priorityContainer} accessibilityRole="radiogroup">
-            {priorities.map((priority) => (
-              <TouchableOpacity
-                key={priority.key}
-                style={[
-                  styles.priorityButton,
-                  formData.priority === priority.value && styles.priorityButtonActive,
-                ]}
-                onPress={() => handleInputChange('priority', priority.value)}
-                accessibilityLabel={t('createOrder.priorityButtonAccessibility', { priority: priority.label })}
-                accessibilityRole="button"
-                accessibilityState={{ selected: formData.priority === priority.value }}>
-                <Text
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>{t('orders.priority') as string}</Text>
+            <View style={styles.priorityContainer}>
+              {priorities.map((priority) => (
+                <TouchableOpacity
+                  key={priority.key}
                   style={[
-                    styles.priorityButtonText,
-                    formData.priority === priority.value && styles.priorityButtonTextActive,
-                  ]}>
-                  {priority.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
+                    styles.priorityButton,
+                    formData.priority === priority.value && styles.priorityButtonSelected,
+                  ]}
+                  onPress={() => handleInputChange('priority', priority.value)}
+                  accessibilityLabel={t('createOrder.priorityButtonAccessibility', { priority: priority.label }) as string}
+                  accessibilityRole="button">
+                  <Text
+                    style={[
+                      styles.priorityButtonText,
+                      formData.priority === priority.value && styles.priorityButtonTextSelected,
+                    ]}>
+                    {priority.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
         </View>
-      </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('createOrder.attachments')}</Text>
-        <FileUploader
-          entityType="order"
-          entityId="temp" // Temporal ID, se reemplazará cuando se cree la orden
-          title={t('createOrder.attachments')}
-          subtitle={t('createOrder.attachmentsDescription')}
-          maxFiles={10}
-          allowMultiple={true}
-          showUploadButton={false} // Los archivos se subirán después de crear la orden
-          onFilesChanged={handleFilesChanged}
-          onUploadComplete={handleFileUploadComplete}
-          onUploadError={handleFileUploadError}
-        />
-      </View>
-
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.submitButton}
-          onPress={handleSubmit}
-          accessibilityLabel={t('createOrder.submitButtonAccessibility')}
-          accessibilityRole="button">
-          <Text style={styles.submitButtonText}>{t('createOrder.title')}</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Customer Selection Modal */}
-      <Modal
-        visible={showCustomerModal}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        accessibilityViewIsModal={true}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>{t('createOrder.selectCustomer')}</Text>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setShowCustomerModal(false)}
-              accessibilityLabel={t('common.closeModal')}
-              accessibilityRole="button">
-              <Text style={styles.closeButtonText}>{t('common.close')}</Text>
-            </TouchableOpacity>
-          </View>
-          <FlatList
-            data={customers}
-            renderItem={renderCustomerItem}
-            keyExtractor={(item) => item.id}
-            style={styles.customerList}
-            accessibilityLabel={t('createOrder.selectCustomer')}
-            accessibilityRole="list"
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('createOrder.attachments') as string}</Text>
+          <Text style={styles.sectionDescription}>{t('createOrder.attachmentsDescription') as string}</Text>
+          
+          <FileUploader
+            onFilesChanged={handleFilesChanged}
+            onUploadComplete={handleFileUploadComplete}
+            onUploadError={handleFileUploadError}
+            maxFiles={5}
           />
         </View>
-      </Modal>
-    </ScrollView>
+
+        <View style={styles.actions}>
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={handleSubmit}
+            disabled={isLoading}
+            accessibilityLabel={t('createOrder.submitButtonAccessibility') as string}
+            accessibilityRole="button">
+            <Text style={styles.submitButtonText}>
+              {isLoading ? t('common.loading') as string : t('common.create') as string}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <Modal
+          visible={showCustomerModal}
+          animationType="slide"
+          presentationStyle="pageSheet"
+          onRequestClose={() => setShowCustomerModal(false)}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>{t('createOrder.selectCustomer') as string}</Text>
+              <TouchableOpacity
+                onPress={() => setShowCustomerModal(false)}
+                accessibilityLabel={t('common.closeModal') as string}
+                accessibilityRole="button">
+                <Text style={styles.modalCloseButton}>×</Text>
+              </TouchableOpacity>
+            </View>
+            
+            <FlatList
+              data={customers}
+              renderItem={renderCustomerItem}
+              keyExtractor={(item) => item.id}
+              style={styles.customerList}
+            />
+          </View>
+        </Modal>
+      </ScrollView>
+    </ErrorBoundary>
   );
 };
 
@@ -337,42 +367,55 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
+  errorMessage: {
+    margin: 16,
+  },
+  header: {
+    padding: 16,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+  },
   section: {
-    margin: 20,
+    marginTop: 16,
+    padding: 16,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#e0e0e0',
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    color: '#333333',
+    fontWeight: '600',
+    marginBottom: 8,
+    color: '#333',
   },
-  card: {
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-    elevation: 3,
+  sectionDescription: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 16,
+  },
+  inputGroup: {
+    marginBottom: 16,
   },
   label: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#333333',
     marginBottom: 8,
+    color: '#333',
   },
   input: {
     borderWidth: 1,
     borderColor: '#ddd',
-    borderRadius: 6,
+    borderRadius: 8,
     padding: 12,
     fontSize: 16,
-    backgroundColor: '#f9f9f9',
-    marginBottom: 20,
+    backgroundColor: '#fff',
   },
   textArea: {
     height: 100,
@@ -381,105 +424,104 @@ const styles = StyleSheet.create({
   customerSelector: {
     borderWidth: 1,
     borderColor: '#ddd',
-    borderRadius: 6,
+    borderRadius: 8,
     padding: 12,
-    backgroundColor: '#f9f9f9',
-    marginBottom: 20,
+    backgroundColor: '#fff',
   },
-  customerSelectorText: {
+  selectorLabel: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 4,
+  },
+  selectorValue: {
     fontSize: 16,
-    color: '#333333',
-  },
-  placeholder: {
-    color: '#999999',
+    color: '#333',
   },
   priorityContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 10,
+    flexWrap: 'wrap',
+    gap: 8,
   },
   priorityButton: {
-    flex: 1,
-    padding: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: '#ddd',
-    borderRadius: 6,
-    marginHorizontal: 5,
-    alignItems: 'center',
+    backgroundColor: '#fff',
   },
-  priorityButtonActive: {
+  priorityButtonSelected: {
     backgroundColor: '#007AFF',
     borderColor: '#007AFF',
   },
   priorityButtonText: {
     fontSize: 14,
-    color: '#666666',
+    color: '#666',
   },
-  priorityButtonTextActive: {
-    color: '#ffffff',
-    fontWeight: '500',
+  priorityButtonTextSelected: {
+    color: '#fff',
   },
-  buttonContainer: {
-    margin: 20,
+  fileUploader: {
+    marginTop: 8,
+  },
+  actions: {
+    padding: 16,
+    paddingTop: 24,
+    paddingBottom: 32,
   },
   submitButton: {
     backgroundColor: '#007AFF',
-    padding: 15,
+    paddingVertical: 16,
     borderRadius: 8,
     alignItems: 'center',
   },
   submitButtonText: {
-    color: '#ffffff',
+    color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#fff',
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
+    padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333333',
+    fontWeight: '600',
   },
-  closeButton: {
-    padding: 8,
-  },
-  closeButtonText: {
-    color: '#007AFF',
-    fontSize: 16,
+  modalCloseButton: {
+    fontSize: 24,
+    color: '#666',
   },
   customerList: {
     flex: 1,
   },
   customerItem: {
-    padding: 20,
+    padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
   },
   customerName: {
     fontSize: 16,
-    fontWeight: '500',
-    color: '#333333',
+    fontWeight: '600',
     marginBottom: 4,
   },
   customerDetails: {
     fontSize: 14,
-    color: '#666666',
+    color: '#666',
     marginBottom: 4,
   },
   customerType: {
     fontSize: 12,
-    color: '#999999',
-    fontStyle: 'italic',
+    color: '#999',
+    textTransform: 'capitalize',
   },
 });
 

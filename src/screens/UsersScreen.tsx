@@ -9,23 +9,46 @@ import {
 } from 'react-native';
 import {User} from '../types';
 import {UsersScreenProps} from '../types/navigation';
-import {useTranslation} from 'react-i18next';
+import {useTranslationSafe} from '../hooks/useTranslationSafe';
 import {translateRole} from '../utils/roleTranslations';
+import ErrorBoundary from '../components/ErrorBoundary';
+import ErrorMessage from '../components/ErrorMessage';
+import {useErrorHandler} from '../hooks/useErrorHandler';
+import {errorService} from '../services/errorService';
 
 const UsersScreen: React.FC<UsersScreenProps> = ({navigation}) => {
-  const {t} = useTranslation();
+  const {t} = useTranslationSafe();
+  const {handleError, clearError, hasError, error} = useErrorHandler();
   const [users, setUsers] = useState<User[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const onRefresh = () => {
-    setRefreshing(true);
-    // TODO: Implement actual data loading when backend is ready
-    // loadUsers().then(setUsers).finally(() => setRefreshing(false));
-    
-    // Simular carga de datos - remove when backend is implemented
-    setTimeout(() => {
+  const onRefresh = async () => {
+    try {
+      clearError();
+      setRefreshing(true);
+      
+      // TODO: Implement actual data loading when backend is ready
+      // loadUsers().then(setUsers).finally(() => setRefreshing(false));
+      
+      // Simular carga de datos - remove when backend is implemented
+      setTimeout(() => {
+        setRefreshing(false);
+      }, 1000);
+      
+      await errorService.logError(null, {
+        component: 'UsersScreen',
+        operation: 'refreshUsers',
+        success: true,
+        usersCount: users.length,
+      });
+    } catch (error) {
+      await errorService.logError(error as Error, {
+        component: 'UsersScreen',
+        operation: 'refreshUsers',
+      });
+      handleError(error as Error);
       setRefreshing(false);
-    }, 1000);
+    }
   };
 
   // TODO: Implement data loading function when backend is ready
@@ -43,12 +66,29 @@ const UsersScreen: React.FC<UsersScreenProps> = ({navigation}) => {
   //   loadUsers();
   // }, []);
 
-  const handleEditUser = (userId: string) => {
-    navigation.navigate('UserManagement', {userId});
+  const handleEditUser = async (userId: string) => {
+    try {
+      clearError();
+      navigation.navigate('UserManagement', {userId});
+      
+      await errorService.logError(null, {
+        component: 'UsersScreen',
+        operation: 'navigateToEditUser',
+        success: true,
+        userId,
+      });
+    } catch (error) {
+      await errorService.logError(error as Error, {
+        component: 'UsersScreen',
+        operation: 'navigateToEditUser',
+        userId,
+      });
+      handleError(error as Error);
+    }
   };
 
   const renderUserItem = ({item}: {item: User}) => {
-    const translatedRole = translateRole(item.role, t);
+    const translatedRole = translateRole(item.role, (key: string) => t(key) as string);
     
     return (
       <TouchableOpacity 
@@ -67,7 +107,7 @@ const UsersScreen: React.FC<UsersScreenProps> = ({navigation}) => {
           <TouchableOpacity 
             style={styles.actionButton}
             onPress={() => handleEditUser(item.id)}>
-            <Text style={styles.actionButtonText}>{t('users.edit')}</Text>
+            <Text style={styles.actionButtonText}>{t('users.edit') as string}</Text>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
@@ -76,23 +116,33 @@ const UsersScreen: React.FC<UsersScreenProps> = ({navigation}) => {
 
   const EmptyComponent = () => (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyText}>{t('users.noUsers')}</Text>
+      <Text style={styles.emptyText}>{t('users.noUsers') as string}</Text>
     </View>
   );
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={users}
-        renderItem={renderUserItem}
-        keyExtractor={(item) => item.id}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        ListEmptyComponent={EmptyComponent}
-        contentContainerStyle={users.length === 0 ? styles.emptyList : undefined}
-      />
-    </View>
+    <ErrorBoundary>
+      <View style={styles.container}>
+        {hasError && (
+          <ErrorMessage 
+            error={error}
+            onRetry={clearError}
+            onDismiss={clearError}
+          />
+        )}
+        
+        <FlatList
+          data={users}
+          renderItem={renderUserItem}
+          keyExtractor={(item) => item.id}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          ListEmptyComponent={EmptyComponent}
+          contentContainerStyle={users.length === 0 ? styles.emptyList : undefined}
+        />
+      </View>
+    </ErrorBoundary>
   );
 };
 

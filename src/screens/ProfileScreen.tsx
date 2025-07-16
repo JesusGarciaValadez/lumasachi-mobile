@@ -9,92 +9,151 @@ import {
 } from 'react-native';
 import {ProfileScreenProps} from '../types/navigation';
 import {useAuth} from '../hooks/useAuth';
-import {useTranslation} from 'react-i18next';
+import {useTranslationSafe} from '../hooks/useTranslationSafe';
 import DetailRow from '../components/DetailRow';
 import {translateRole} from '../utils/roleTranslations';
+import ErrorBoundary from '../components/ErrorBoundary';
+import ErrorMessage from '../components/ErrorMessage';
+import {useErrorHandler} from '../hooks/useErrorHandler';
+import {errorService} from '../services/errorService';
 
 const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
   const {user, logout, isLoading} = useAuth();
-  const {t} = useTranslation();
+  const {t} = useTranslationSafe();
+  const {handleError, clearError, hasError, error} = useErrorHandler();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (isLoggingOut) return;
     
-    Alert.alert(
-      t('auth.logout'),
-      t('auth.logoutConfirm'),
-      [
-        {
-          text: t('common.cancel'),
-          style: 'cancel',
-        },
-        {
-          text: t('auth.logout'),
-          style: 'destructive',
-          onPress: async () => {
-            setIsLoggingOut(true);
-            try {
-              await logout();
-            } finally {
-              setIsLoggingOut(false);
-            }
+    try {
+      clearError();
+      
+      Alert.alert(
+        t('auth.logout') as string,
+        t('auth.logoutConfirm') as string,
+        [
+          {
+            text: t('common.cancel') as string,
+            style: 'cancel',
           },
-        },
-      ]
-    );
+          {
+            text: t('auth.logout') as string,
+            style: 'destructive',
+            onPress: async () => {
+              setIsLoggingOut(true);
+              try {
+                await logout();
+                
+                await errorService.logError(null, {
+                  component: 'ProfileScreen',
+                  operation: 'logout',
+                  success: true,
+                  userId: user?.id,
+                });
+              } catch (error) {
+                await errorService.logError(error as Error, {
+                  component: 'ProfileScreen',
+                  operation: 'logout',
+                  userId: user?.id,
+                });
+                handleError(error as Error);
+              } finally {
+                setIsLoggingOut(false);
+              }
+            },
+          },
+        ]
+      );
+    } catch (error) {
+      await errorService.logError(error as Error, {
+        component: 'ProfileScreen',
+        operation: 'logoutDialog',
+        userId: user?.id,
+      });
+      handleError(error as Error);
+    }
   };
 
-
+  const handleNavigateToSettings = async () => {
+    try {
+      clearError();
+      navigation.navigate('Settings');
+      
+      await errorService.logError(null, {
+        component: 'ProfileScreen',
+        operation: 'navigateToSettings',
+        success: true,
+        userId: user?.id,
+      });
+    } catch (error) {
+      await errorService.logError(error as Error, {
+        component: 'ProfileScreen',
+        operation: 'navigateToSettings',
+        userId: user?.id,
+      });
+      handleError(error as Error);
+    }
+  };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>
-            {user?.firstName?.[0]}{user?.lastName?.[0]}
+    <ErrorBoundary>
+      <ScrollView style={styles.container}>
+        <View style={styles.header}>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>
+              {user?.firstName?.[0]}{user?.lastName?.[0]}
+            </Text>
+          </View>
+          <Text style={styles.userName}>
+            {user?.firstName} {user?.lastName}
           </Text>
+          <Text style={styles.userRole}>{user?.role ? translateRole(user.role, (key: string) => t(key) as string) : ''}</Text>
         </View>
-        <Text style={styles.userName}>
-          {user?.firstName} {user?.lastName}
-        </Text>
-        <Text style={styles.userRole}>{user?.role ? translateRole(user.role, t) : ''}</Text>
-      </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('profile.personalInfo')}</Text>
-        <View style={styles.card}>
-          <DetailRow label={t('profile.email')} value={user?.email || ''} valueFlex={2} />
-          <DetailRow label={t('profile.phone')} value={user?.phoneNumber || ''} valueFlex={2} />
-          <DetailRow label={t('profile.address')} value={user?.address || ''} valueFlex={2} />
-          <DetailRow label={t('profile.company')} value={user?.company || ''} valueFlex={2} />
+        {hasError && (
+          <ErrorMessage 
+            error={error}
+            onRetry={clearError}
+            onDismiss={clearError}
+          />
+        )}
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('profile.personalInfo') as string}</Text>
+          <View style={styles.card}>
+            <DetailRow label={t('profile.email') as string} value={user?.email || ''} valueFlex={2} />
+            <DetailRow label={t('profile.phone') as string} value={user?.phoneNumber || ''} valueFlex={2} />
+            <DetailRow label={t('profile.address') as string} value={user?.address || ''} valueFlex={2} />
+            <DetailRow label={t('profile.company') as string} value={user?.company || ''} valueFlex={2} />
+          </View>
         </View>
-      </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('profile.configuration')}</Text>
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={() => navigation.navigate('Settings')}>
-          <Text style={styles.actionButtonText}>{t('profile.configuration')}</Text>
-        </TouchableOpacity>
-      </View>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('profile.configuration') as string}</Text>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={handleNavigateToSettings}>
+            <Text style={styles.actionButtonText}>{t('profile.configuration') as string}</Text>
+          </TouchableOpacity>
+        </View>
 
-      <View style={styles.section}>
-        <TouchableOpacity
-          style={[
-            styles.actionButton, 
-            styles.logoutButton,
-            (isLoggingOut || isLoading) && styles.disabledButton
-          ]}
-          onPress={handleLogout}
-          disabled={isLoggingOut || isLoading}>
-          <Text style={[styles.actionButtonText, styles.logoutButtonText]}>
-            {isLoggingOut || isLoading ? t('auth.loggingOut') : t('auth.logout')}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+        <View style={styles.section}>
+          <TouchableOpacity
+            style={[
+              styles.actionButton, 
+              styles.logoutButton,
+              (isLoggingOut || isLoading) && styles.disabledButton
+            ]}
+            onPress={handleLogout}
+            disabled={isLoggingOut || isLoading}>
+            <Text style={[styles.actionButtonText, styles.logoutButtonText]}>
+              {isLoggingOut || isLoading ? t('auth.loggingOut') as string : t('auth.logout') as string}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </ErrorBoundary>
   );
 };
 
