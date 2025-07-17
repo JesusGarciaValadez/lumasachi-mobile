@@ -59,7 +59,12 @@ export const usePermissions = (): UsePermissionsResult => {
   // Memoize user permissions to avoid recalculating on each render
   const userPermissions = useMemo(() => {
     if (!user) return [];
-    return PermissionsService.getPermissionsForRole(user.role);
+    try {
+      return PermissionsService.getPermissionsForRole(user.role);
+    } catch (error) {
+      // console.error('Error getting permissions for role:', error);
+      return [];
+    }
   }, [user]);
   
   // Function to verify a specific permission

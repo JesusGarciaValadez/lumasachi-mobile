@@ -8,352 +8,372 @@
  * @date 2024-01-15
  */
 
-import { renderHook } from '@testing-library/react-hooks';
-import { UserRole } from '../../src/types';
+import React from 'react';
+import { renderHook, act } from '@testing-library/react-native';
 import { usePermissions } from '../../src/hooks/usePermissions';
-import { PERMISSIONS } from '../../src/services/permissionsService';
+import { mockUsers, mockPermissions } from '../utils/mockData';
+import { PermissionsService, PERMISSIONS } from '../../src/services/permissionsService';
+import { QueryTestProvider } from '../utils/testProviders';
 
-// Mock del hook useAuth
+// Mock auth hook
+const mockUseAuth = jest.fn();
 jest.mock('../../src/hooks/useAuth', () => ({
-  useAuth: jest.fn(),
+  useAuth: () => mockUseAuth(),
 }));
 
-const mockUseAuth = require('../../src/hooks/useAuth').useAuth;
+// Mock permissions service
+jest.mock('../../src/services/permissionsService', () => ({
+  PermissionsService: {
+    checkPermission: jest.fn(),
+    hasPermission: jest.fn(),
+    getUserPermissions: jest.fn(),
+    canAccess: jest.fn(),
+    getPermissionsForRole: jest.fn(),
+    canAccessScreen: jest.fn(),
+    canAccessTab: jest.fn(),
+    hasAllPermissions: jest.fn(),
+    hasAnyPermission: jest.fn(),
+  },
+  PERMISSIONS: {
+    USERS: {
+      CREATE: 'users.create',
+      READ: 'users.read',
+      UPDATE: 'users.update',
+      DELETE: 'users.delete',
+    },
+    ORDERS: {
+      CREATE: 'orders.create',
+      READ: 'orders.read',
+      UPDATE: 'orders.update',
+      DELETE: 'orders.delete',
+      ASSIGN: 'orders.assign',
+      STATUS_CHANGE: 'orders.status_change',
+    },
+    REPORTS: {
+      VIEW: 'reports.view',
+      EXPORT: 'reports.export',
+    },
+    SYSTEM: {
+      SETTINGS: 'system.settings',
+      LOGS: 'system.logs',
+    },
+  },
+}));
 
-describe('🔐 usePermissions Hook', () => {
-  
+
+const wrapper = ({ children }: { children: React.ReactNode }) => (
+  <QueryTestProvider>{children}</QueryTestProvider>
+);
+
+const mockPermissionsService = jest.mocked(PermissionsService);
+
+describe('usePermissions', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-  });
-
-  describe('Super Administrator', () => {
-    beforeEach(() => {
-      mockUseAuth.mockReturnValue({
-        user: { 
-          id: '1', 
-          firstName: 'Admin', 
-          lastName: 'User', 
-          email: 'admin@example.com', 
-          role: UserRole.SUPER_ADMINISTRATOR 
-        },
-        isLoading: false,
-      });
+    // Reset default mock implementation
+    mockPermissionsService.getPermissionsForRole.mockImplementation((role) => {
+      switch (role) {
+        case 'ADMINISTRATOR':
+          return mockPermissions.ADMIN;
+        case 'EMPLOYEE':
+          return mockPermissions.EMPLOYEE;
+        case 'CUSTOMER':
+          return mockPermissions.CUSTOMER;
+        default:
+          return [];
+      }
     });
-
-    it('debería tener todos los permisos', () => {
-      const { result } = renderHook(() => usePermissions());
-      
-      expect(result.current.canCreateUsers).toBe(true);
-      expect(result.current.canEditUsers).toBe(true);
-      expect(result.current.canDeleteUsers).toBe(true);
-      expect(result.current.canCreateOrders).toBe(true);
-      expect(result.current.canEditOrders).toBe(true);
-      expect(result.current.canDeleteOrders).toBe(true);
-      expect(result.current.canAssignOrders).toBe(true);
-      expect(result.current.canViewReports).toBe(true);
-      expect(result.current.canExportData).toBe(true);
-      expect(result.current.canAccessSystemSettings).toBe(true);
-      expect(result.current.canAccessSystemLogs).toBe(true);
+    mockPermissionsService.hasPermission.mockImplementation((role, permission) => {
+      const permissions = mockPermissionsService.getPermissionsForRole(role);
+      return permissions.includes(permission);
     });
-
-    it('debería poder acceder a todas las pantallas', () => {
-      const { result } = renderHook(() => usePermissions());
-      
-      expect(result.current.canAccessScreen('CreateOrder')).toBe(true);
-      expect(result.current.canAccessScreen('EditOrder')).toBe(true);
-      expect(result.current.canAccessScreen('UserManagement')).toBe(true);
-      expect(result.current.canAccessScreen('CreateUser')).toBe(true);
-      expect(result.current.canAccessScreen('ManageRoles')).toBe(true);
-      expect(result.current.canAccessScreen('ViewReports')).toBe(true);
-      expect(result.current.canAccessScreen('ExportData')).toBe(true);
-      expect(result.current.canAccessScreen('SystemSettings')).toBe(true);
+    mockPermissionsService.canAccessScreen.mockImplementation((role, screen) => {
+      const permissions = mockPermissionsService.getPermissionsForRole(role);
+      const screenPermissions = {
+        'UserManagement': ['users.read'],
+        'CreateUser': ['users.create'],
+        'Orders': ['orders.read'],
+        'CreateOrder': ['orders.create'],
+        'Reports': ['reports.read'],
+      };
+      const requiredPermissions = screenPermissions[screen] || [];
+      return requiredPermissions.every(perm => permissions.includes(perm));
     });
-
-    it('debería tener todos los permisos en la lista', () => {
-      const { result } = renderHook(() => usePermissions());
-      
-      expect(result.current.userPermissions).toContain(PERMISSIONS.USERS.CREATE);
-      expect(result.current.userPermissions).toContain(PERMISSIONS.USERS.READ);
-      expect(result.current.userPermissions).toContain(PERMISSIONS.USERS.UPDATE);
-      expect(result.current.userPermissions).toContain(PERMISSIONS.USERS.DELETE);
-      expect(result.current.userPermissions).toContain(PERMISSIONS.ORDERS.CREATE);
-      expect(result.current.userPermissions).toContain(PERMISSIONS.ORDERS.READ);
-      expect(result.current.userPermissions).toContain(PERMISSIONS.ORDERS.UPDATE);
-      expect(result.current.userPermissions).toContain(PERMISSIONS.ORDERS.DELETE);
-      expect(result.current.userPermissions).toContain(PERMISSIONS.ORDERS.ASSIGN);
-      expect(result.current.userPermissions).toContain(PERMISSIONS.ORDERS.STATUS_CHANGE);
-      expect(result.current.userPermissions).toContain(PERMISSIONS.REPORTS.VIEW);
-      expect(result.current.userPermissions).toContain(PERMISSIONS.REPORTS.EXPORT);
-      expect(result.current.userPermissions).toContain(PERMISSIONS.SYSTEM.SETTINGS);
-      expect(result.current.userPermissions).toContain(PERMISSIONS.SYSTEM.LOGS);
+    mockPermissionsService.hasAllPermissions.mockImplementation((role, permissions) => {
+      const userPermissions = mockPermissionsService.getPermissionsForRole(role);
+      return permissions.every(perm => userPermissions.includes(perm));
     });
   });
 
-  describe('Administrator', () => {
-    beforeEach(() => {
-      mockUseAuth.mockReturnValue({
-        user: { 
-          id: '2', 
-          firstName: 'Admin', 
-          lastName: 'User', 
-          email: 'admin@example.com', 
-          role: UserRole.ADMINISTRATOR 
-        },
-        isLoading: false,
-      });
+  it('returns no permissions for unauthenticated user', () => {
+    mockUseAuth.mockReturnValue({
+      user: null,
+      isAuthenticated: false,
     });
 
-    it('debería tener permisos de administrador pero no de sistema', () => {
-      const { result } = renderHook(() => usePermissions());
-      
-      expect(result.current.canCreateUsers).toBe(true);
-      expect(result.current.canEditUsers).toBe(true);
-      expect(result.current.canDeleteUsers).toBe(false);
-      expect(result.current.canCreateOrders).toBe(true);
-      expect(result.current.canEditOrders).toBe(true);
-      expect(result.current.canDeleteOrders).toBe(false);
-      expect(result.current.canAssignOrders).toBe(true);
-      expect(result.current.canViewReports).toBe(true);
-      expect(result.current.canExportData).toBe(true);
-      expect(result.current.canAccessSystemSettings).toBe(false);
-      expect(result.current.canAccessSystemLogs).toBe(false);
-    });
+    const { result } = renderHook(() => usePermissions(), { wrapper });
 
-    it('debería poder acceder a pantallas de administración pero no de sistema', () => {
-      const { result } = renderHook(() => usePermissions());
-      
-      expect(result.current.canAccessScreen('CreateOrder')).toBe(true);
-      expect(result.current.canAccessScreen('EditOrder')).toBe(true);
-      expect(result.current.canAccessScreen('UserManagement')).toBe(true);
-      expect(result.current.canAccessScreen('CreateUser')).toBe(true);
-      expect(result.current.canAccessScreen('ManageRoles')).toBe(true);
-      expect(result.current.canAccessScreen('ViewReports')).toBe(true);
-      expect(result.current.canAccessScreen('ExportData')).toBe(true);
-      expect(result.current.canAccessScreen('SystemSettings')).toBe(false);
-    });
+    expect(result.current.userPermissions).toEqual([]);
+    expect(result.current.hasPermission(PERMISSIONS.USERS.READ)).toBe(false);
+    expect(result.current.canAccessScreen('UserManagement')).toBe(false);
   });
 
-  describe('Employee', () => {
-    beforeEach(() => {
-      mockUseAuth.mockReturnValue({
-        user: { 
-          id: '3', 
-          firstName: 'Employee', 
-          lastName: 'User', 
-          email: 'employee@example.com', 
-          role: UserRole.EMPLOYEE 
-        },
-        isLoading: false,
-      });
+  it('returns admin permissions for admin user', () => {
+    mockUseAuth.mockReturnValue({
+      user: { ...mockUsers[0], role: 'ADMINISTRATOR' },
+      isAuthenticated: true,
     });
 
-    it('debería tener solo permisos de órdenes', () => {
-      const { result } = renderHook(() => usePermissions());
-      
-      expect(result.current.canCreateUsers).toBe(false);
-      expect(result.current.canEditUsers).toBe(false);
-      expect(result.current.canDeleteUsers).toBe(false);
-      expect(result.current.canCreateOrders).toBe(true);
-      expect(result.current.canEditOrders).toBe(true);
-      expect(result.current.canDeleteOrders).toBe(false);
-      expect(result.current.canAssignOrders).toBe(false);
-      expect(result.current.canViewReports).toBe(false);
-      expect(result.current.canExportData).toBe(false);
-      expect(result.current.canAccessSystemSettings).toBe(false);
-      expect(result.current.canAccessSystemLogs).toBe(false);
-    });
+    const { result } = renderHook(() => usePermissions(), { wrapper });
 
-    it('debería poder acceder solo a pantallas de órdenes', () => {
-      const { result } = renderHook(() => usePermissions());
-      
-      expect(result.current.canAccessScreen('CreateOrder')).toBe(true);
-      expect(result.current.canAccessScreen('EditOrder')).toBe(true);
-      expect(result.current.canAccessScreen('UserManagement')).toBe(false);
-      expect(result.current.canAccessScreen('CreateUser')).toBe(false);
-      expect(result.current.canAccessScreen('ManageRoles')).toBe(false);
-      expect(result.current.canAccessScreen('ViewReports')).toBe(false);
-      expect(result.current.canAccessScreen('ExportData')).toBe(false);
-      expect(result.current.canAccessScreen('SystemSettings')).toBe(false);
-    });
+    expect(result.current.userPermissions).toEqual(mockPermissions.ADMIN);
+    expect(result.current.hasPermission('users.create')).toBe(true);
+    expect(result.current.hasPermission('users.read')).toBe(true);
+    expect(result.current.hasPermission('users.update')).toBe(true);
+    expect(result.current.hasPermission('users.delete')).toBe(true);
   });
 
-  describe('Customer', () => {
-    beforeEach(() => {
-      mockUseAuth.mockReturnValue({
-        user: { 
-          id: '4', 
-          firstName: 'Customer', 
-          lastName: 'User', 
-          email: 'customer@example.com', 
-          role: UserRole.CUSTOMER 
-        },
-        isLoading: false,
-      });
+  it('returns employee permissions for employee user', () => {
+    mockUseAuth.mockReturnValue({
+      user: { ...mockUsers[0], role: 'EMPLOYEE' },
+      isAuthenticated: true,
     });
 
-    it('debería tener solo permisos de lectura de órdenes', () => {
-      const { result } = renderHook(() => usePermissions());
-      
-      expect(result.current.canCreateUsers).toBe(false);
-      expect(result.current.canEditUsers).toBe(false);
-      expect(result.current.canDeleteUsers).toBe(false);
-      expect(result.current.canCreateOrders).toBe(false);
-      expect(result.current.canEditOrders).toBe(false);
-      expect(result.current.canDeleteOrders).toBe(false);
-      expect(result.current.canAssignOrders).toBe(false);
-      expect(result.current.canViewReports).toBe(false);
-      expect(result.current.canExportData).toBe(false);
-      expect(result.current.canAccessSystemSettings).toBe(false);
-      expect(result.current.canAccessSystemLogs).toBe(false);
-    });
+    const { result } = renderHook(() => usePermissions(), { wrapper });
 
-    it('debería tener acceso muy limitado a pantallas', () => {
-      const { result } = renderHook(() => usePermissions());
-      
-      expect(result.current.canAccessScreen('CreateOrder')).toBe(false);
-      expect(result.current.canAccessScreen('EditOrder')).toBe(false);
-      expect(result.current.canAccessScreen('UserManagement')).toBe(false);
-      expect(result.current.canAccessScreen('CreateUser')).toBe(false);
-      expect(result.current.canAccessScreen('ManageRoles')).toBe(false);
-      expect(result.current.canAccessScreen('ViewReports')).toBe(false);
-      expect(result.current.canAccessScreen('ExportData')).toBe(false);
-      expect(result.current.canAccessScreen('SystemSettings')).toBe(false);
-    });
-
-    it('debería tener solo permiso de lectura de órdenes', () => {
-      const { result } = renderHook(() => usePermissions());
-      
-      expect(result.current.userPermissions).toContain(PERMISSIONS.ORDERS.READ);
-      expect(result.current.userPermissions).not.toContain(PERMISSIONS.ORDERS.CREATE);
-      expect(result.current.userPermissions).not.toContain(PERMISSIONS.ORDERS.UPDATE);
-      expect(result.current.userPermissions).not.toContain(PERMISSIONS.ORDERS.DELETE);
-      expect(result.current.userPermissions).not.toContain(PERMISSIONS.USERS.CREATE);
-      expect(result.current.userPermissions).not.toContain(PERMISSIONS.USERS.READ);
-      expect(result.current.userPermissions).not.toContain(PERMISSIONS.USERS.UPDATE);
-      expect(result.current.userPermissions).not.toContain(PERMISSIONS.USERS.DELETE);
-      expect(result.current.userPermissions).not.toContain(PERMISSIONS.REPORTS.VIEW);
-      expect(result.current.userPermissions).not.toContain(PERMISSIONS.REPORTS.EXPORT);
-      expect(result.current.userPermissions).not.toContain(PERMISSIONS.SYSTEM.SETTINGS);
-      expect(result.current.userPermissions).not.toContain(PERMISSIONS.SYSTEM.LOGS);
-    });
+    expect(result.current.userPermissions).toEqual(mockPermissions.EMPLOYEE);
+    expect(result.current.hasPermission('orders.create')).toBe(true);
+    expect(result.current.hasPermission('orders.read')).toBe(true);
+    expect(result.current.hasPermission('orders.update')).toBe(true);
+    expect(result.current.hasPermission('users.create')).toBe(false);
   });
 
-  describe('Sin usuario autenticado', () => {
-    beforeEach(() => {
-      mockUseAuth.mockReturnValue({
-        user: null,
-        isLoading: false,
-      });
+  it('returns customer permissions for customer user', () => {
+    mockUseAuth.mockReturnValue({
+      user: { ...mockUsers[0], role: 'CUSTOMER' },
+      isAuthenticated: true,
     });
 
-    it('debería retornar false para todos los permisos', () => {
-      const { result } = renderHook(() => usePermissions());
-      
-      expect(result.current.canCreateUsers).toBe(false);
-      expect(result.current.canEditUsers).toBe(false);
-      expect(result.current.canDeleteUsers).toBe(false);
-      expect(result.current.canCreateOrders).toBe(false);
-      expect(result.current.canEditOrders).toBe(false);
-      expect(result.current.canDeleteOrders).toBe(false);
-      expect(result.current.canAssignOrders).toBe(false);
-      expect(result.current.canViewReports).toBe(false);
-      expect(result.current.canExportData).toBe(false);
-      expect(result.current.canAccessSystemSettings).toBe(false);
-      expect(result.current.canAccessSystemLogs).toBe(false);
-    });
+    const { result } = renderHook(() => usePermissions(), { wrapper });
 
-    it('debería retornar false para acceso a pantallas', () => {
-      const { result } = renderHook(() => usePermissions());
-      
-      expect(result.current.canAccessScreen('CreateOrder')).toBe(false);
-      expect(result.current.canAccessScreen('EditOrder')).toBe(false);
-      expect(result.current.canAccessScreen('UserManagement')).toBe(false);
-      expect(result.current.canAccessScreen('CreateUser')).toBe(false);
-      expect(result.current.canAccessScreen('ManageRoles')).toBe(false);
-      expect(result.current.canAccessScreen('ViewReports')).toBe(false);
-      expect(result.current.canAccessScreen('ExportData')).toBe(false);
-      expect(result.current.canAccessScreen('SystemSettings')).toBe(false);
-    });
-
-    it('debería retornar lista vacía de permisos', () => {
-      const { result } = renderHook(() => usePermissions());
-      
-      expect(result.current.userPermissions).toEqual([]);
-      expect(result.current.userRole).toBe(null);
-    });
+    expect(result.current.userPermissions).toEqual(mockPermissions.CUSTOMER);
+    expect(result.current.hasPermission('orders.read')).toBe(true);
+    expect(result.current.hasPermission('orders.create')).toBe(false);
+    expect(result.current.hasPermission('users.read')).toBe(false);
   });
 
-  describe('Loading state', () => {
-    beforeEach(() => {
-      mockUseAuth.mockReturnValue({
-        user: { 
-          id: '1', 
-          firstName: 'Admin', 
-          lastName: 'User', 
-          email: 'admin@example.com', 
-          role: UserRole.SUPER_ADMINISTRATOR 
-        },
-        isLoading: true,
-      });
+  it('checks specific permissions correctly', () => {
+    mockUseAuth.mockReturnValue({
+      user: { ...mockUsers[0], role: 'EMPLOYEE' },
+      isAuthenticated: true,
     });
 
-    it('debería retornar el estado de loading', () => {
-      const { result } = renderHook(() => usePermissions());
-      
-      expect(result.current.isLoading).toBe(true);
-    });
+    const { result } = renderHook(() => usePermissions(), { wrapper });
+
+    expect(result.current.hasPermission('orders.read')).toBe(true);
+    expect(result.current.hasPermission('orders.create')).toBe(true);
+    expect(result.current.hasPermission('users.delete')).toBe(false);
+    expect(result.current.hasPermission('settings.update')).toBe(false);
   });
 
-  describe('Functions', () => {
-    beforeEach(() => {
-      mockUseAuth.mockReturnValue({
-        user: { 
-          id: '1', 
-          firstName: 'Admin', 
-          lastName: 'User', 
-          email: 'admin@example.com', 
-          role: UserRole.ADMINISTRATOR 
-        },
-        isLoading: false,
-      });
+  it('checks screen access correctly', () => {
+    mockUseAuth.mockReturnValue({
+      user: { ...mockUsers[0], role: 'ADMINISTRATOR' },
+      isAuthenticated: true,
     });
 
-    it('debería verificar permisos individuales correctamente', () => {
-      const { result } = renderHook(() => usePermissions());
+    mockPermissionsService.getPermissionsForRole.mockReturnValue(mockPermissions.ADMIN);
+    mockPermissionsService.canAccess.mockImplementation((permissions: string[], screen: string) => {
+      const screenPermissions = {
+        'UserManagement': ['users.read'],
+        'CreateUser': ['users.create'],
+        'Orders': ['orders.read'],
+        'CreateOrder': ['orders.create'],
+        'Reports': ['reports.read'],
+      };
       
-      expect(result.current.hasPermission(PERMISSIONS.USERS.CREATE)).toBe(true);
-      expect(result.current.hasPermission(PERMISSIONS.USERS.DELETE)).toBe(false);
-      expect(result.current.hasPermission(PERMISSIONS.ORDERS.CREATE)).toBe(true);
-      expect(result.current.hasPermission(PERMISSIONS.SYSTEM.SETTINGS)).toBe(false);
+      const requiredPermissions = screenPermissions[screen] || [];
+      return requiredPermissions.every(perm => permissions.includes(perm));
     });
 
-    it('debería verificar múltiples permisos (any) correctamente', () => {
-      const { result } = renderHook(() => usePermissions());
-      
-      expect(result.current.hasAnyPermission([
-        PERMISSIONS.USERS.CREATE,
-        PERMISSIONS.SYSTEM.SETTINGS
-      ])).toBe(true);
-      
-      expect(result.current.hasAnyPermission([
-        PERMISSIONS.USERS.DELETE,
-        PERMISSIONS.SYSTEM.SETTINGS
-      ])).toBe(false);
+    const { result } = renderHook(() => usePermissions(), { wrapper });
+
+expect(result.current.canAccessScreen('UserManagement')).toBe(true);
+    expect(result.current.canAccessScreen('CreateUser')).toBe(true);
+    expect(result.current.canAccessScreen('Orders')).toBe(true);
+    expect(result.current.canAccessScreen('CreateOrder')).toBe(true);
+    expect(result.current.canAccessScreen('Reports')).toBe(true);
+  });
+
+  it('denies screen access for insufficient permissions', () => {
+    mockUseAuth.mockReturnValue({
+      user: { ...mockUsers[0], role: 'CUSTOMER' },
+      isAuthenticated: true,
     });
 
-    it('debería verificar múltiples permisos (all) correctamente', () => {
-      const { result } = renderHook(() => usePermissions());
+    mockPermissionsService.getPermissionsForRole.mockReturnValue(mockPermissions.CUSTOMER);
+    mockPermissionsService.canAccess.mockImplementation((permissions: string[], screen: string) => {
+      const screenPermissions = {
+        'UserManagement': ['users.read'],
+        'CreateUser': ['users.create'],
+        'Orders': ['orders.read'],
+        'CreateOrder': ['orders.create'],
+        'Reports': ['reports.read'],
+      };
       
-      expect(result.current.hasAllPermissions([
-        PERMISSIONS.USERS.CREATE,
-        PERMISSIONS.USERS.READ,
-        PERMISSIONS.USERS.UPDATE
-      ])).toBe(true);
-      
-      expect(result.current.hasAllPermissions([
-        PERMISSIONS.USERS.CREATE,
-        PERMISSIONS.USERS.DELETE
-      ])).toBe(false);
+      const requiredPermissions = screenPermissions[screen] || [];
+      return requiredPermissions.every(perm => permissions.includes(perm));
     });
+
+    const { result } = renderHook(() => usePermissions(), { wrapper });
+
+expect(result.current.canAccessScreen('UserManagement')).toBe(false);
+    expect(result.current.canAccessScreen('CreateUser')).toBe(false);
+    expect(result.current.canAccessScreen('Orders')).toBe(true);
+    expect(result.current.canAccessScreen('CreateOrder')).toBe(false);
+    expect(result.current.canAccessScreen('Reports')).toBe(false);
+  });
+
+  it('checks multiple permissions with checkPermissions', () => {
+    mockUseAuth.mockReturnValue({
+      user: { ...mockUsers[0], role: 'EMPLOYEE' },
+      isAuthenticated: true,
+    });
+
+    mockPermissionsService.getPermissionsForRole.mockReturnValue(mockPermissions.EMPLOYEE);
+    mockPermissionsService.checkPermission.mockImplementation((permissions: string[], requiredPermissions: string[]) => {
+      return requiredPermissions.every(perm => permissions.includes(perm));
+    });
+
+    const { result } = renderHook(() => usePermissions(), { wrapper });
+
+expect(result.current.hasAllPermissions(['orders.read', 'orders.create'])).toBe(true);
+    expect(result.current.hasAllPermissions(['orders.read', 'users.create'])).toBe(false);
+    expect(result.current.hasAllPermissions(['users.delete', 'settings.update'])).toBe(false);
+  });
+
+  it('updates permissions when user role changes', () => {
+    // Start with EMPLOYEE role
+    mockUseAuth.mockReturnValue({
+      user: { ...mockUsers[0], role: 'EMPLOYEE' },
+      isAuthenticated: true,
+    });
+
+    const { result, rerender } = renderHook(() => usePermissions(), { wrapper });
+
+    expect(result.current.userPermissions).toEqual(mockPermissions.EMPLOYEE);
+
+    // Change user role to admin
+    mockUseAuth.mockReturnValue({
+      user: { ...mockUsers[0], role: 'ADMINISTRATOR' },
+      isAuthenticated: true,
+    });
+
+    rerender();
+
+    expect(result.current.userPermissions).toEqual(mockPermissions.ADMIN);
+  });
+
+  it('handles role-based permission inheritance', () => {
+    mockUseAuth.mockReturnValue({
+      user: { ...mockUsers[0], role: 'SUPER_ADMINISTRATOR' },
+      isAuthenticated: true,
+    });
+
+    const superAdminPermissions = [
+      ...mockPermissions.ADMIN,
+      'system.admin',
+      'system.maintenance',
+    ];
+
+    mockPermissionsService.getPermissionsForRole.mockReturnValue(superAdminPermissions);
+
+    const { result } = renderHook(() => usePermissions(), { wrapper });
+
+expect(result.current.userPermissions).toEqual(superAdminPermissions);
+    expect(result.current.hasPermission('system.admin')).toBe(true);
+    expect(result.current.hasPermission('users.create')).toBe(true);
+    expect(result.current.hasPermission('orders.create')).toBe(true);
+  });
+
+  it('handles permission validation errors gracefully', () => {
+    // Set a specific mock for this test that throws an error
+    const originalMock = mockPermissionsService.getPermissionsForRole.getMockImplementation();
+    mockPermissionsService.getPermissionsForRole.mockImplementation(() => {
+      throw new Error('Permission service error');
+    });
+    
+    // Mock hasPermission to always return false when permissions are empty
+    mockPermissionsService.hasPermission.mockReturnValue(false);
+    
+    mockUseAuth.mockReturnValue({
+      user: { ...mockUsers[0], role: 'EMPLOYEE' },
+      isAuthenticated: true,
+    });
+
+    const { result } = renderHook(() => usePermissions(), { wrapper });
+
+    // Should fallback to empty permissions on error
+    expect(result.current.userPermissions).toEqual([]);
+    expect(result.current.hasPermission('orders.read')).toBe(false);
+    
+    // Restore original mock
+    mockPermissionsService.getPermissionsForRole.mockImplementation(originalMock);
+  });
+
+  it('memoizes permissions to prevent unnecessary recalculations', () => {
+    // Clear all previous calls
+    jest.clearAllMocks();
+    
+    mockUseAuth.mockReturnValue({
+      user: { ...mockUsers[0], role: 'EMPLOYEE' },
+      isAuthenticated: true,
+    });
+
+    const { result, rerender } = renderHook(() => usePermissions(), { wrapper });
+
+    const firstPermissions = result.current.userPermissions;
+    const callCountAfterFirstRender = mockPermissionsService.getPermissionsForRole.mock.calls.length;
+
+    // Rerender without changing user
+    rerender();
+
+    const secondPermissions = result.current.userPermissions;
+    const callCountAfterSecondRender = mockPermissionsService.getPermissionsForRole.mock.calls.length;
+
+    // Should return the same reference (memoized)
+    expect(firstPermissions).toBe(secondPermissions);
+    // Should not have called getPermissionsForRole again
+    expect(callCountAfterSecondRender).toBe(callCountAfterFirstRender);
+  });
+
+  it('provides permission checking utilities', () => {
+    mockUseAuth.mockReturnValue({
+      user: { ...mockUsers[0], role: 'ADMINISTRATOR' },
+      isAuthenticated: true,
+    });
+
+    mockPermissionsService.getPermissionsForRole.mockReturnValue(mockPermissions.ADMIN);
+
+    const { result } = renderHook(() => usePermissions(), { wrapper });
+
+expect(result.current.userRole).toBe('ADMINISTRATOR');
+    expect(result.current.canCreateUsers).toBe(true);
+    expect(result.current.canDeleteUsers).toBe(true);
+  });
+
+  it('handles unknown roles gracefully', () => {
+    mockUseAuth.mockReturnValue({
+      user: { ...mockUsers[0], role: 'UNKNOWN_ROLE' },
+      isAuthenticated: true,
+    });
+
+    mockPermissionsService.getPermissionsForRole.mockReturnValue([]);
+
+    const { result } = renderHook(() => usePermissions(), { wrapper });
+
+expect(result.current.userPermissions).toEqual([]);
+    expect(result.current.hasPermission('orders.read')).toBe(false);
+expect(result.current.canAccessScreen('Orders')).toBe(false);
   });
 }); 

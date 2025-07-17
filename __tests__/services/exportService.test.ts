@@ -1,4 +1,5 @@
-import {exportService, EXPORT_FORMATS, DATA_TYPES} from '../../src/services/exportService';
+import { exportService, EXPORT_FORMATS, DATA_TYPES } from '../../src/services/exportService';
+import { act } from '@testing-library/react';
 
 // Mock react-native-fs
 jest.mock('react-native-fs', () => ({

@@ -8,6 +8,9 @@
  * @date 2024-01-15
  */
 
+// Necesitamos no hacer mock del servicio real para poder testearlo
+jest.unmock('../../src/services/permissionsService');
+
 import { UserRole } from '../../src/types';
 import { PermissionsService, PERMISSIONS, Permission } from '../../src/services/permissionsService';
 

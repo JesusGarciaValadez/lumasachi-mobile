@@ -1,3 +1,7 @@
 {
-    "java.compile.nullAnalysis.mode": "automatic"
+    "java.compile.nullAnalysis.mode": "automatic",
+    "oxc.enable": true,
+    "cSpell.words": [
+        "Laravel"
+    ]
 }
