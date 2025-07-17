@@ -310,4 +310,58 @@ describe('errorService', () => {
     });
   });
 
+  describe('generateErrorReport', () => {
+    it('generates error report with Platform.OS and Platform.Version', () => {
+      const error = new Error('Test error for report');
+      error.stack = 'Error: Test error for report\n    at Object.<anonymous>';
+      const errorInfo = { componentStack: 'in TestComponent' };
+      
+      const report = errorService.generateErrorReport(error, errorInfo);
+      
+      expect(report).toMatchObject({
+        errorId: expect.stringMatching(/^report_/),
+        timestamp: expect.any(Number),
+        error: {
+          name: 'Error',
+          message: 'Test error for report',
+          stack: error.stack,
+        },
+        context: {
+          errorInfo,
+          networkStatus: expect.objectContaining({
+            isConnected: expect.any(Boolean),
+            connectionType: expect.any(String),
+          }),
+        },
+        deviceInfo: {
+          platform: 'ios', // Default mocked value from jest.setup.js
+          version: 'unknown', // Platform.Version is undefined in test environment
+        },
+        networkInfo: expect.objectContaining({
+          isConnected: expect.any(Boolean),
+          connectionType: expect.any(String),
+        }),
+      });
+    });
+
+    it('generates error report without errorInfo', () => {
+      const error = new Error('Test error without info');
+      
+      const report = errorService.generateErrorReport(error);
+      
+      expect(report).toMatchObject({
+        errorId: expect.stringMatching(/^report_/),
+        timestamp: expect.any(Number),
+        error: {
+          name: 'Error',
+          message: 'Test error without info',
+        },
+        deviceInfo: {
+          platform: 'ios',
+          version: 'unknown',
+        },
+      });
+    });
+  });
+
 });

@@ -334,7 +334,6 @@ class ErrorService {
    */
   public generateErrorReport(error: Error | any, errorInfo?: React.ErrorInfo): ErrorReport {
     const Platform = require('react-native').Platform;
-    const DeviceInfo = require('react-native-device-info');
     
     const errorReport: ErrorReport = {
       errorId: `report_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -350,7 +349,7 @@ class ErrorService {
       },
       deviceInfo: {
         platform: Platform.OS,
-        version: Platform.Version.toString(),
+        version: Platform.Version ? Platform.Version.toString() : 'unknown',
       },
       networkInfo: this.networkStatus,
     };
