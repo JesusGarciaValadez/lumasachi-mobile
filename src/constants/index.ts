@@ -90,4 +90,30 @@ export const PUBLISHING_STATUSES = {
   PUBLISHED: 'Published',
   CLOSED: 'Closed',
   DELETED: 'Deleted',
-} as const; 
+} as const;
+
+// Permissions (Re-exported from permissionsService for convenience)
+export const PERMISSIONS = {
+  USERS: {
+    CREATE: 'users.create',
+    READ: 'users.read',
+    UPDATE: 'users.update',
+    DELETE: 'users.delete',
+  },
+  ORDERS: {
+    CREATE: 'orders.create',
+    READ: 'orders.read',
+    UPDATE: 'orders.update',
+    DELETE: 'orders.delete',
+    ASSIGN: 'orders.assign',
+    STATUS_CHANGE: 'orders.status_change',
+  },
+  REPORTS: {
+    VIEW: 'reports.view',
+    EXPORT: 'reports.export',
+  },
+  SYSTEM: {
+    SETTINGS: 'system.settings',
+    LOGS: 'system.logs',
+  },
+} as const;

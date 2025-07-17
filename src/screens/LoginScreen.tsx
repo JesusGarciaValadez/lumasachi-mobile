@@ -70,6 +70,7 @@ const LoginScreen: React.FC = () => {
   return (
     <ErrorBoundary>
       <KeyboardAvoidingView
+        testID="login-screen"
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <OfflineIndicator />
@@ -89,6 +90,7 @@ const LoginScreen: React.FC = () => {
 
           <View style={styles.inputContainer}>
             <TextInput
+              testID="login-email-input"
               style={[styles.input, isLoading && styles.inputDisabled]}
               placeholder={t('auth.email')}
               value={email}
@@ -101,6 +103,7 @@ const LoginScreen: React.FC = () => {
 
           <View style={styles.inputContainer}>
             <TextInput
+              testID="login-password-input"
               style={[styles.input, isLoading && styles.inputDisabled]}
               placeholder={t('auth.password')}
               value={password}
@@ -111,6 +114,7 @@ const LoginScreen: React.FC = () => {
           </View>
 
           <TouchableOpacity
+            testID="login-submit-button"
             style={[styles.button, isLoading && styles.buttonDisabled]}
             onPress={handleLogin}
             disabled={isLoading}>

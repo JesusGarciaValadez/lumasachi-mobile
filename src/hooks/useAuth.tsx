@@ -54,7 +54,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({children}) 
         context: 'loadUserFromStorage',
         action: 'load-user-from-storage',
       });
-      console.error(t('auth.errors.storageLoad'), error);
+      // console.error(t('auth.errors.storageLoad'), error);
     } finally {
       setIsLoading(false);
     }
@@ -144,7 +144,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({children}) 
         action: 'user-logout',
         userId: user?.id,
       });
-      console.error(t('auth.errors.logout'), error);
+      // console.error(t('auth.errors.logout'), error);
     } finally {
       setIsLoading(false);
     }
@@ -173,7 +173,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({children}) 
         action: 'update-user-storage',
         userId: updatedUser.id,
       });
-      console.error(t('auth.errors.storageUpdate'), error);
+      // console.error(t('auth.errors.storageUpdate'), error);
     }
   };
 
