@@ -19,7 +19,7 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
 
   const onRefresh = () => {
     setRefreshing(true);
-    // Simular carga de datos
+    // Simulate data loading
     setTimeout(() => {
       setRefreshing(false);
     }, 1000);
