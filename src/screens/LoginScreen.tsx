@@ -18,6 +18,7 @@ import {useNetworkStatus} from '../hooks/useNetworkStatus';
 import ErrorBoundary from '../components/ErrorBoundary';
 import ErrorMessage from '../components/ErrorMessage';
 import OfflineIndicator from '../components/OfflineIndicator';
+import LogoImage from '../components/LogoImage';
 
 const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -76,7 +77,7 @@ const LoginScreen: React.FC = () => {
         <OfflineIndicator />
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.formContainer}>
-            <Text style={styles.title}>{t('auth.title')}</Text>
+            <LogoImage />
             <Text style={styles.subtitle}>{t('auth.subtitle')}</Text>
             
             {error && (
