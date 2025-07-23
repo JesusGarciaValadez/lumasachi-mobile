@@ -69,10 +69,8 @@ const ManageRolesScreen: React.FC = () => {
           },
         ]);
         
-        await errorService.logError(null, {
+        errorService.logSuccess('loadRoles', {
           component: 'ManageRolesScreen',
-          operation: 'loadRoles',
-          success: true,
           rolesCount: 2,
         });
       } catch (error) {
@@ -106,10 +104,8 @@ const ManageRolesScreen: React.FC = () => {
         )
       );
       
-      await errorService.logError(null, {
+      errorService.logSuccess('permissionToggle', {
         component: 'ManageRolesScreen',
-        operation: 'permissionToggle',
-        success: true,
         roleId,
         permissionId,
       });
@@ -129,10 +125,8 @@ const ManageRolesScreen: React.FC = () => {
       clearError();
       
       // TODO: Implement actual role saving logic here
-      await errorService.logError(null, {
+      errorService.logSuccess('saveChanges', {
         component: 'ManageRolesScreen',
-        operation: 'saveChanges',
-        success: true,
         rolesCount: roles.length,
       });
       

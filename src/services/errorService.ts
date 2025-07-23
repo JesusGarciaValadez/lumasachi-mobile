@@ -232,9 +232,29 @@ class ErrorService {
   }
 
   /**
+   * Log successful operation
+   */
+  public logSuccess(operation: string, context?: Record<string, any>): void {
+    if (__DEV__) {
+      console.log('Success:', {
+        operation,
+        timestamp: Date.now(),
+        context,
+        success: true
+      });
+    }
+  }
+
+  /**
    * Log error with context
    */
   public async logError(error: Error | any, context?: Record<string, any>): Promise<string> {
+    // Handle null or undefined errors
+    if (!error) {
+      console.warn('logError called with null/undefined error. Use logSuccess for successful operations.');
+      error = new Error('Null error passed to logError');
+    }
+    
     const errorId = `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const errorType = this.classifyError(error);
 
@@ -242,9 +262,9 @@ class ErrorService {
       id: errorId,
       timestamp: Date.now(),
       error: {
-        name: error.name || 'Unknown Error',
-        message: error.message || 'No message provided',
-        stack: error.stack,
+        name: error?.name || 'Unknown Error',
+        message: error?.message || 'No message provided',
+        stack: error?.stack,
       },
       errorType,
       context,
