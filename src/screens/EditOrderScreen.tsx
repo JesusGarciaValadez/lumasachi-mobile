@@ -118,10 +118,8 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
           status: mockOrder.status,
         });
         
-        await errorService.logError(null, {
+        errorService.logSuccess('loadOrderData', {
           component: 'EditOrderScreen',
-          operation: 'loadOrderData',
-          success: true,
           orderId,
           customerCount: mockCustomers.length,
         });
@@ -189,10 +187,8 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
               status: originalOrder.status,
             });
             clearError();
-            errorService.logError(null, {
+            errorService.logSuccess('resetForm', {
               component: 'EditOrderScreen',
-              operation: 'resetForm',
-              success: true,
               orderId: originalOrder.id,
             });
           },
@@ -239,10 +235,8 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
                 // await updateOrderAPI(orderId, formData);
                 console.log('Order updated:', formData);
                 
-                await errorService.logError(null, {
+                errorService.logSuccess('updateOrder', {
                   component: 'EditOrderScreen',
-                  operation: 'updateOrder',
-                  success: true,
                   orderId,
                   formData,
                 });

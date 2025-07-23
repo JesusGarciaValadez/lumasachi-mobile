@@ -35,10 +35,8 @@ const UsersScreen: React.FC<UsersScreenProps> = ({navigation}) => {
         setRefreshing(false);
       }, 1000);
       
-      await errorService.logError(null, {
+      errorService.logSuccess('refreshUsers', {
         component: 'UsersScreen',
-        operation: 'refreshUsers',
-        success: true,
         usersCount: users.length,
       });
     } catch (error) {
@@ -71,10 +69,8 @@ const UsersScreen: React.FC<UsersScreenProps> = ({navigation}) => {
       clearError();
       navigation.navigate('UserManagement', {userId});
       
-      await errorService.logError(null, {
+      errorService.logSuccess('navigateToEditUser', {
         component: 'UsersScreen',
-        operation: 'navigateToEditUser',
-        success: true,
         userId,
       });
     } catch (error) {

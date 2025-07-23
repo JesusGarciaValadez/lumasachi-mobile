@@ -97,10 +97,8 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
           updatedAt: new Date('2024-01-15T14:30:00Z'),
         });
         
-        await errorService.logError(null, {
+        errorService.logSuccess('loadOrderData', {
           component: 'OrderDetailsScreen',
-          operation: 'loadOrderData',
-          success: true,
           orderId,
         });
       } catch (error) {
@@ -121,10 +119,8 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
   const handleEditOrder = () => {
     try {
       navigation.navigate('EditOrder', {orderId});
-      errorService.logError(null, {
+      errorService.logSuccess('navigateToEdit', {
         component: 'OrderDetailsScreen',
-        operation: 'navigateToEdit',
-        success: true,
         orderId,
       });
     } catch (error) {

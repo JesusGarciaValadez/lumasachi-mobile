@@ -70,10 +70,8 @@ const ExportDataScreen: React.FC = () => {
       clearError();
       setExportingId(option.id);
       
-      await errorService.logError(null, {
+      errorService.logSuccess('startExport', {
         component: 'ExportDataScreen',
-        operation: 'startExport',
-        success: true,
         optionId: option.id,
         format: option.format,
       });
@@ -98,10 +96,8 @@ const ExportDataScreen: React.FC = () => {
         throw new Error(saveResult.error || t('userManagement.export.errors.saveFailed') as string);
       }
       
-      await errorService.logError(null, {
+      errorService.logSuccess('exportComplete', {
         component: 'ExportDataScreen',
-        operation: 'exportComplete',
-        success: true,
         optionId: option.id,
         format: option.format,
         filename,

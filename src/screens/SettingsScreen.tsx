@@ -30,10 +30,8 @@ const SettingsScreen: React.FC = () => {
       clearError();
       setNotificationsEnabled(value);
       
-      await errorService.logError(null, {
+      errorService.logSuccess('notificationToggle', {
         component: 'SettingsScreen',
-        operation: 'notificationToggle',
-        success: true,
         value,
       });
     } catch (error) {
@@ -51,10 +49,8 @@ const SettingsScreen: React.FC = () => {
       clearError();
       setDarkModeEnabled(value);
       
-      await errorService.logError(null, {
+      errorService.logSuccess('darkModeToggle', {
         component: 'SettingsScreen',
-        operation: 'darkModeToggle',
-        success: true,
         value,
       });
     } catch (error) {
@@ -85,10 +81,8 @@ const SettingsScreen: React.FC = () => {
               try {
                 changeLanguage(newLanguage);
                 
-                await errorService.logError(null, {
+                errorService.logSuccess('languageChange', {
                   component: 'SettingsScreen',
-                  operation: 'languageChange',
-                  success: true,
                   newLanguage,
                 });
               } catch (error) {
@@ -141,10 +135,8 @@ const SettingsScreen: React.FC = () => {
                 // Clear axios cache (if any)
                 // The HTTP client doesn't have persistent cache, but we clear query cache above
                 
-                await errorService.logError(null, {
+                errorService.logSuccess('clearCache', {
                   component: 'SettingsScreen',
-                  operation: 'clearCache',
-                  success: true,
                   keysRemoved: keysToRemove.length,
                 });
                 
@@ -181,10 +173,8 @@ const SettingsScreen: React.FC = () => {
       clearError();
       console.log('Terms pressed');
       
-      await errorService.logError(null, {
+      errorService.logSuccess('termsPress', {
         component: 'SettingsScreen',
-        operation: 'termsPress',
-        success: true,
       });
     } catch (error) {
       await errorService.logError(error as Error, {
@@ -200,10 +190,8 @@ const SettingsScreen: React.FC = () => {
       clearError();
       console.log('Privacy pressed');
       
-      await errorService.logError(null, {
+      errorService.logSuccess('privacyPress', {
         component: 'SettingsScreen',
-        operation: 'privacyPress',
-        success: true,
       });
     } catch (error) {
       await errorService.logError(error as Error, {

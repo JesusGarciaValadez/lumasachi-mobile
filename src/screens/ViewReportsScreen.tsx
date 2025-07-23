@@ -87,10 +87,8 @@ const ViewReportsScreen: React.FC = () => {
       // Show alert with report info instead of navigating to non-existent screen
       Alert.alert(t('common.info') as string, `${t('userManagement.reports.viewing') as string} ${report.title}`);
       
-      await errorService.logError(null, {
+      errorService.logSuccess('viewReport', {
         component: 'ViewReportsScreen',
-        operation: 'viewReport',
-        success: true,
         reportId: report.id,
         reportType: report.type,
       });
@@ -110,10 +108,8 @@ const ViewReportsScreen: React.FC = () => {
       clearError();
       setSelectedType(type);
       
-      await errorService.logError(null, {
+      errorService.logSuccess('filterChange', {
         component: 'ViewReportsScreen',
-        operation: 'filterChange',
-        success: true,
         filterType: type,
       });
     } catch (error) {

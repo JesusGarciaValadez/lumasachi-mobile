@@ -45,10 +45,8 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
               try {
                 await logout();
                 
-                await errorService.logError(null, {
+                errorService.logSuccess('logout', {
                   component: 'ProfileScreen',
-                  operation: 'logout',
-                  success: true,
                   userId: user?.id,
                 });
               } catch (error) {
@@ -80,10 +78,8 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
       clearError();
       navigation.navigate('Settings');
       
-      await errorService.logError(null, {
+      errorService.logSuccess('navigateToSettings', {
         component: 'ProfileScreen',
-        operation: 'navigateToSettings',
-        success: true,
         userId: user?.id,
       });
     } catch (error) {
