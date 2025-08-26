@@ -9,6 +9,16 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
+import com.facebook.react.modules.network.OkHttpClientFactory
+import com.facebook.react.modules.network.OkHttpClientProvider
+import com.facebook.react.modules.network.ReactCookieJarContainer
+import okhttp3.OkHttpClient
+import okhttp3.CertificatePinner
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
+import java.security.cert.X509Certificate
+import java.security.SecureRandom
 
 class MainApplication : Application(), ReactApplication {
 
@@ -34,5 +44,26 @@ class MainApplication : Application(), ReactApplication {
   override fun onCreate() {
     super.onCreate()
     loadReactNative(this)
+
+    if (BuildConfig.DEBUG) {
+      OkHttpClientProvider.setOkHttpClientFactory(object : OkHttpClientFactory {
+        override fun createNewNetworkModuleClient(): OkHttpClient {
+          val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
+            override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {}
+            override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {}
+            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
+          })
+
+          val sslContext = SSLContext.getInstance("TLS")
+          sslContext.init(null, trustAllCerts, SecureRandom())
+
+          return OkHttpClient.Builder()
+            .cookieJar(ReactCookieJarContainer())
+            .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
+            .hostnameVerifier { _, _ -> true } // Allow all hostnames
+            .build()
+        }
+      })
+    }
   }
 }

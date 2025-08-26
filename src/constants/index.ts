@@ -1,13 +1,23 @@
 import { UserRole } from '../types';
+import { APP_ENV, API_BASE_URL, STAGING_API_BASE_URL, PRODUCTION_API_BASE_URL } from '@env';
 
 // API Constants
-export const API_BASE_URL = __DEV__ 
-  ? 'http://localhost:8000/api' 
-  : 'https://your-production-api.com/api';
+export let API_BASE_URL_CONFIG: string|null = null;
+switch(APP_ENV) {
+  case 'local': 
+    API_BASE_URL_CONFIG = API_BASE_URL;
+    break;
+  case 'staging': 
+    API_BASE_URL_CONFIG = STAGING_API_BASE_URL;
+    break;
+  default: 
+    API_BASE_URL_CONFIG = PRODUCTION_API_BASE_URL;
+    break;
+};
 
 export const API_ENDPOINTS = {
   AUTH: {
-    LOGIN: '/auth/login',
+    LOGIN: '/v1/sanctum/token',
     REGISTER: '/auth/register',
     LOGOUT: '/auth/logout',
     REFRESH: '/auth/refresh',
@@ -22,7 +32,7 @@ export const API_ENDPOINTS = {
     TIMELINE: '/orders/timeline',
   },
   USERS: {
-    PROFILE: '/users/profile',
+    PROFILE: '/v1/user',
     UPDATE_PROFILE: '/users/profile',
     CREATE: '/users',
     LIST: '/users',
