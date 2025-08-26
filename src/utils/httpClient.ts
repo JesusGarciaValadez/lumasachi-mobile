@@ -1,19 +1,21 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { API_BASE_URL, STORAGE_KEYS } from '../constants';
+import { API_BASE_URL_CONFIG, STORAGE_KEYS } from '../constants';
 
 class HttpClient {
   private instance: AxiosInstance;
 
   constructor() {
     this.instance = axios.create({
-      baseURL: API_BASE_URL,
+      baseURL: API_BASE_URL_CONFIG,
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
     });
+
+    console.log(this.instance.defaults.baseURL);
 
     this.setupInterceptors();
   }

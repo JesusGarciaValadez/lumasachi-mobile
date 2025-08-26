@@ -1,9 +1,14 @@
 import React, {useState, useEffect, useContext, createContext, useCallback} from 'react';
-import {User, UserRole} from '../types';
+import {User} from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useTranslationSafe} from './useTranslationSafe';
 import {errorService} from '../services/errorService';
 import {retryService} from '../services/retryService';
+import {authService} from '../services/authService';
+import {Platform} from 'react-native';
+import 'react-native-get-random-values'; // Important for uuid on React Native
+import { v4 as uuidv4 } from 'uuid';
+import {STORAGE_KEYS} from '../constants';
 
 interface AuthContextType {
   user: User | null;
@@ -34,7 +39,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({children}) 
     try {
       const result = await retryService.executeWithRetry(
         async () => {
-          const storedUser = await AsyncStorage.getItem('user');
+          const storedUser = await AsyncStorage.getItem(STORAGE_KEYS.USER_DATA);
           if (storedUser) {
             return JSON.parse(storedUser);
           }
@@ -64,46 +69,19 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({children}) 
     loadUserFromStorage();
   }, [loadUserFromStorage]);
 
-  const login = async (email: string, _password: string) => {
+  const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const result = await retryService.executeWithRetry(
-        async () => {
-          // Login simulation - in production this would be an API call
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          
-          // Mock user for testing
-          const mockUser: User = {
-            id: '1',
-            firstName: t('auth.mockUser.firstName') as string,
-            lastName: t('auth.mockUser.lastName') as string,
-            email: email,
-            role: UserRole.ADMINISTRATOR,
-            company: t('auth.mockUser.company') as string,
-            phoneNumber: t('auth.mockUser.phoneNumber') as string,
-            address: t('auth.mockUser.address') as string,
-            isActive: true,
-            languagePreference: 'en',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            lastLoginAt: new Date(),
-          };
+      const device_name = `${Platform.OS}_${uuidv4()}`;
+      await authService.login({ email, password, device_name });
+      
+      // Fetch user data after successful login
+      const fetchedUser = await authService.fetchUserData(email);
+      await AsyncStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(fetchedUser));
+      setUser(fetchedUser);
 
-          // Save user to storage
-          await AsyncStorage.setItem('user', JSON.stringify(mockUser));
-          return mockUser;
-        },
-        {
-          maxRetries: 2,
-          baseDelay: 1000,
-        }
-      );
+      // Navigate to the main screen after successful login and data fetch
 
-      if (result.success && result.result) {
-        setUser(result.result);
-      } else {
-        throw result.error || new Error(t('auth.errors.invalidCredentials') as string);
-      }
     } catch (error) {
       await errorService.logError(error as Error, {
         context: 'login',
@@ -119,32 +97,15 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({children}) 
   const logout = async () => {
     try {
       setIsLoading(true);
-      
-      const result = await retryService.executeWithRetry(
-        async () => {
-          await AsyncStorage.removeItem('user');
-          // Small delay to allow React Navigation to stabilize
-          await new Promise(resolve => setTimeout(resolve, 100));
-          return true;
-        },
-        {
-          maxRetries: 3,
-          baseDelay: 500,
-        }
-      );
-
-      if (result.success) {
-        setUser(null);
-      } else {
-        throw result.error || new Error('Logout failed');
-      }
+      await authService.logout();
+      setUser(null);
     } catch (error) {
       await errorService.logError(error as Error, {
         context: 'logout',
         action: 'user-logout',
         userId: user?.id,
       });
-      // console.error(t('auth.errors.logout'), error);
+      throw new Error(t('auth.errors.logout') as string);
     } finally {
       setIsLoading(false);
     }
@@ -155,7 +116,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({children}) 
     try {
       const result = await retryService.executeWithRetry(
         async () => {
-          await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
+          await AsyncStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(updatedUser));
           return true;
         },
         {
