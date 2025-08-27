@@ -193,7 +193,8 @@ class ErrorService {
       error.response?.status === 401 ||
       errorMessage.includes('unauthorized') ||
       errorMessage.includes('authentication') ||
-      errorMessage.includes('invalid credentials')
+      errorMessage.includes('invalid credentials') ||
+      error.code === 'INVALID_CREDENTIALS' // Added custom error code check
     ) {
       return 'AUTHENTICATION_ERROR';
     }
@@ -285,7 +286,7 @@ class ErrorService {
 
     // Log to console in development
     if (__DEV__) {
-      console.error('Error logged:', errorLog);
+      console.log('Error logged:', errorLog);
     }
 
     return errorId;
@@ -387,7 +388,7 @@ class ErrorService {
     retryCount?: number;
   }): Promise<void> {
     const errorType = this.classifyError(error);
-    const errorId = await this.logError(error, options);
+    const _errorId = await this.logError(error, options);
 
     // Handle specific error types
     switch (errorType) {
@@ -527,7 +528,7 @@ class ErrorService {
     if (options?.showAlert) {
       Alert.alert(
         'Authentication Required',
-        'Please log in to continue.',
+        error.message || 'Please log in to continue.',
         [{ text: 'OK', onPress: () => {} }]
       );
     }

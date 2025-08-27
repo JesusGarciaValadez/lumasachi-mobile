@@ -22,6 +22,8 @@
     },
     "errors": {
       "missingFields": "Por favor ingresa tu email y contraseña",
+      "emailRequired": "El campo email es obligatorio.",
+      "passwordRequired": "El campo contraseña es obligatorio.",
       "invalidCredentials": "Credenciales inválidas",
       "storageLoad": "Error cargando usuario desde almacenamiento",
       "logout": "Error durante el cierre de sesión",

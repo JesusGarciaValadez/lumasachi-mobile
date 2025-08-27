@@ -22,6 +22,8 @@
     },
     "errors": {
       "missingFields": "Please enter your email and password",
+      "emailRequired": "The email field is required.",
+      "passwordRequired": "The password field is required.",
       "invalidCredentials": "Invalid credentials",
       "storageLoad": "Error loading user from storage",
       "logout": "Error during logout",

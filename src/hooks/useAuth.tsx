@@ -88,7 +88,8 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({children}) 
         action: 'user-login',
         email,
       });
-      throw new Error(t('auth.errors.invalidCredentials') as string);
+      // Re-throw original error to surface backend message to UI
+      throw (error instanceof Error ? error : new Error(t('auth.errors.invalidCredentials') as string));
     } finally {
       setIsLoading(false);
     }
