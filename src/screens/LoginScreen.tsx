@@ -32,24 +32,51 @@ const LoginScreen: React.FC = () => {
   const {handleError} = useErrorHandler({ showAlert: false });
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string; general?: string }>({});
   const {isOffline} = useNetworkStatus();
-  const [ephemeralError, setEphemeralError] = useState<string | null>(null);
-  const [ephemeralVisible, setEphemeralVisible] = useState(false);
-  const showEphemeral = (() => {
-    let hideTimer: NodeJS.Timeout | null = null;
-    return (message: string) => {
-      // reset previous timer if any
-      if (hideTimer) {
-        clearTimeout(hideTimer);
-        hideTimer = null;
-      }
-      setEphemeralError(message);
-      // force toggle to ensure re-render when same message repeats
-      setEphemeralVisible(false);
-      setTimeout(() => setEphemeralVisible(true), 0);
-      hideTimer = setTimeout(() => setEphemeralVisible(false), 6000);
-    };
-  })();
+  // Removed ephemeral banner logic to avoid duplicate error rendering
   // const _navigation = useNavigation();
+  
+  // Local validation helpers
+  const isString = (value: unknown): value is string => typeof value === 'string';
+  const isEmailValid = (value: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(value);
+  };
+  const passwordHasLettersNumbersAndSymbols = (value: string): boolean => {
+    const hasLetter = /[A-Za-z]/.test(value);
+    const hasNumber = /[0-9]/.test(value);
+    const hasSymbol = /[^A-Za-z0-9]/.test(value);
+    return hasLetter && hasNumber && hasSymbol;
+  };
+  const validateFields = (values: { email: unknown; password: unknown }) => {
+    const errors: { email?: string; password?: string } = {};
+    // Email validations
+    if (!values.email || (isString(values.email) && values.email.trim() === '')) {
+      errors.email = t('auth.errors.emailRequired') as string;
+    } else if (!isString(values.email)) {
+      errors.email = t('validation.email.string') as string;
+    } else if ((values.email as string).length <= 8) {
+      errors.email = t('validation.email.minLength', { count: 8 }) as string;
+    } else if (!isEmailValid(values.email as string)) {
+      errors.email = t('validation.email.invalid') as string;
+    }
+
+    // Password validations
+    if (!values.password || (isString(values.password) && values.password.trim() === '')) {
+      errors.password = t('auth.errors.passwordRequired') as string;
+    } else if (!isString(values.password)) {
+      errors.password = t('validation.password.string') as string;
+    } else if ((values.password as string).length <= 8) {
+      errors.password = t('validation.password.minLength', { count: 8 }) as string;
+    } else if (!passwordHasLettersNumbersAndSymbols(values.password as string)) {
+      errors.password = t('validation.password.mustContainLettersNumbersSymbols') as string;
+    }
+
+    return errors;
+  };
+
+  // UI enablement: enabled only when both fields non-empty and email format valid
+  const isEmailFormatValid = isEmailValid(email || '');
+  const isSubmitEnabled = Boolean(email && password && isEmailFormatValid && !isLoading);
 
   const localizeAuthError = (err: any): string => {
     const errors = (err?.errors || {}) as Record<string, string[] | string>;
@@ -72,8 +99,10 @@ const LoginScreen: React.FC = () => {
   };
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert(t('common.error'), t('auth.errors.missingFields'));
+    // Local validation on submit
+    const submitErrors = validateFields({ email, password });
+    if (submitErrors.email || submitErrors.password) {
+      setFieldErrors(submitErrors);
       return;
     }
 
@@ -111,17 +140,13 @@ const LoginScreen: React.FC = () => {
       }
       setFieldErrors(nextFieldErrors);
 
-      // Build banner message from field or general errors
-      const fieldsMessage = [nextFieldErrors.email, nextFieldErrors.password]
-        .filter(Boolean)
-        .join('\n');
-      const bannerMessage = fieldsMessage || nextFieldErrors.general || backendMessage || t('auth.errors.invalidCredentials');
-
-      // Show banner first (ensure visible even if loader overlay is present)
-      showEphemeral(bannerMessage);
-      Toast.show({ type: 'error', text1: bannerMessage, position: 'bottom', visibilityTime: 6000 });
-
-      const loginError = new Error(bannerMessage);
+      // Prefer displaying errors inline; toast only for server/general messages (no field-level)
+      const hasFieldLevel = Boolean(nextFieldErrors.email || nextFieldErrors.password);
+      const bannerMessage = nextFieldErrors.general || backendMessage || t('auth.errors.invalidCredentials');
+      if (!hasFieldLevel && bannerMessage) {
+        Toast.show({ type: 'error', text1: bannerMessage as string, position: 'bottom', visibilityTime: 6000 });
+      }
+      const loginError = new Error(bannerMessage as string);
       setError(loginError);
       handleError(loginError);
     } finally {
@@ -181,12 +206,7 @@ const LoginScreen: React.FC = () => {
             )}
           </View>
 
-          {ephemeralVisible && !!ephemeralError && (
-            <View style={styles.ephemeralCard}>
-              <Text style={styles.ephemeralIcon}>⚠️</Text>
-              <Text style={styles.ephemeralText}>{ephemeralError}</Text>
-            </View>
-          )}
+          {/* No ephemeral/banner to avoid duplicate error messages */}
 
           {!!fieldErrors.general && (
             <Text style={styles.generalErrorText}>{fieldErrors.general}</Text>
@@ -194,9 +214,9 @@ const LoginScreen: React.FC = () => {
 
           <TouchableOpacity
             testID="login-submit-button"
-            style={[styles.button, isLoading && styles.buttonDisabled]}
+            style={[styles.button, (!isSubmitEnabled) && styles.buttonDisabled]}
             onPress={handleLogin}
-            disabled={isLoading}>
+            disabled={!isSubmitEnabled}>
             <View style={styles.buttonContent}>
               {isLoading && (
                 <ActivityIndicator

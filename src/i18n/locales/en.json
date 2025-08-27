@@ -420,4 +420,17 @@
       "noInternetConnection": "No internet connection"
     }
   }
+  ,
+  "validation": {
+    "email": {
+      "string": "Email must be a text string.",
+      "minLength": "Email must be longer than {{count}} characters.",
+      "invalid": "Please enter a valid email address."
+    },
+    "password": {
+      "string": "Password must be a text string.",
+      "minLength": "Password must be longer than {{count}} characters.",
+      "mustContainLettersNumbersSymbols": "Password must include letters, numbers, and symbols."
+    }
+  }
 } 

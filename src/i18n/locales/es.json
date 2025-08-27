@@ -420,4 +420,17 @@
       "noInternetConnection": "No hay conexión a internet"
     }
   }
+  ,
+  "validation": {
+    "email": {
+      "string": "El email debe ser una cadena de texto.",
+      "minLength": "El email debe tener más de {{count}} caracteres.",
+      "invalid": "Por favor ingresa un correo electrónico válido."
+    },
+    "password": {
+      "string": "La contraseña debe ser una cadena de texto.",
+      "minLength": "La contraseña debe tener más de {{count}} caracteres.",
+      "mustContainLettersNumbersSymbols": "La contraseña debe incluir letras, números y signos."
+    }
+  }
 } 
