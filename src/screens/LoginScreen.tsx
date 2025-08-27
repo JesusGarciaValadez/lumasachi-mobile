@@ -19,7 +19,7 @@ import ErrorBoundary from '../components/ErrorBoundary';
 import ErrorMessage from '../components/ErrorMessage';
 import OfflineIndicator from '../components/OfflineIndicator';
 import LogoImage from '../components/LogoImage';
-import {useNavigation} from '@react-navigation/native';
+// import {useNavigation} from '@react-navigation/native';
 
 const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -30,7 +30,7 @@ const LoginScreen: React.FC = () => {
   const {t} = useTranslation();
   const {handleError} = useErrorHandler();
   const {isOffline} = useNetworkStatus();
-  const navigation = useNavigation();
+  // const _navigation = useNavigation();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -51,8 +51,6 @@ const LoginScreen: React.FC = () => {
     
     try {
       await login(email, password);
-      // RootNavigator renders 'Main' when authenticated, which contains the 'Home' tab
-      navigation.navigate('Main' as never);
     } catch (error) {
       const loginError = error instanceof Error 
         ? error 
