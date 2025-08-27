@@ -15,6 +15,7 @@ import './i18n'; // Importar configuración de i18n
 import {initializeI18n} from './i18n';
 import {TranslationProvider} from './i18n/TranslationProvider';
 import {queryClient} from './services/queryClient';
+import Toast from 'react-native-toast-message';
 
 type AppState = 'loading' | 'ready' | 'error';
 
@@ -122,6 +123,7 @@ const App: React.FC = () => {
         <TranslationProvider>
           <AuthProvider>
             <RootNavigator />
+            <Toast position="bottom" />
           </AuthProvider>
         </TranslationProvider>
       </QueryClientProvider>

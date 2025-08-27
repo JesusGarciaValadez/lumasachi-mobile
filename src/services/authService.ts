@@ -30,16 +30,31 @@ const login = async (credentials: LoginCredentials): Promise<string> => {
     return token;
   } catch (error) {
     if (error instanceof AxiosError && error.response) {
-      const { message, errors } = error.response.data;
-      let errorMessage = message;
+      const data = error.response.data as any;
+      const { message, errors } = data || {};
+      const status = error.response.status;
+      let errorMessage = message || 'Invalid credentials';
 
       if (errors) {
-        errorMessage += '\n';
-        for (const key in errors) {
-          errorMessage += `${errors[key].join(', ')}\n`;
+        const parts: string[] = [];
+        Object.keys(errors).forEach((key) => {
+          const msgs = Array.isArray(errors[key]) ? errors[key] : [String(errors[key])];
+          parts.push(msgs.join(', '));
+        });
+        if (parts.length) {
+          errorMessage = parts.join('\n');
         }
       }
-      throw new Error(errorMessage.trim());
+
+      const err = new Error(String(errorMessage).trim());
+      (err as any).status = status;
+      (err as any).errors = errors || {};
+      (err as any).serverMessage = message || '';
+      const lower = String(message || errorMessage).toLowerCase();
+      if ((status === 401 || status === 422) && (lower.includes('credential') || lower.includes('incorrect'))) {
+        (err as any).code = 'INVALID_CREDENTIALS';
+      }
+      throw err;
     } else if (error instanceof Error) {
       throw error;
     } else {

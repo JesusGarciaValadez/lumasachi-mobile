@@ -16,21 +16,60 @@ import {useTranslation} from 'react-i18next';
 import {useErrorHandler} from '../hooks/useErrorHandler';
 import {useNetworkStatus} from '../hooks/useNetworkStatus';
 import ErrorBoundary from '../components/ErrorBoundary';
-import ErrorMessage from '../components/ErrorMessage';
+// import ErrorMessage from '../components/ErrorMessage';
 import OfflineIndicator from '../components/OfflineIndicator';
 import LogoImage from '../components/LogoImage';
+import Toast from 'react-native-toast-message';
 // import {useNavigation} from '@react-navigation/native';
 
 const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [_error, setError] = useState<Error | null>(null);
   const {login} = useAuth();
   const {t} = useTranslation();
-  const {handleError} = useErrorHandler();
+  const {handleError} = useErrorHandler({ showAlert: false });
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string; general?: string }>({});
   const {isOffline} = useNetworkStatus();
+  const [ephemeralError, setEphemeralError] = useState<string | null>(null);
+  const [ephemeralVisible, setEphemeralVisible] = useState(false);
+  const showEphemeral = (() => {
+    let hideTimer: NodeJS.Timeout | null = null;
+    return (message: string) => {
+      // reset previous timer if any
+      if (hideTimer) {
+        clearTimeout(hideTimer);
+        hideTimer = null;
+      }
+      setEphemeralError(message);
+      // force toggle to ensure re-render when same message repeats
+      setEphemeralVisible(false);
+      setTimeout(() => setEphemeralVisible(true), 0);
+      hideTimer = setTimeout(() => setEphemeralVisible(false), 6000);
+    };
+  })();
   // const _navigation = useNavigation();
+
+  const localizeAuthError = (err: any): string => {
+    const errors = (err?.errors || {}) as Record<string, string[] | string>;
+    const rawMsg = String(err?.serverMessage || err?.message || '').toLowerCase();
+
+    // Field-specific
+    if (errors.email || rawMsg.includes('email field is required')) {
+      return t('auth.errors.emailRequired');
+    }
+    if (errors.password || rawMsg.includes('password field is required')) {
+      return t('auth.errors.passwordRequired');
+    }
+
+    // Invalid credentials
+    if (err?.code === 'INVALID_CREDENTIALS' || rawMsg.includes('provided credentials are incorrect')) {
+      return t('auth.errors.invalidCredentials');
+    }
+
+    return t('common.errors.unexpectedError');
+  };
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -48,14 +87,41 @@ const LoginScreen: React.FC = () => {
 
     setIsLoading(true);
     setError(null);
+    setFieldErrors({});
     
     try {
       await login(email, password);
     } catch (error) {
-      const loginError = error instanceof Error 
-        ? error 
-        : new Error(t('auth.errors.invalidCredentials'));
-      
+      const err = error as any;
+      const errors = (err?.errors || {}) as Record<string, string[] | string>;
+
+      // Prefer field-level errors if present
+      const nextFieldErrors: { email?: string; password?: string; general?: string } = {};
+      if (errors.email) {
+        nextFieldErrors.email = t('auth.errors.emailRequired');
+      }
+      if (errors.password) {
+        nextFieldErrors.password = t('auth.errors.passwordRequired');
+      }
+      // Always capture backend/general message
+      const backendMessage = err?.serverMessage || (err instanceof Error ? err.message : '') || '';
+      const friendlyGeneral = localizeAuthError(err) || backendMessage || undefined;
+      if (friendlyGeneral) {
+        nextFieldErrors.general = friendlyGeneral;
+      }
+      setFieldErrors(nextFieldErrors);
+
+      // Build banner message from field or general errors
+      const fieldsMessage = [nextFieldErrors.email, nextFieldErrors.password]
+        .filter(Boolean)
+        .join('\n');
+      const bannerMessage = fieldsMessage || nextFieldErrors.general || backendMessage || t('auth.errors.invalidCredentials');
+
+      // Show banner first (ensure visible even if loader overlay is present)
+      showEphemeral(bannerMessage);
+      Toast.show({ type: 'error', text1: bannerMessage, position: 'bottom', visibilityTime: 6000 });
+
+      const loginError = new Error(bannerMessage);
       setError(loginError);
       handleError(loginError);
     } finally {
@@ -82,14 +148,7 @@ const LoginScreen: React.FC = () => {
             <LogoImage />
             <Text style={styles.subtitle}>{t('auth.subtitle')}</Text>
             
-            {error && (
-              <ErrorMessage
-                error={error}
-                onRetry={handleLogin}
-                onDismiss={() => setError(null)}
-                style={styles.errorMessage}
-              />
-            )}
+            {/* Removed inline ErrorMessage to avoid LogBox and centralize errors in banner/fields */}
 
           <View style={styles.inputContainer}>
             <TextInput
@@ -102,6 +161,9 @@ const LoginScreen: React.FC = () => {
               autoCapitalize="none"
               editable={!isLoading}
             />
+            {!!fieldErrors.email && (
+              <Text style={styles.inputErrorText}>{fieldErrors.email}</Text>
+            )}
           </View>
 
           <View style={styles.inputContainer}>
@@ -114,7 +176,21 @@ const LoginScreen: React.FC = () => {
               secureTextEntry
               editable={!isLoading}
             />
+            {!!fieldErrors.password && (
+              <Text style={styles.inputErrorText}>{fieldErrors.password}</Text>
+            )}
           </View>
+
+          {ephemeralVisible && !!ephemeralError && (
+            <View style={styles.ephemeralCard}>
+              <Text style={styles.ephemeralIcon}>⚠️</Text>
+              <Text style={styles.ephemeralText}>{ephemeralError}</Text>
+            </View>
+          )}
+
+          {!!fieldErrors.general && (
+            <Text style={styles.generalErrorText}>{fieldErrors.general}</Text>
+          )}
 
           <TouchableOpacity
             testID="login-submit-button"
@@ -144,7 +220,7 @@ const LoginScreen: React.FC = () => {
             </Text>
           </TouchableOpacity>
         </View>
-      </ScrollView>
+        </ScrollView>
       
       {/* Loading Overlay */}
       {isLoading && (
@@ -194,6 +270,52 @@ const styles = StyleSheet.create({
   },
   errorMessage: {
     marginBottom: 16,
+  },
+  inputErrorText: {
+    color: '#dc3545',
+    marginTop: 6,
+    fontSize: 13,
+  },
+  generalErrorText: {
+    color: '#dc3545',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  ephemeralContainer: {
+    position: 'absolute',
+    left: 16,
+    right: 16,
+    bottom: 16,
+  },
+  inlineBannerContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+  },
+  ephemeralCard: {
+    backgroundColor: '#FFF5F5',
+    borderLeftColor: '#FF6B6B',
+    borderLeftWidth: 4,
+    borderRadius: 8,
+    padding: 12,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginTop: 8,
+    marginBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 2,
+  },
+  ephemeralIcon: {
+    marginRight: 8,
+    fontSize: 16,
+  },
+  ephemeralText: {
+    flex: 1,
+    color: '#2D3748',
+    fontSize: 14,
+    lineHeight: 20,
   },
   subtitle: {
     fontSize: 16,
