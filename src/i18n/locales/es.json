@@ -32,7 +32,11 @@
     },
     "forgotPassword": "¿Olvidaste tu contraseña?",
     "forgotPasswordTitle": "Restablecer Contraseña",
-    "forgotPasswordMessage": "La funcionalidad de restablecimiento de contraseña se implementará pronto."
+    "forgotPasswordMessage": "La funcionalidad de restablecimiento de contraseña se implementará pronto.",
+    "getNewPassword": "Obtener una nueva contraseña",
+    "backToLoginForm": "← Volver al formulario de login",
+    "forgotPasswordSubtitle": "Ingresa tu email para obtener un enlace de restablecimiento",
+    "forgotSuccessToast": "En breve recibirás un correo en tu bandeja de entrada para obtener una nueva contraseña"
   },
   "home": {
     "greeting": {

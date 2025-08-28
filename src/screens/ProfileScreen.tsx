@@ -120,7 +120,6 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
           <View style={styles.card}>
             <DetailRow label={t('profile.email') as string} value={user?.email || ''} valueFlex={2} />
             <DetailRow label={t('profile.phone') as string} value={user?.phoneNumber || ''} valueFlex={2} />
-            <DetailRow label={t('profile.address') as string} value={user?.address || ''} valueFlex={2} />
             <DetailRow label={t('profile.company') as string} value={user?.company || ''} valueFlex={2} />
           </View>
         </View>

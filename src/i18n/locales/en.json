@@ -32,7 +32,11 @@
     },
     "forgotPassword": "Forgot Password?",
     "forgotPasswordTitle": "Reset Password",
-    "forgotPasswordMessage": "Password reset functionality will be implemented soon."
+    "forgotPasswordMessage": "Password reset functionality will be implemented soon.",
+    "getNewPassword": "Get a new password",
+    "backToLoginForm": "← Back to login form",
+    "forgotPasswordSubtitle": "Enter your email to receive a reset link",
+    "forgotSuccessToast": "You'll receive an email shortly to obtain a new password"
   },
   "home": {
     "greeting": {

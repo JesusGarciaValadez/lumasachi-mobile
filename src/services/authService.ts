@@ -63,27 +63,26 @@ const login = async (credentials: LoginCredentials): Promise<string> => {
   }
 };
 
-// API response for GET /v1/user/{email}
+// API response for GET /v1/user/{email} (current shape)
 interface BackendUserResponse {
-  user_id: number;
-  user_found: boolean;
-  user_data?: {
+  data: {
     id: number;
-    company_id?: string | null;
+    company_uuid?: string | null;
+    company_name?: string | null;
     first_name: string;
     last_name: string;
+    full_name?: string | null;
     email: string;
+    email_verified_at?: string | null;
     role: string; // e.g. "Employee", "Super Administrator"
-    phone_number?: string | null;
+    type?: string | null; // e.g. "Individual" | "Corporate"
     is_active: boolean;
-    notes?: string | null;
-    type?: string | null;
     preferences?: unknown | null;
+    phone_number?: string | null;
+    notes?: string | null;
     created_at?: string;
     updated_at?: string;
   };
-  user_exists?: boolean;
-  all_attributes?: Record<string, unknown>;
 }
 
 const toUserRole = (role: string): User['role'] => {
@@ -105,10 +104,18 @@ const toUserRole = (role: string): User['role'] => {
 };
 
 const mapBackendToUser = (payload: BackendUserResponse): User => {
-  const data = payload.user_data;
-  if (!payload.user_found || !data) {
+  const data = payload?.data;
+  if (!data) {
     throw new Error('User not found');
   }
+
+  // Normalize customer type from server to our union
+  const normalizedCustomerType = ((): User['customerType'] => {
+    const t = (data.type || '').toString().toLowerCase();
+    if (t === 'individual') return 'individual';
+    if (t === 'corporate') return 'corporate';
+    return undefined;
+  })();
 
   return {
     id: String(data.id),
@@ -116,15 +123,15 @@ const mapBackendToUser = (payload: BackendUserResponse): User => {
     lastName: data.last_name,
     email: data.email,
     role: toUserRole(String(data.role || '')),
-    company: data.company_id || undefined,
+    company: data.company_name || undefined,
     phoneNumber: data.phone_number || undefined,
     address: undefined,
     isActive: Boolean(data.is_active),
     lastLoginAt: undefined,
     languagePreference: 'es',
-    customerNotes: undefined,
-    customerType: undefined,
-    customerPreferences: undefined,
+    customerNotes: (data.notes ?? undefined) as string | undefined,
+    customerType: normalizedCustomerType,
+    customerPreferences: (data.preferences ?? undefined) as string | undefined,
     isCustomer: undefined,
     isEmployee: undefined,
     createdAt: data.created_at ? new Date(data.created_at) : new Date(),
