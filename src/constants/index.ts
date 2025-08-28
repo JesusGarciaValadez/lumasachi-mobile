@@ -19,7 +19,7 @@ export const API_ENDPOINTS = {
   AUTH: {
     LOGIN: '/v1/sanctum/token',
     REGISTER: '/auth/register',
-    LOGOUT: '/auth/logout',
+    LOGOUT: '/v1/logout',
     REFRESH: '/auth/refresh',
     FORGOT_PASSWORD: '/v1/forgot-password',
     RESET_PASSWORD: '/auth/reset-password',

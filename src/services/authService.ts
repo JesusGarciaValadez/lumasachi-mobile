@@ -171,12 +171,48 @@ const fetchUserData = async (email: string): Promise<User> => {
 };
 
 const logout = async (): Promise<void> => {
-  await AsyncStorage.multiRemove([
-    STORAGE_KEYS.AUTH_TOKEN,
-    STORAGE_KEYS.REFRESH_TOKEN, // Assuming refresh token might be used later
-    STORAGE_KEYS.USER_DATA,
-  ]);
-  // No API call for logout as per cURL, only local state clear
+  try {
+    // Perform API logout to invalidate server-side token/session
+    const response = await httpClient.post<{ message: string }>(
+      API_ENDPOINTS.AUTH.LOGOUT,
+      undefined,
+      {
+        headers: {
+          'Accept': 'application/json',
+        },
+      }
+    );
+
+    if (response.status === 200) {
+      // Clear local auth-related data on successful logout
+      await AsyncStorage.multiRemove([
+        STORAGE_KEYS.AUTH_TOKEN,
+        STORAGE_KEYS.REFRESH_TOKEN,
+        STORAGE_KEYS.USER_DATA,
+      ]);
+      return;
+    }
+
+    // If the API returns a non-200 response, treat as failure
+    const message = (response.data as any)?.message || 'Logout failed';
+    throw new Error(String(message));
+  } catch (error) {
+    // If server explicitly responds with an error, surface message
+    if (error instanceof AxiosError && error.response) {
+      const data = error.response.data as any;
+      const message = data?.message || 'Logout failed';
+      const err = new Error(String(message).trim());
+      (err as any).status = error.response.status;
+      throw err;
+    }
+
+    // Re-throw non-Axios errors
+    if (error instanceof Error) {
+      throw error;
+    }
+
+    throw new Error('An unknown error occurred during logout.');
+  }
 };
 
 const getAuthToken = async (): Promise<string | null> => {
