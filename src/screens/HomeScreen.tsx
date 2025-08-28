@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,19 +10,21 @@ import {
 import {HomeScreenProps} from '../types/navigation';
 import {useAuth} from '../hooks/useAuth';
 import {useOrderStats} from '../hooks/useOrderStats';
+import {useOrders} from '../hooks/useOrders';
 import {useTranslation} from 'react-i18next';
 import {translateRole} from '../utils/roleTranslations';
 import {RequirePermission, RequireAdmin} from '../components/PermissionGuard';
 import {PERMISSIONS} from '../services/permissionsService';
-import ErrorBoundary from '../components/ErrorBoundary';
-import ErrorMessage from '../components/ErrorMessage';
-import OfflineIndicator from '../components/OfflineIndicator';
-import {useNetworkStatus} from '../hooks/useNetworkStatus';
+// Removed unused imports
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const {user} = useAuth();
+  const {ensureLoaded, isLoading: ordersLoading, error: ordersError} = useOrders();
   const {stats, isLoading: statsLoading, error: statsError} = useOrderStats();
   const {t} = useTranslation();
+  useEffect(() => {
+    ensureLoaded();
+  }, [ensureLoaded]);
 
   const handleCreateOrder = () => {
     navigation.navigate('CreateOrder');
@@ -89,12 +91,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
       <View style={styles.summary}>
         <Text style={styles.sectionTitle}>{t('home.summary')}</Text>
         
-        {statsLoading ? (
+        {ordersLoading || statsLoading ? (
           <View style={[styles.summaryCard, styles.loadingCard]}>
             <ActivityIndicator size="small" color="#007AFF" />
             <Text style={styles.loadingText}>{t('app.loading')}</Text>
           </View>
-        ) : statsError ? (
+        ) : ordersError || statsError ? (
           <View style={styles.summaryCard}>
             <Text style={styles.errorText}>{t('home.error.generic')}</Text>
           </View>
