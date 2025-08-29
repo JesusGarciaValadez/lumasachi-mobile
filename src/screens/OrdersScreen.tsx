@@ -13,6 +13,7 @@ import {useTranslation} from 'react-i18next';
 import {getStatusTranslation} from '../utils/roleTranslations';
 import {useOrders} from '../hooks/useOrders';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import { formatDateTimeLocal, formatDateLocal } from '../utils/datetime';
 
 const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
   const {t} = useTranslation();
@@ -50,8 +51,8 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
     }
     const customerName = item?.customer?.full_name || '-';
     const assignedToName = item?.assigned_to?.full_name || '-';
-    const createdAt = item?.created_at ? new Date(item.created_at).toLocaleDateString() : '';
-    const completedAt = item?.actual_completion ? new Date(item.actual_completion).toLocaleDateString() : null;
+    const createdAt = formatDateLocal(item?.created_at);
+    const completedAt = item?.actual_completion ? formatDateTimeLocal(item.actual_completion) : null;
 
     return (
       <TouchableOpacity
@@ -61,7 +62,7 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
           {backgroundColor},
         ]}
         onPress={() => handleOrderPress(item.id)}
-        accessibilityRole="button"
+        accessibilityRole="button"  
         accessibilityLabel={`${t('orders.order')} #${item.id}`}
       >
         <View style={styles.rowBetween}>
