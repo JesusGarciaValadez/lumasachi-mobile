@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-import { format } from 'date-fns';
+// date-fns format not needed; using custom formatter
+import { formatDateTimeLocal } from '../utils/datetime';
 // removed locales; fixed output format to numeric month
 import {OrderDetailsScreenProps} from '../types/navigation';
 import {useTranslationSafe} from '../hooks/useTranslationSafe';
@@ -67,7 +68,7 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
     }
   };
 
-  const _getCustomerName = () => customer?.full_name || '-';
+  // customer name utility not needed currently
 
   const translateOrFallback = (key: string, fallback: string) => {
     const translated = t(key) as string;
@@ -87,11 +88,7 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
     };
   };
 
-  const formatDateTime = (dateString?: string | null) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return format(date, 'yyyy-MM-dd HH:mm:ss');
-  };
+  const formatDateTime = (dateString?: string | null) => formatDateTimeLocal(dateString);
 
   const statusLedColor = useMemo(() => {
     switch (order?.status) {
@@ -169,17 +166,16 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
                 <View style={styles.detailRowCustom}>
                   <Text style={styles.detailLabel}>{t('orders.status') as string}:</Text>
                   <View style={styles.inlineRight}>
-                    <Text style={styles.detailValue}>{t(getStatusTranslation(order?.status || 'Open'))}</Text>
+                    <Text style={styles.detailValue}>{t(getStatusTranslation(order?.status || 'Open')) as string}</Text>
                     {!!statusLedColor && <View style={[styles.statusDot, {backgroundColor: statusLedColor}]} />}
                   </View>
                 </View>
                 <DetailRow label={t('orders.orderTitle') as string} value={order?.title || ''} />
-                <DetailRow label={t('orders.description') as string} value={order?.description || ''} />
                 <DetailRow label={t('orders.category') as string} value={order?.category || ''} />
                 <View style={styles.detailRowCustom}>
                   <Text style={styles.detailLabel}>{t('orders.priority') as string}:</Text>
                   <View style={styles.inlineRight}>
-                    <Text style={styles.detailValue}>{t(priorityTranslationKey(order?.priority))}</Text>
+                    <Text style={styles.detailValue}>{t(priorityTranslationKey(order?.priority)) as string}</Text>
                     <View style={[styles.priorityDot, {backgroundColor: getPriorityColor(order?.priority)}]} />
                   </View>
                 </View>

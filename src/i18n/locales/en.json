@@ -62,7 +62,7 @@
     "order": "Order",
     "customer": "Customer",
     "status": "Status",
-    "description": "Description",
+    "description": "Order Description",
     "priority": "Priority",
     "category": "Category",
     "orderTitle": "Title",
