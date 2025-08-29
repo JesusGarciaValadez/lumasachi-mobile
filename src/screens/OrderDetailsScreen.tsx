@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
@@ -8,8 +8,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { format } from 'date-fns';
+// removed locales; fixed output format to numeric month
 import {OrderDetailsScreenProps} from '../types/navigation';
-import {Order, Status, User, UserRole} from '../types';
 import {useTranslationSafe} from '../hooks/useTranslationSafe';
 import DetailRow from '../components/DetailRow';
 import {getStatusTranslation} from '../utils/roleTranslations';
@@ -17,6 +17,7 @@ import ErrorBoundary from '../components/ErrorBoundary';
 import ErrorMessage from '../components/ErrorMessage';
 import {useErrorHandler} from '../hooks/useErrorHandler';
 import {errorService} from '../services/errorService';
+import { useOrders } from '../hooks/useOrders';
 
 const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
   navigation,
@@ -25,96 +26,29 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
   const {orderId} = route.params;
   const {t} = useTranslationSafe();
   const {handleError, clearError, hasError, error} = useErrorHandler();
-  const [order, setOrder] = useState<Order | null>(null);
-  const [orderStatus, setOrderStatus] = useState<Status | null>(null);
-  const [customer, setCustomer] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { orders, ensureLoaded } = useOrders();
 
-  useEffect(() => {
-    const loadOrderData = async () => {
+  const order = useMemo(() => orders.find(o => String(o.id) === String(orderId)) || null, [orders, orderId]);
+  const customer = order?.customer || null;
+  const loading = !order;
+
+  React.useEffect(() => {
+    const run = async () => {
       try {
         clearError();
-        setLoading(true);
-        // TODO: Uncomment when backend is implemented
-        // const orderData = await fetchOrder(orderId);
-        // const statusData = await fetchOrderStatus(orderData.statusId);
-        // const customerData = await fetchUser(orderData.customerId);
-        // setOrder(orderData);
-        // setOrderStatus(statusData);
-        // setCustomer(customerData);
-        
-        // Temporary placeholder data until backend is ready
-        setOrder({
-          id: orderId,
-          customerId: 'customer-123',
-          customer: {
-            id: 'customer-123',
-            firstName: t('common.mockData.customerFirstName') as string,
-            lastName: t('common.mockData.customerLastName') as string,
-            email: t('common.mockData.customerEmail') as string,
-            role: UserRole.CUSTOMER,
-            address: t('common.mockData.customerAddress') as string,
-            phoneNumber: '+1234567890',
-            company: t('common.mockData.demoCompany') as string,
-            isActive: true,
-            languagePreference: 'es',
-            customerNotes: t('common.mockData.vipCustomer') as string,
-            customerType: 'corporate',
-            isCustomer: true,
-            isEmployee: false,
-            createdAt: new Date('2024-01-10T10:00:00Z'),
-            updatedAt: new Date('2024-01-15T14:30:00Z'),
-          },
-          title: t('common.mockData.testOrder') as string,
-          description: t('common.mockData.testOrderDescription') as string,
-          status: 'In Progress',
-          priority: 'Normal',
-          createdAt: new Date('2024-01-15T10:30:00Z'),
-          updatedAt: new Date('2024-01-20T14:45:00Z'),
-          createdBy: 'admin',
-          updatedBy: 'admin',
-        });
-        setOrderStatus({
-          id: 'status-1',
-          statusName: 'In Progress',
-        });
-        setCustomer({
-          id: 'customer-123',
-          firstName: t('common.mockData.customerFirstName') as string,
-          lastName: t('common.mockData.customerLastName') as string,
-          email: t('common.mockData.customerEmail') as string,
-          role: UserRole.CUSTOMER,
-          address: t('common.mockData.customerAddress') as string,
-          phoneNumber: '+1234567890',
-          company: t('common.mockData.demoCompany') as string,
-          isActive: true,
-          languagePreference: 'es',
-          customerNotes: t('common.mockData.vipCustomer') as string,
-          customerType: 'corporate',
-          isCustomer: true,
-          isEmployee: false,
-          createdAt: new Date('2024-01-10T10:00:00Z'),
-          updatedAt: new Date('2024-01-15T14:30:00Z'),
-        });
-        
-        errorService.logSuccess('loadOrderData', {
+        await ensureLoaded();
+      } catch (err) {
+        await errorService.logError(err as Error, {
           component: 'OrderDetailsScreen',
+          operation: 'ensureLoaded',
           orderId,
         });
-      } catch (error) {
-        await errorService.logError(error as Error, {
-          component: 'OrderDetailsScreen',
-          operation: 'loadOrderData',
-          orderId,
-        });
-        handleError(error as Error);
-      } finally {
-        setLoading(false);
+        handleError(err as Error);
       }
     };
-
-    loadOrderData();
-  }, [orderId, t, handleError, clearError]);
+    run();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ensureLoaded, orderId]);
 
   const handleEditOrder = () => {
     try {
@@ -133,25 +67,72 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
     }
   };
 
-  const getCustomerName = () => {
-    if (!customer) return '-';
-    return `${customer.firstName} ${customer.lastName}`;
+  const _getCustomerName = () => customer?.full_name || '-';
+
+  const translateOrFallback = (key: string, fallback: string) => {
+    const translated = t(key) as string;
+    return translated === key ? fallback : translated;
   };
 
   const getCustomerInfo = () => {
     if (!customer) return null;
+    const anyCustomer: any = customer as any;
     return {
-      name: `${customer.firstName} ${customer.lastName}`,
+      name: customer.full_name,
       email: customer.email,
-      company: customer.company,
-      phone: customer.phoneNumber,
-      type: customer.customerType,
-      notes: customer.customerNotes,
+      company: anyCustomer?.company?.name || anyCustomer?.company || '',
+      phone: anyCustomer?.phone_number || '',
+      type: (customer.type || '').toString(),
+      notes: anyCustomer?.notes || '',
     };
   };
 
-  const formatDate = (date: Date) => {
-    return format(date, 'dd/MM/yyyy');
+  const formatDateTime = (dateString?: string | null) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return format(date, 'yyyy-MM-dd HH:mm:ss');
+  };
+
+  const statusLedColor = useMemo(() => {
+    switch (order?.status) {
+      case 'Open':
+        return '#74B9FF';
+      case 'In Progress':
+        return '#007AFF';
+      case 'Ready for delivery':
+      case 'Completed':
+      case 'Delivered':
+        return '#34C759';
+      case 'Paid':
+        return '#66D17A';
+      default:
+        return null;
+    }
+  }, [order?.status]);
+
+  const priorityTranslationKey = (priority?: string) => {
+    const map: Record<string, string> = {
+      Low: 'orders.priorities.low',
+      Normal: 'orders.priorities.normal',
+      High: 'orders.priorities.high',
+      Urgent: 'orders.priorities.urgent',
+    };
+    return priority ? map[priority] || 'orders.priorities.normal' : '';
+  };
+
+  const getPriorityColor = (priority?: string) => {
+    switch (priority) {
+      case 'Low':
+        return '#34C759';
+      case 'Normal':
+        return '#FFD60A';
+      case 'High':
+        return '#FF9500';
+      case 'Urgent':
+        return '#FF3B30';
+      default:
+        return '#FFD60A';
+    }
   };
 
   const customerInfo = getCustomerInfo();
@@ -175,10 +156,9 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
             )}
 
             <View style={styles.header}>
-              <Text style={styles.orderId}>{t('orders.order') as string} #{orderId}</Text>
-              <TouchableOpacity
-                style={styles.editButton}
-                onPress={handleEditOrder}>
+              <Text style={styles.pageTitle}>{translateOrFallback('orders.order', 'Órden')}</Text>
+              <Text style={styles.orderId}>#{orderId}</Text>
+              <TouchableOpacity style={styles.editButton} onPress={handleEditOrder}>
                 <Text style={styles.editButtonText}>{t('common.edit') as string}</Text>
               </TouchableOpacity>
             </View>
@@ -186,32 +166,40 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>{t('orders.generalInfo') as string}</Text>
               <View style={styles.card}>
-                <DetailRow 
-                  label={t('orders.status') as string} 
-                  value={orderStatus ? t(getStatusTranslation(orderStatus.statusName)) as string : '-'} 
-                />
-                <DetailRow 
-                  label={t('orders.customer') as string} 
-                  value={getCustomerName()} 
-                />
-                <DetailRow 
-                  label={t('orders.priority') as string} 
-                  value={order?.priority || '-'} 
-                />
-                <DetailRow 
-                  label={t('orders.createdAt') as string} 
-                  value={order?.createdAt ? formatDate(order.createdAt) : '-'} 
-                />
-                <DetailRow 
-                  label={t('orders.updatedAt') as string} 
-                  value={order?.updatedAt ? formatDate(order.updatedAt) : '-'} 
-                />
+                <View style={styles.detailRowCustom}>
+                  <Text style={styles.detailLabel}>{t('orders.status') as string}:</Text>
+                  <View style={styles.inlineRight}>
+                    <Text style={styles.detailValue}>{t(getStatusTranslation(order?.status || 'Open'))}</Text>
+                    {!!statusLedColor && <View style={[styles.statusDot, {backgroundColor: statusLedColor}]} />}
+                  </View>
+                </View>
+                <DetailRow label={t('orders.orderTitle') as string} value={order?.title || ''} />
+                <DetailRow label={t('orders.description') as string} value={order?.description || ''} />
+                <DetailRow label={t('orders.category') as string} value={order?.category || ''} />
+                <View style={styles.detailRowCustom}>
+                  <Text style={styles.detailLabel}>{t('orders.priority') as string}:</Text>
+                  <View style={styles.inlineRight}>
+                    <Text style={styles.detailValue}>{t(priorityTranslationKey(order?.priority))}</Text>
+                    <View style={[styles.priorityDot, {backgroundColor: getPriorityColor(order?.priority)}]} />
+                  </View>
+                </View>
+                <DetailRow label={t('orders.createdAt') as string} value={formatDateTime(order?.created_at)} />
+                <DetailRow label={t('orders.createdBy') as string} value={order?.created_by?.full_name || ''} />
+                <DetailRow label={t('orders.assignedTo') as string} value={order?.assigned_to?.full_name || ''} />
+                <DetailRow label={t('orders.updatedAt') as string} value={formatDateTime(order?.updated_at)} />
+                {!!order?.estimated_completion && (
+                  <DetailRow label={t('orders.estimatedCompletion') as string} value={formatDateTime(order?.estimated_completion)} />
+                )}
+                {!!order?.actual_completion && (
+                  <DetailRow label={t('orders.actualCompletion') as string} value={formatDateTime(order?.actual_completion)} />
+                )}
+                <DetailRow label={t('orders.notes') as string} value={order?.notes || ''} valueFlex={2} />
               </View>
             </View>
 
             {customerInfo && (
               <View style={styles.section}>
-                <Text style={styles.sectionTitle}>{t('orders.customerInfo') as string}</Text>
+                <Text style={styles.sectionTitle}>{translateOrFallback('orders.customerInfo', 'Información del Cliente')}</Text>
                 <View style={styles.card}>
                   <DetailRow 
                     label={t('common.name') as string} 
@@ -283,27 +271,33 @@ const styles = StyleSheet.create({
     color: '#666666',
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    backgroundColor: '#007AFF',
+    paddingTop: 20,
+    paddingBottom: 16,
+    paddingHorizontal: 20,
+    borderBottomWidth: 0,
   },
-  orderId: {
+  pageTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#333333',
+    color: '#ffffff',
+    marginBottom: 6,
+  },
+  orderId: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#ffffff',
+    marginBottom: 10,
   },
   editButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#ffffff',
     paddingHorizontal: 15,
     paddingVertical: 8,
     borderRadius: 6,
+    alignSelf: 'flex-start',
   },
   editButtonText: {
-    color: '#ffffff',
+    color: '#007AFF',
     fontSize: 14,
     fontWeight: '500',
   },
@@ -333,6 +327,42 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333333',
     lineHeight: 24,
+  },
+  detailRowCustom: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  detailLabel: {
+    fontSize: 14,
+    color: '#666666',
+    flex: 1,
+  },
+  detailValue: {
+    fontSize: 14,
+    color: '#333333',
+    fontWeight: '500',
+  },
+  inlineRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  statusDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginLeft: 8,
+  },
+  priorityDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginLeft: 8,
   },
 });
 
