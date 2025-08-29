@@ -24,12 +24,12 @@ const styles = StyleSheet.create({
     borderBottomColor: '#f0f0f0',
   },
   detailLabel: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#666666',
     flex: 1,
   },
   detailValue: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#333333',
     fontWeight: '500',
     flex: 1,

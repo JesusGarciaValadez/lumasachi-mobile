@@ -78,6 +78,10 @@
     "inProgress": "En Progreso",
     "assignedTo": "Asignado a",
     "completed": "Completado",
+    "createdBy": "Creado por",
+    "estimatedCompletion": "Fecha estimada de cumplimiento",
+    "actualCompletion": "Fecha de cumplimiento",
+    "notes": "Notas",
     "statuses": {
       "open": "Abierto",
       "inProgress": "En Progreso",
