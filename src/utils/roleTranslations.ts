@@ -27,10 +27,12 @@ export const getStatusTranslation = (status: string): string => {
     'Open': 'orders.statuses.open',
     'In Progress': 'orders.statuses.inProgress',
     'Ready for delivery': 'orders.statuses.readyForDelivery',
+    'Completed': 'orders.statuses.completed',
     'Delivered': 'orders.statuses.delivered',
     'Paid': 'orders.statuses.paid',
     'Returned': 'orders.statuses.returned',
     'Not paid': 'orders.statuses.notPaid',
+    'On hold': 'orders.statuses.onHold',
     'Cancelled': 'orders.statuses.cancelled',
   };
 
