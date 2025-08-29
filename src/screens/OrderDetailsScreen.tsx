@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -19,6 +19,7 @@ import ErrorMessage from '../components/ErrorMessage';
 import {useErrorHandler} from '../hooks/useErrorHandler';
 import {errorService} from '../services/errorService';
 import { useOrders } from '../hooks/useOrders';
+import { orderService, RawOrderHistoryEntry, PaginatedResponse } from '../services/orderService';
 
 const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
   navigation,
@@ -28,6 +29,8 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
   const {t} = useTranslationSafe();
   const {handleError, clearError, hasError, error} = useErrorHandler();
   const { orders, ensureLoaded } = useOrders();
+  const [history, setHistory] = useState<RawOrderHistoryEntry[]>([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
   const order = useMemo(() => orders.find(o => String(o.id) === String(orderId)) || null, [orders, orderId]);
   const customer = order?.customer || null;
@@ -50,6 +53,29 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
     run();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ensureLoaded, orderId]);
+
+  useEffect(() => {
+    if (!order) return;
+    const controller = new AbortController();
+    const load = async () => {
+      try {
+        setIsLoadingHistory(true);
+        const resp = await orderService.fetchOrderHistory(String(order.id), controller.signal) as PaginatedResponse<RawOrderHistoryEntry>;
+        const items = Array.isArray(resp?.data) ? resp.data : [];
+        setHistory(items);
+      } catch (err) {
+        await errorService.logError(err as Error, {
+          component: 'OrderDetailsScreen',
+          operation: 'fetchOrderHistory',
+          orderId,
+        });
+      } finally {
+        setIsLoadingHistory(false);
+      }
+    };
+    load();
+    return () => controller.abort();
+  }, [order, orderId]);
 
   const handleEditOrder = () => {
     try {
@@ -167,7 +193,7 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
                   <Text style={styles.detailLabel}>{t('orders.status') as string}:</Text>
                   <View style={styles.inlineRight}>
                     <Text style={styles.detailValue}>{t(getStatusTranslation(order?.status || 'Open')) as string}</Text>
-                    {!!statusLedColor && <View style={[styles.statusDot, {backgroundColor: statusLedColor}]} />}
+                    {!!statusLedColor && renderLed(getLedTone(statusLedColor))}
                   </View>
                 </View>
                 <DetailRow label={t('orders.orderTitle') as string} value={order?.title || ''} />
@@ -176,7 +202,7 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
                   <Text style={styles.detailLabel}>{t('orders.priority') as string}:</Text>
                   <View style={styles.inlineRight}>
                     <Text style={styles.detailValue}>{t(priorityTranslationKey(order?.priority)) as string}</Text>
-                    <View style={[styles.priorityDot, {backgroundColor: getPriorityColor(order?.priority)}]} />
+                    {renderLed(getPriorityColor(order?.priority))}
                   </View>
                 </View>
                 <DetailRow label={t('orders.createdAt') as string} value={formatDateTime(order?.created_at)} />
@@ -243,6 +269,51 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
                 </Text>
               </View>
             </View>
+
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>{translateOrFallback('orders.history', 'Historial')}</Text>
+              {isLoadingHistory && (
+                <View style={[styles.card, styles.historyLoadingCard]}>
+                  <Text style={styles.historyLoadingText}>{t('common.loading') as string}</Text>
+                </View>
+              )}
+              {!isLoadingHistory && !history.length && (
+                <View style={styles.card}><Text style={styles.description}>{translateOrFallback('orders.noHistory', 'No hay actividad aún')}</Text></View>
+              )}
+              {!!history.length && (
+                <View style={styles.timeline}>
+                  {history.map((h, index) => {
+                    const actor = h.creator || null;
+                    const first = (actor?.first_name || actor?.full_name?.split(' ')?.[0] || '?').toString();
+                    const last = (actor?.last_name || actor?.full_name?.split(' ')?.slice(-1)[0] || '?').toString();
+                    const initials = `${first.charAt(0)}${last.charAt(0)}`.toUpperCase();
+                    const message = h.comment || h.description || '';
+                    const when = formatDateTime(h.created_at);
+                    return (
+                      <View key={String(h.id ?? index)} style={{position: 'relative'}}>
+                        <View style={styles.timelineAvatar}>
+                          <Text style={styles.timelineAvatarText}>{initials}</Text>
+                        </View>
+                        <View style={styles.historyCard}>
+                          <View style={styles.historyHeader}>
+                            <View style={styles.historyHeaderText}>
+                              <Text style={styles.historyActor}>{actor?.full_name || `${first} ${last}`}</Text>
+                            </View>
+                            <Text style={styles.historyWhen}>{when}</Text>
+                          </View>
+                          {!!message && (
+                            <View style={styles.historyBody}>
+                              <Text style={styles.historyMessage}>{message}</Text>
+                            </View>
+                          )}
+                        </View>
+                      </View>
+                    );
+                  })}
+                </View>
+              )}
+            </View>
+
           </>
         )}
       </ScrollView>
@@ -319,6 +390,15 @@ const styles = StyleSheet.create({
     shadowRadius: 2.22,
     elevation: 3,
   },
+  historyLoadingCard: {
+    paddingVertical: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  historyLoadingText: {
+    fontSize: 16,
+    color: '#666666',
+  },
   description: {
     fontSize: 16,
     color: '#333333',
@@ -349,17 +429,151 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   statusDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
     marginLeft: 8,
   },
   priorityDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginLeft: 8,
+  },
+  ledOuter: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    marginLeft: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ledInner: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    marginLeft: 8,
+    borderWidth: 2,
+  },
+  historyCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    padding: 16,
+    marginLeft: 16,
+    marginRight: 0,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.12,
+    shadowRadius: 2,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: '#f0f0f0',
+  },
+  historyHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  avatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#E5E5EA',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#007AFF',
+  },
+  historyHeaderText: {
+    flex: 1,
+    marginLeft: 0,
+  },
+  historyActor: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#111111',
+  },
+  historyAction: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginTop: 2,
+  },
+  historyWhen: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginLeft: 12,
+    textAlign: 'right',
+  },
+  historyBody: {
+    marginTop: 10,
+  },
+  historyMessage: {
+    fontSize: 14,
+    color: '#333333',
+    lineHeight: 20,
+  },
+  timeline: {
+    paddingLeft: 24,
+    borderLeftWidth: 1,
+    borderLeftColor: '#E5E5EA',
+  },
+  timelineAvatar: {
+    position: 'absolute',
+    left: -18,
+    top: 10,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#E5E5EA',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 2,
+  },
+  timelineAvatarText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#007AFF',
   },
 });
 
 export default OrderDetailsScreen; 
+
+// Helpers
+function withAlpha(hex: string, alpha: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function getLedTone(color: string): string {
+  const lower = color.toLowerCase();
+  if (lower === '#34c759' || lower === '#66d17a') {
+    return '#22C55E';
+  }
+  if (lower === '#ff3b30' || lower === '#ff6b6b') {
+    return '#EF4444';
+  }
+  return color;
+}
+
+function renderLed(color: string) {
+  return (
+    <View style={[styles.ledOuter, { backgroundColor: withAlpha(color, 0.15) }]}
+    >
+      <View
+        style={[
+          styles.ledInner,
+          { backgroundColor: color, borderColor: withAlpha(color, 0.35) },
+        ]}
+      />
+    </View>
+  );
+} 

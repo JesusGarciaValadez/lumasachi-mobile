@@ -70,10 +70,13 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
             {t('orders.customer')}: <Text style={[styles.valueBold, {color: textColor}]}>{customerName}</Text>
           </Text>
           <View style={styles.statusContainer}>
-            <Text style={[styles.label, {color: secondaryColor}]}>
+            <Text style={[styles.label, {color: secondaryColor}]}
+            >
               {t('orders.status')}: <Text style={[styles.value, {color: textColor}]}>{t(getStatusTranslation(item.status))}</Text>
             </Text>
-            {!!statusLedColor && <View style={[styles.statusDot, {backgroundColor: statusLedColor}]} />}
+            {!!statusLedColor && (
+              renderLed(getLedTone(statusLedColor))
+            )}
           </View>
         </View>
 
@@ -84,7 +87,7 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
           {showPriority && (
             <View style={styles.priorityContainer}>
               <Text style={[styles.label, {color: secondaryColor}]}> {t('orders.priority')}: <Text style={[styles.value, {color: textColor}]}>{t(priorityTranslationKey(item.priority))}</Text></Text>
-              <View style={[styles.priorityDot, {backgroundColor: getPriorityColor(item.priority)}]} />
+              {renderLed(getLedTone(getPriorityColor(item.priority)))}
             </View>
           )}
         </View>
@@ -95,7 +98,7 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
           </Text>
           {!!createdAt && (
             <Text style={[styles.meta, {color: secondaryColor}]}>
-              {t('orders.createdAt')}: {createdAt}
+              {t('orders.createdAt')}: <Text style={[styles.value, {color: textColor}]}>{createdAt}</Text>
             </Text>
           )}
         </View>
@@ -208,9 +211,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   priorityDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
     marginLeft: 8,
   },
   statusContainer: {
@@ -218,10 +221,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statusDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginLeft: 6,
+  },
+  ledOuter: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    marginLeft: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ledInner: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    marginLeft: 6,
+    borderWidth: 2,
   },
   emptyContainer: {
     flex: 1,
@@ -362,4 +379,39 @@ function getSecondaryTextColor(primaryColor: string, isDark: boolean): string {
   }
   // Fallback
   return isDark ? '#C7C7CC' : '#666666';
+}
+
+function withAlpha(hex: string, alpha: number): string {
+  // hex like #RRGGBB
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function getLedTone(color: string): string {
+  // Normalize greens and reds to match the reference tones
+  // Softer green and red while keeping others unchanged
+  const lower = color.toLowerCase();
+  if (lower === GREEN.toLowerCase() || lower === LIGHT_GREEN.toLowerCase()) {
+    return '#22C55E'; // Tailwind emerald-500 like
+  }
+  if (lower === RED.toLowerCase() || lower === LIGHT_RED.toLowerCase()) {
+    return '#EF4444'; // Tailwind red-500 like
+  }
+  return color;
+}
+
+function renderLed(color: string) {
+  return (
+    <View style={[styles.ledOuter, { backgroundColor: withAlpha(color, 0.15) }]}
+    >
+      <View
+        style={[
+          styles.ledInner,
+          { backgroundColor: color, borderColor: withAlpha(color, 0.35) },
+        ]}
+      />
+    </View>
+  );
 }

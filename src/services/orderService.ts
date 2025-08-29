@@ -32,11 +32,37 @@ export interface RawOrder {
   updated_at: string;
 }
 
+export interface RawOrderHistoryEntry {
+  id?: string | number;
+  order_id?: string;
+  field_changed?: string | null;
+  old_value?: string | null;
+  new_value?: string | null;
+  comment?: string | null;
+  description?: string | null;
+  created_by?: number | null;
+  creator?: RawOrderUser | null;
+  created_at?: string;
+  attachments?: any[];
+  [key: string]: any;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  links?: any;
+  meta?: any;
+}
+
 export const orderService = {
   async fetchOrders(signal?: AbortSignal) {
     // Base URL likely already includes "/api"; use "/v1/orders" to produce "/api/v1/orders"
     const response = await httpClient.get<RawOrder[]>('/v1/orders', { signal });
     return response.data;
+  },
+
+  async fetchOrderHistory(orderId: string, signal?: AbortSignal) {
+    const response = await httpClient.get<PaginatedResponse<RawOrderHistoryEntry>>(`/v1/orders/${orderId}/history`, { signal });
+    return response.data; // returns { data: [...], links, meta }
   },
 };
 
