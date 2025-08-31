@@ -1,4 +1,5 @@
 import { httpClient } from '../utils/httpClient';
+import { Attachment } from '../types';
 
 export interface RawOrderUser {
   id: number;
@@ -43,7 +44,7 @@ export interface RawOrderHistoryEntry {
   created_by?: number | null;
   creator?: RawOrderUser | null;
   created_at?: string;
-  attachments?: any[];
+  attachments?: Attachment[];
   [key: string]: any;
 }
 

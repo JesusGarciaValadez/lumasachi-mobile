@@ -20,6 +20,7 @@ import {useErrorHandler} from '../hooks/useErrorHandler';
 import {errorService} from '../services/errorService';
 import { useOrders } from '../hooks/useOrders';
 import { orderService, RawOrderHistoryEntry, PaginatedResponse } from '../services/orderService';
+import { Attachment } from '../types';
 
 const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
   navigation,
@@ -99,6 +100,41 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
   const translateOrFallback = (key: string, fallback: string) => {
     const translated = t(key) as string;
     return translated === key ? fallback : translated;
+  };
+
+  const renderAttachments = (attachments: Attachment[]) => {
+    if (!attachments || attachments.length === 0) {
+      return null;
+    }
+
+    return (
+      <View style={styles.attachmentsContainer}>
+        <Text style={styles.attachmentsTitle}>{translateOrFallback('orders.attachments', 'Archivos adjuntos')}:</Text>
+        {attachments.map((attachment, index) => (
+          <View key={attachment.id || index} style={styles.attachmentItem}>
+            <View style={styles.attachmentIcon}>
+              <Text style={styles.attachmentIconText}>
+                {attachment.isImage ? '📷' : attachment.isDocument ? '📄' : '📎'}
+              </Text>
+            </View>
+            <View style={styles.attachmentInfo}>
+              <Text style={styles.attachmentName}>{attachment.fileName}</Text>
+              <Text style={styles.attachmentSize}>
+                {formatFileSize(attachment.fileSize)} • {attachment.mimeType}
+              </Text>
+            </View>
+          </View>
+        ))}
+      </View>
+    );
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
   const getCustomerInfo = () => {
@@ -289,6 +325,7 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
                     const initials = `${first.charAt(0)}${last.charAt(0)}`.toUpperCase();
                     const message = h.comment || h.description || '';
                     const when = formatDateTime(h.created_at);
+                    const hasAttachments = h.field_changed === 'attachments' && h.attachments && h.attachments.length > 0;
                     return (
                       <View key={String(h.id ?? index)} style={{position: 'relative'}}>
                         <View style={styles.timelineAvatar}>
@@ -306,6 +343,7 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
                               <Text style={styles.historyMessage}>{message}</Text>
                             </View>
                           )}
+                          {hasAttachments && renderAttachments(h.attachments!)}
                         </View>
                       </View>
                     );
@@ -540,6 +578,54 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
     color: '#007AFF',
+  },
+  attachmentsContainer: {
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+  },
+  attachmentsTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#666666',
+    marginBottom: 8,
+  },
+  attachmentItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 6,
+    marginBottom: 6,
+  },
+  attachmentIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 6,
+    backgroundColor: '#ffffff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+    borderWidth: 1,
+    borderColor: '#e5e5ea',
+  },
+  attachmentIconText: {
+    fontSize: 16,
+  },
+  attachmentInfo: {
+    flex: 1,
+  },
+  attachmentName: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#333333',
+    marginBottom: 2,
+  },
+  attachmentSize: {
+    fontSize: 12,
+    color: '#666666',
   },
 });
 
