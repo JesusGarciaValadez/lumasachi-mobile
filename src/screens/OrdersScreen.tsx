@@ -35,8 +35,8 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
     await refresh();
   };
 
-  const handleOrderPress = (orderId: string) => {
-    navigation.navigate('OrderDetails', {orderId});
+  const handleOrderPress = (orderUuid: string) => {
+    navigation.navigate('OrderDetails', { orderUuid });
   };
 
   const handleCreateOrder = () => {
@@ -61,9 +61,9 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
           isDark ? styles.orderItemDark : styles.orderItemLight,
           {backgroundColor},
         ]}
-        onPress={() => handleOrderPress(item.id)}
+        onPress={() => handleOrderPress(String(item.uuid || item.id))}
         accessibilityRole="button"  
-        accessibilityLabel={`${t('orders.order')} #${item.id}`}
+        accessibilityLabel={`${t('orders.order')} #${String(item.uuid || item.id)}`}
       >
         <View style={styles.rowBetween}>
           <Text style={[styles.label, {color: secondaryColor}]}> 
@@ -81,9 +81,11 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
         </View>
 
         <View style={styles.rowBetween}>
-          <Text style={[styles.label, {color: secondaryColor}]}> 
-            {t('orders.subject')}: <Text style={[styles.value, {color: textColor}]}>{item.title}</Text>
-          </Text>
+          {!!createdAt && (
+            <Text style={[styles.label, {color: secondaryColor}]}>
+                {t('orders.createdAt')}: <Text style={[styles.value, {color: textColor}]}>{createdAt}</Text>
+            </Text>
+          )}
           {showPriority && (
             <View style={styles.priorityContainer}>
               <Text style={[styles.label, {color: secondaryColor}]}> {t('orders.priority')}: <Text style={[styles.value, {color: textColor}]}>{t(priorityTranslationKey(item.priority))}</Text></Text>
@@ -96,11 +98,12 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
           <Text style={[styles.label, {color: secondaryColor}]}> 
             {t('orders.assignedTo')}: <Text style={[styles.value, {color: textColor}]}>{assignedToName}</Text>
           </Text>
-          {!!createdAt && (
-            <Text style={[styles.meta, {color: secondaryColor}]}>
-              {t('orders.createdAt')}: <Text style={[styles.value, {color: textColor}]}>{createdAt}</Text>
-            </Text>
-          )}
+        </View>
+
+        <View style={styles.rowBetween}>
+          <Text style={[styles.label, {color: secondaryColor}]}> 
+            {t('orders.subject')}: <Text style={[styles.value, {color: textColor}]}>{item.title}</Text>
+          </Text>
         </View>
 
         {completedAt && (
@@ -130,7 +133,7 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
       <FlatList
         data={orders}
         renderItem={renderOrderItem}
-        keyExtractor={(item) => String(item.id)}
+        keyExtractor={(item) => String(item.uuid || item.id)}
         refreshControl={
           <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
         }

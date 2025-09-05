@@ -18,6 +18,7 @@ import {usePermissions} from '../hooks/usePermissions';
 import {useTranslationSafe} from '../hooks/useTranslationSafe';
 import {PERMISSIONS} from '../services/permissionsService';
 import {View, Text, StyleSheet} from 'react-native';
+import {navigationRef} from './navigationRef';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -89,7 +90,7 @@ const RootNavigator: React.FC = () => {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <Stack.Navigator
         screenOptions={{
           headerShown: false,

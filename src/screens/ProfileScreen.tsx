@@ -50,12 +50,12 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
                   userId: user?.id,
                 });
               } catch (error) {
+                // Avoid blocking UX on logout errors; user is already locally logged out
                 await errorService.logError(error as Error, {
                   component: 'ProfileScreen',
                   operation: 'logout',
                   userId: user?.id,
                 });
-                handleError(error as Error);
               } finally {
                 setIsLoggingOut(false);
               }

@@ -9,16 +9,16 @@ export type RootStackParamList = {
   Main: undefined;
   Splash: undefined;
   Login: undefined;
-  OrderDetails: {orderId: string};
+  OrderDetails: {orderUuid: string};
   CreateOrder: undefined;
-  EditOrder: {orderId: string};
+  EditOrder: {orderUuid: string};
   Profile: undefined;
-  UserManagement: {userId?: string};
+  UserManagement: {userUuid?: string};
   Settings: undefined;
   CreateUser: undefined;
   ManageRoles: undefined;
   ViewReports: undefined;
-  ReportDetails: {reportId: string};
+  ReportDetails: {reportUuid: string};
   ExportData: undefined;
 };
 

@@ -95,6 +95,7 @@
       "onHold": "On hold",
       "cancelled": "Cancelled"
     },
+    "subject": "Subject",
     "priorities": {
       "low": "Low",
       "normal": "Normal",
@@ -128,6 +129,16 @@
       "descriptionTooShort": "Order description must be at least 10 characters long",
       "loadCustomersFailed": "Failed to load customer data. Please try again."
     }
+  },
+  "attachments": {
+    "noPreview": "No preview available",
+    "previewError": "Error loading preview",
+    "imageLoadError": "Error loading image",
+    "loadError": "Error loading file",
+    "unsupportedType": "File type not supported for preview",
+    "openExternally": "Open externally",
+    "openWith": "Open with...",
+    "cannotOpen": "Cannot open this file"
   },
   "editOrder": {
     "title": "Edit Order",
@@ -342,6 +353,7 @@
     "success": "Success",
     "loading": "Loading...",
     "required": "Required",
+    "download": "Download",
     "retry": "Retry",
     "resetAndRetry": "Reset & Retry",
     "ok": "OK",
