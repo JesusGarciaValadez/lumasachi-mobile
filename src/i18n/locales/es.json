@@ -95,6 +95,7 @@
       "onHold": "En espera",
       "cancelled": "Cancelado"
     },
+    "subject": "Asunto",
     "priorities": {
       "low": "Baja",
       "normal": "Normal",
@@ -128,6 +129,16 @@
       "descriptionTooShort": "La descripción de la orden debe tener al menos 10 caracteres",
       "loadCustomersFailed": "Error al cargar los datos del cliente. Por favor intenta de nuevo."
     }
+  },
+  "attachments": {
+    "noPreview": "No hay vista previa disponible",
+    "previewError": "Error al cargar la vista previa",
+    "imageLoadError": "Error al cargar la imagen",
+    "loadError": "Error al cargar el archivo",
+    "unsupportedType": "Tipo de archivo no soportado para vista previa",
+    "openExternally": "Abrir externamente",
+    "openWith": "Abrir con...",
+    "cannotOpen": "No se puede abrir este archivo"
   },
   "editOrder": {
     "title": "Editar Orden",
@@ -341,6 +352,7 @@
     "error": "Error",
     "success": "Éxito",
     "loading": "Cargando...",
+    "download": "Descargar",
     "required": "Obligatorio",
     "retry": "Reintentar",
     "resetAndRetry": "Reiniciar y Reintentar",

@@ -96,17 +96,40 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({children}) 
   };
 
   const logout = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      await authService.logout();
+      // Read token first, then clear local state immediately
+      const token = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+
+      // Local-first cleanup so UI transitions immediately
+      await AsyncStorage.multiRemove([
+        STORAGE_KEYS.AUTH_TOKEN,
+        STORAGE_KEYS.REFRESH_TOKEN,
+        STORAGE_KEYS.USER_DATA,
+      ]);
       setUser(null);
+
+      // Fire-and-forget revoke in the background using saved token
+      (async () => {
+        if (!token) return;
+        const result = await authService.logout({ token });
+        if (!result.ok) {
+          await errorService.logError(new Error(result.message || 'Logout revoke failed'), {
+            context: 'logout',
+            action: 'revoke-token',
+            status: result.status,
+          });
+        } else {
+          errorService.logSuccess('logout-revoke', { status: result.status });
+        }
+      })();
     } catch (error) {
+      // Even if background revoke scheduling fails, user is locally logged out
       await errorService.logError(error as Error, {
         context: 'logout',
-        action: 'user-logout',
+        action: 'local-first-cleanup',
         userId: user?.id,
       });
-      throw new Error(t('auth.errors.logout') as string);
     } finally {
       setIsLoading(false);
     }

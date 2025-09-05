@@ -126,7 +126,7 @@ export class FileService {
   static async uploadSingleFile(
     file: FileSelection,
     entityType: string = 'order',
-    entityId: string,
+    entityUuid: string,
     onProgress?: (progress: number) => void
   ): Promise<FileUploadResult> {
     try {
@@ -138,7 +138,7 @@ export class FileService {
       } as any);
 
       const response = await httpClient.post(
-        `/api/${entityType}s/${entityId}/attachments`,
+        `/api/${entityType}s/${entityUuid}/attachments`,
         formData,
         {
           headers: {
@@ -174,7 +174,7 @@ export class FileService {
   static async uploadMultipleFiles(
     files: FileSelection[],
     entityType: string = 'order',
-    entityId: string,
+    entityUuid: string,
     onProgress?: (fileProgress: FileUploadProgress[]) => void
   ): Promise<MultipleFileUploadResult> {
     const result: MultipleFileUploadResult = {
@@ -209,7 +209,7 @@ export class FileService {
 
     try {
       const response = await httpClient.post(
-        `/api/${entityType}s/${entityId}/attachments`,
+        `/api/${entityType}s/${entityUuid}/attachments`,
         formData,
         {
           headers: {
@@ -282,9 +282,9 @@ export class FileService {
   /**
    * Delete an attachment
    */
-  static async deleteAttachment(attachmentId: string): Promise<boolean> {
+  static async deleteAttachment(attachmentUuid: string): Promise<boolean> {
     try {
-      await httpClient.delete(`/api/attachments/${attachmentId}`);
+      await httpClient.delete(`/api/attachments/${attachmentUuid}`);
       return true;
     } catch (error) {
       console.error('Error deleting attachment:', error);
@@ -295,9 +295,9 @@ export class FileService {
   /**
    * Get download URL for an attachment
    */
-  static async getDownloadUrl(attachmentId: string): Promise<string> {
+  static async getDownloadUrl(attachmentUuid: string): Promise<string> {
     try {
-      const response = await httpClient.get(`/api/attachments/${attachmentId}/download`);
+      const response = await httpClient.get(`/api/attachments/${attachmentUuid}/download`);
       return response.data.downloadUrl;
     } catch (error) {
       throw new Error('Error obteniendo URL de descarga');
@@ -307,9 +307,9 @@ export class FileService {
   /**
    * Get preview URL for an attachment
    */
-  static async getPreviewUrl(attachmentId: string): Promise<string | null> {
+  static async getPreviewUrl(attachmentUuid: string): Promise<string | null> {
     try {
-      const response = await httpClient.get(`/api/attachments/${attachmentId}/preview`);
+      const response = await httpClient.get(`/api/attachments/${attachmentUuid}/preview`);
       return response.data.previewUrl || null;
     } catch (error) {
       console.error('Error getting preview URL:', error);

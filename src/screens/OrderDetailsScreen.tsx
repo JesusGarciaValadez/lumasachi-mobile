@@ -6,6 +6,8 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  Share,
+  Linking,
 } from 'react-native';
 // date-fns format not needed; using custom formatter
 import { formatDateTimeLocal } from '../utils/datetime';
@@ -20,23 +22,33 @@ import {useErrorHandler} from '../hooks/useErrorHandler';
 import {errorService} from '../services/errorService';
 import { useOrders } from '../hooks/useOrders';
 import { orderService, RawOrderHistoryEntry, PaginatedResponse } from '../services/orderService';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { httpClient } from '../utils/httpClient';
+import SimpleAttachmentPreviewModal from '../components/SimpleAttachmentPreviewModal';
 
 const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
   navigation,
   route,
 }) => {
-  const {orderId} = route.params;
+  const routeParams: any = (route as any)?.params || {};
+  const orderKeyParam = routeParams.orderUuid ?? routeParams.orderId ?? routeParams.id;
+  const orderKey: string = orderKeyParam ? String(orderKeyParam) : '';
   const {t} = useTranslationSafe();
   const {handleError, clearError, hasError, error} = useErrorHandler();
   const { orders, ensureLoaded } = useOrders();
   const [history, setHistory] = useState<RawOrderHistoryEntry[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+  const [previewAttachment, setPreviewAttachment] = useState<any>(null);
+  const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
 
-  const order = useMemo(() => orders.find(o => String(o.id) === String(orderId)) || null, [orders, orderId]);
+  const order = useMemo(
+    () => orders.find(o => String((o as any)?.uuid || o.id) === orderKey) || null,
+    [orders, orderKey]
+  );
   const customer = order?.customer || null;
   const loading = !order;
 
-  React.useEffect(() => {
+  useEffect(() => {
     const run = async () => {
       try {
         clearError();
@@ -45,14 +57,14 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
         await errorService.logError(err as Error, {
           component: 'OrderDetailsScreen',
           operation: 'ensureLoaded',
-          orderId,
+          orderId: orderKey,
         });
         handleError(err as Error);
       }
     };
     run();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ensureLoaded, orderId]);
+  }, [ensureLoaded, orderKey]);
 
   useEffect(() => {
     if (!order) return;
@@ -60,14 +72,14 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
     const load = async () => {
       try {
         setIsLoadingHistory(true);
-        const resp = await orderService.fetchOrderHistory(String(order.id), controller.signal) as PaginatedResponse<RawOrderHistoryEntry>;
+        const resp = await orderService.fetchOrderHistory(String((order as any).uuid || order.id), controller.signal) as PaginatedResponse<RawOrderHistoryEntry>;
         const items = Array.isArray(resp?.data) ? resp.data : [];
         setHistory(items);
       } catch (err) {
         await errorService.logError(err as Error, {
           component: 'OrderDetailsScreen',
           operation: 'fetchOrderHistory',
-          orderId,
+          orderId: orderKey,
         });
       } finally {
         setIsLoadingHistory(false);
@@ -75,20 +87,20 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
     };
     load();
     return () => controller.abort();
-  }, [order, orderId]);
+  }, [order, orderKey]);
 
   const handleEditOrder = () => {
     try {
-      navigation.navigate('EditOrder', {orderId});
+      navigation.navigate('EditOrder', { orderUuid: String(order?.id ?? orderKey) });
       errorService.logSuccess('navigateToEdit', {
         component: 'OrderDetailsScreen',
-        orderId,
+        orderId: orderKey,
       });
     } catch (error) {
       errorService.logError(error as Error, {
         component: 'OrderDetailsScreen',
         operation: 'navigateToEdit',
-        orderId,
+        orderId: orderKey,
       });
       handleError(error as Error);
     }
@@ -160,6 +172,70 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
 
   const customerInfo = getCustomerInfo();
 
+  const getAttachmentIconName = (attachment: any): string => {
+    const mime: string = (attachment?.mime_type || '').toString().toLowerCase();
+    const ext: string = (attachment?.extension || '').toString().toLowerCase();
+    if (attachment?.is_image || mime.startsWith('image/')) return 'image';
+    if (attachment?.is_pdf || mime.includes('pdf') || ext === 'pdf') return 'picture-as-pdf';
+    if (mime.includes('excel') || mime.includes('spreadsheet') || ['xls', 'xlsx', 'csv'].includes(ext)) return 'table-chart';
+    if (mime.includes('word') || mime.includes('document') || ['doc', 'docx', 'txt', 'rtf', 'md'].includes(ext)) return 'description';
+    return 'attach-file';
+  };
+
+
+  const handlePreviewAttachment = (attachment: any) => {
+    console.log('🔍 OrderDetailsScreen: handlePreviewAttachment called with:', {
+      id: attachment?.id,
+      uuid: attachment?.uuid,
+      fileName: attachment?.file_name || attachment?.name,
+      mimeType: attachment?.mime_type
+    });
+    
+    setPreviewAttachment(attachment);
+    setIsPreviewModalVisible(true);
+    
+    console.log('✅ OrderDetailsScreen: Modal state set to visible');
+  };
+
+  const handleClosePreview = () => {
+    setIsPreviewModalVisible(false);
+    setPreviewAttachment(null);
+  };
+
+  const handleDownloadAttachment = async (attachment: any) => {
+    try {
+      // Prefer dedicated download endpoint to get a signed URL or direct download
+      const resp = await httpClient.get(`/v1/attachments/${attachment.id}/download`);
+      const downloadUrl = resp?.data?.downloadUrl || resp?.data?.url || attachment?.url;
+      if (downloadUrl) {
+        // Let the OS/browser handle save location
+        await Linking.openURL(downloadUrl);
+        await errorService.logSuccess('downloadAttachmentOpened', {
+          component: 'OrderDetailsScreen',
+          orderId: orderKey,
+          attachmentId: String(attachment?.id || ''),
+        });
+        return;
+      }
+    } catch (err) {
+      await errorService.logError(err as Error, {
+        component: 'OrderDetailsScreen',
+        operation: 'downloadAttachment',
+        orderId: orderKey,
+      });
+    }
+
+    // Fallback: share the preview URL if available
+    try {
+      const url = attachment?.url;
+      if (url) {
+        await Share.share({ url });
+      }
+    } catch (_shareErr) {
+      // no-op
+    }
+  };
+
   return (
     <ErrorBoundary>
       <ScrollView style={styles.container}>
@@ -180,7 +256,7 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
 
             <View style={styles.header}>
               <Text style={styles.pageTitle}>{translateOrFallback('orders.order', 'Órden')}</Text>
-              <Text style={styles.orderId}>#{orderId}</Text>
+              <Text style={styles.orderId}>#{String((order as any)?.uuid || orderKey)}</Text>
               <TouchableOpacity style={styles.editButton} onPress={handleEditOrder}>
                 <Text style={styles.editButtonText}>{t('common.edit') as string}</Text>
               </TouchableOpacity>
@@ -306,6 +382,36 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
                               <Text style={styles.historyMessage}>{message}</Text>
                             </View>
                           )}
+                          {!!(Array.isArray(h.attachments) && h.attachments.length) && (
+                            <View style={styles.attachmentsContainer}>
+                              {h.attachments.map((att: any) => (
+                                <View key={String(att.id)} style={styles.attachmentRow}>
+                                  <View style={styles.attachmentLeft}>
+                                    <Icon name={getAttachmentIconName(att)} size={18} color="#6B7280" />
+                                    <Text style={styles.attachmentName} numberOfLines={1}>
+                                      {att.file_name || att.name || 'archivo'}
+                                    </Text>
+                                  </View>
+                                  <View style={styles.attachmentActions}>
+                                    <TouchableOpacity
+                                      onPress={() => handlePreviewAttachment(att)}
+                                      style={styles.iconButton}
+                                      accessibilityLabel={t('common.preview') as string}
+                                    >
+                                      <Icon name="visibility" size={20} color="#007AFF" />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                      onPress={() => handleDownloadAttachment(att)}
+                                      style={styles.iconButton}
+                                      accessibilityLabel={t('common.download') as string}
+                                    >
+                                      <Icon name="download" size={20} color="#007AFF" />
+                                    </TouchableOpacity>
+                                  </View>
+                                </View>
+                              ))}
+                            </View>
+                          )}
                         </View>
                       </View>
                     );
@@ -317,6 +423,14 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
           </>
         )}
       </ScrollView>
+      
+      {/* Simple Attachment Preview Modal */}
+      <SimpleAttachmentPreviewModal
+        visible={isPreviewModalVisible}
+        attachment={previewAttachment}
+        onClose={handleClosePreview}
+        onDownload={handleDownloadAttachment}
+      />
     </ErrorBoundary>
   );
 };
@@ -516,6 +630,36 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#333333',
     lineHeight: 20,
+  },
+  attachmentsContainer: {
+    marginTop: 12,
+    gap: 8,
+  },
+  attachmentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 6,
+  },
+  attachmentLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    marginRight: 8,
+    gap: 8,
+  },
+  attachmentName: {
+    fontSize: 13,
+    color: '#333333',
+    flexShrink: 1,
+  },
+  attachmentActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  iconButton: {
+    padding: 6,
   },
   timeline: {
     paddingLeft: 24,

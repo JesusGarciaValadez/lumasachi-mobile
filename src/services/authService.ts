@@ -63,6 +63,10 @@ const login = async (credentials: LoginCredentials): Promise<string> => {
   }
 };
 
+interface LogoutOptions {
+  token?: string;
+}
+
 // API response for GET /v1/user/{email} (current shape)
 interface BackendUserResponse {
   data: {
@@ -170,48 +174,38 @@ const fetchUserData = async (email: string): Promise<User> => {
   }
 };
 
-const logout = async (): Promise<void> => {
+const logout = async (
+  options?: LogoutOptions
+): Promise<{ ok: boolean; status?: number; message?: string }> => {
   try {
-    // Perform API logout to invalidate server-side token/session
+    // Build headers explicitly so we can pass the token even after local storage is cleared
+    const headers: Record<string, string> = {
+      'Accept': 'application/json',
+    };
+    if (options?.token) {
+      headers['Authorization'] = `Bearer ${options.token}`;
+    }
+
     const response = await httpClient.post<{ message: string }>(
       API_ENDPOINTS.AUTH.LOGOUT,
       undefined,
-      {
-        headers: {
-          'Accept': 'application/json',
-        },
-      }
+      { headers }
     );
 
-    if (response.status === 200) {
-      // Clear local auth-related data on successful logout
-      await AsyncStorage.multiRemove([
-        STORAGE_KEYS.AUTH_TOKEN,
-        STORAGE_KEYS.REFRESH_TOKEN,
-        STORAGE_KEYS.USER_DATA,
-      ]);
-      return;
-    }
-
-    // If the API returns a non-200 response, treat as failure
-    const message = (response.data as any)?.message || 'Logout failed';
-    throw new Error(String(message));
+    return {
+      ok: response.status >= 200 && response.status < 300,
+      status: response.status,
+      message: (response.data as any)?.message,
+    };
   } catch (error) {
-    // If server explicitly responds with an error, surface message
-    if (error instanceof AxiosError && error.response) {
-      const data = error.response.data as any;
-      const message = data?.message || 'Logout failed';
-      const err = new Error(String(message).trim());
-      (err as any).status = error.response.status;
-      throw err;
+    if (error instanceof AxiosError) {
+      return {
+        ok: false,
+        status: error.response?.status,
+        message: (error.response?.data as any)?.message || error.message,
+      };
     }
-
-    // Re-throw non-Axios errors
-    if (error instanceof Error) {
-      throw error;
-    }
-
-    throw new Error('An unknown error occurred during logout.');
+    return { ok: false, message: (error as Error)?.message || 'Logout failed' };
   }
 };
 

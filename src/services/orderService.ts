@@ -2,6 +2,7 @@ import { httpClient } from '../utils/httpClient';
 
 export interface RawOrderUser {
   id: number;
+  uuid: string;
   first_name: string;
   last_name: string;
   full_name: string;
@@ -16,6 +17,7 @@ export interface RawOrderUser {
 
 export interface RawOrder {
   id: string;
+  uuid: string;
   customer: RawOrderUser | null;
   title: string;
   description: string;
@@ -34,6 +36,7 @@ export interface RawOrder {
 
 export interface RawOrderHistoryEntry {
   id?: string | number;
+  uuid: string;
   order_id?: string;
   field_changed?: string | null;
   old_value?: string | null;
@@ -60,8 +63,8 @@ export const orderService = {
     return response.data;
   },
 
-  async fetchOrderHistory(orderId: string, signal?: AbortSignal) {
-    const response = await httpClient.get<PaginatedResponse<RawOrderHistoryEntry>>(`/v1/orders/${orderId}/history`, { signal });
+  async fetchOrderHistory(orderUuid: string, signal?: AbortSignal) {
+    const response = await httpClient.get<PaginatedResponse<RawOrderHistoryEntry>>(`/v1/orders/${orderUuid}/history`, { signal });
     return response.data; // returns { data: [...], links, meta }
   },
 };
