@@ -255,7 +255,7 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
             )}
 
             <View style={styles.header}>
-              <Text style={styles.pageTitle}>{translateOrFallback('orders.order', 'Órden')}</Text>
+              <Text style={styles.pageTitle}>{t('orders.order') as string}</Text>
               <Text style={styles.orderId}>#{String((order as any)?.uuid || orderKey)}</Text>
               <TouchableOpacity style={styles.editButton} onPress={handleEditOrder}>
                 <Text style={styles.editButtonText}>{t('common.edit') as string}</Text>
@@ -297,7 +297,7 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
 
             {customerInfo && (
               <View style={styles.section}>
-                <Text style={styles.sectionTitle}>{translateOrFallback('orders.customerInfo', 'Información del Cliente')}</Text>
+                <Text style={styles.sectionTitle}>{t('orders.customerInfo') as string}</Text>
                 <View style={styles.card}>
                   <DetailRow 
                     label={t('common.name') as string} 
@@ -347,14 +347,14 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
             </View>
 
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>{translateOrFallback('orders.history', 'Historial')}</Text>
+              <Text style={styles.sectionTitle}>{t('orders.history') as string}</Text>
               {isLoadingHistory && (
                 <View style={[styles.card, styles.historyLoadingCard]}>
                   <Text style={styles.historyLoadingText}>{t('common.loading') as string}</Text>
                 </View>
               )}
               {!isLoadingHistory && !history.length && (
-                <View style={styles.card}><Text style={styles.description}>{translateOrFallback('orders.noHistory', 'No hay actividad aún')}</Text></View>
+                <View style={styles.card}><Text style={styles.description}>{t('orders.noHistory') as string}</Text></View>
               )}
               {!!history.length && (
                 <View style={styles.timeline}>
@@ -389,7 +389,7 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
                                   <View style={styles.attachmentLeft}>
                                     <Icon name={getAttachmentIconName(att)} size={18} color="#6B7280" />
                                     <Text style={styles.attachmentName} numberOfLines={1}>
-                                      {att.file_name || att.name || 'archivo'}
+                                      {att.file_name || att.name || t('common.file') as string}
                                     </Text>
                                   </View>
                                   <View style={styles.attachmentActions}>

@@ -68,7 +68,7 @@ const SettingsScreen: React.FC = () => {
       clearError();
       const currentLanguage = i18n.language;
       const newLanguage = currentLanguage === 'es' ? 'en' : 'es';
-      const languageName = newLanguage === 'es' ? 'Español' : 'English';
+      const languageName = t(`settings.languageNames.${newLanguage}`) as string;
       
       Alert.alert(
         t('settings.language') as string,
@@ -165,13 +165,13 @@ const SettingsScreen: React.FC = () => {
   };
 
   const getCurrentLanguageLabel = () => {
-    return i18n.language === 'es' ? 'Español' : 'English';
+    return t(`settings.languageNames.${i18n.language}`) as string;
   };
 
   const handleTermsPress = async () => {
     try {
       clearError();
-      console.log('Terms pressed');
+      // Terms functionality to be implemented
       
       errorService.logSuccess('termsPress', {
         component: 'SettingsScreen',
@@ -188,7 +188,7 @@ const SettingsScreen: React.FC = () => {
   const handlePrivacyPress = async () => {
     try {
       clearError();
-      console.log('Privacy pressed');
+      // Privacy policy functionality to be implemented
       
       errorService.logSuccess('privacyPress', {
         component: 'SettingsScreen',
