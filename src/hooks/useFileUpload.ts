@@ -227,7 +227,7 @@ export const useFileUpload = (options: UseFileUploadOptions = {}): UseFileUpload
           onUploadComplete(result.result);
         }
       } else {
-        throw result.error || new Error('Upload failed');
+        throw result.error || new Error(t('hooks.errors.uploadFailed') as string);
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : (t('fileUpload.errors.unknownError') as string);
@@ -338,7 +338,7 @@ export const useFileUpload = (options: UseFileUploadOptions = {}): UseFileUpload
               onUploadComplete(mergedResult);
             }
           } else {
-            throw result.error || new Error('Retry upload failed');
+            throw result.error || new Error(t('hooks.errors.retryUploadFailed') as string);
           }
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : (t('fileUpload.errors.unknownError') as string);

@@ -1,463 +1,602 @@
 {
   "app": {
-    "name": "Lumasachi Control",
-    "loading": "Loading..."
-  },
-  "auth": {
-    "title": "Lumasachi Control",
-    "subtitle": "Sign in to your account",
-    "email": "Email",
-    "password": "Password",
-    "login": "Sign In",
-    "loggingIn": "Signing in...",
-    "logout": "Sign Out",
-    "loggingOut": "Signing out...",
-    "logoutConfirm": "Are you sure you want to sign out?",
-    "mockUser": {
-      "firstName": "Demo User",
-      "lastName": "Test",
-      "company": "Lumasachi",
-      "address": "123 Main St",
-      "phoneNumber": "+1-123-456-7890"
-    },
-    "errors": {
-      "missingFields": "Please enter your email and password",
-      "emailRequired": "The email field is required.",
-      "passwordRequired": "The password field is required.",
-      "invalidCredentials": "Invalid credentials",
-      "storageLoad": "Error loading user from storage",
-      "logout": "Error during logout",
-      "storageUpdate": "Error updating user in storage",
-      "hookUsage": "useAuth must be used within an AuthProvider"
-    },
-    "forgotPassword": "Forgot Password?",
-    "forgotPasswordTitle": "Reset Password",
-    "forgotPasswordMessage": "Password reset functionality will be implemented soon.",
-    "getNewPassword": "Get a new password",
-    "backToLoginForm": "← Back to login form",
-    "forgotPasswordSubtitle": "Enter your email to receive a reset link",
-    "forgotSuccessToast": "You'll receive an email shortly to obtain a new password"
-  },
-  "home": {
-    "greeting": {
-      "morning": "Good morning",
-      "afternoon": "Good afternoon",
-      "evening": "Good evening"
-    },
-    "user": "User",
-    "quickActions": "Quick Actions",
-    "createOrder": "Create New Order",
-    "viewOrders": "View My Orders",
-    "viewProfile": "View Profile",
-    "adminPanel": "Admin Panel",
-    "summary": "Summary",
-    "activeOrders": "Active Orders",
-    "completedOrders": "Completed Orders",
-    "error": {
-      "generic": "Unable to load data. Please try again later."
-    }
-  },
-  "orders": {
-    "title": "Orders",
-    "order": "Order",
-    "customer": "Customer",
-    "status": "Status",
-    "description": "Order Description",
-    "priority": "Priority",
-    "category": "Category",
-    "orderTitle": "Title",
-    "history": "History",
-    "noHistory": "No history yet",
-    "createdAt": "Created Date",
-    "updatedAt": "Last Updated",
-    "editingOrder": "Editing Order",
-    "orderDetails": "Order Details",
-    "generalInfo": "General Information",
-    "createFirstOrder": "Create First Order",
-    "createNewOrder": "Create New Order",
-    "noOrdersAvailable": "No orders available",
-    "inProgress": "In Progress",
-    "assignedTo": "Assigned to",
-    "completed": "Completed",
-    "createdBy": "Created by",
-    "estimatedCompletion": "Estimated completion",
-    "actualCompletion": "Completion date",
-    "notes": "Notes",
-    "statuses": {
-      "open": "Open",
-      "inProgress": "In Progress",
-      "readyForDelivery": "Ready for Delivery",
-      "completed": "Completed",
-      "delivered": "Delivered",
-      "paid": "Paid",
-      "returned": "Returned",
-      "notPaid": "Not Paid",
-      "onHold": "On hold",
-      "cancelled": "Cancelled"
-    },
-    "subject": "Subject",
-    "priorities": {
-      "low": "Low",
-      "normal": "Normal",
-      "high": "High",
-      "urgent": "Urgent"
-    },
-    "customerType": "Customer Type",
-    "customerNotes": "Customer Notes",
-    "descriptionPlaceholder": "This is an example description for the order. Here would be shown detailed information about what is requested in the order."
-  },
-  "createOrder": {
-    "title": "Create Order",
-    "customerInfo": "Customer Information",
-    "orderDetails": "Order Details",
-    "attachments": "Attachments",
-    "attachmentsDescription": "Add files related to this order",
-    "customerName": "Customer name",
-    "orderDescription": "Describe the order details",
-    "workCategory": "Work category",
-    "confirmCreate": "Are you sure you want to create this order?",
-    "attachmentsWillBeUploaded": "{{count}} file(s) will be uploaded after creating the order",
-    "selectCustomer": "Select Customer",
-    "selectCustomerAccessibility": "Select customer for this order",
-    "orderTitle": "Order Title",
-    "priorityButtonAccessibility": "Set priority to {{priority}}",
-    "submitButtonAccessibility": "Create order with current details",
-    "customerItemAccessibility": "Select {{customerName}} from {{company}}",
-    "errors": {
-      "missingFields": "Please complete all required fields",
-      "titleTooShort": "Order title must be at least 3 characters long",
-      "descriptionTooShort": "Order description must be at least 10 characters long",
-      "loadCustomersFailed": "Failed to load customer data. Please try again."
-    }
+    "loading": "Loading...",
+    "name": "Lumasachi Control"
   },
   "attachments": {
-    "noPreview": "No preview available",
-    "previewError": "Error loading preview",
+    "cannotOpen": "Cannot open this file",
     "imageLoadError": "Error loading image",
     "loadError": "Error loading file",
-    "unsupportedType": "File type not supported for preview",
+    "noPreview": "No preview available",
     "openExternally": "Open externally",
     "openWith": "Open with...",
-    "cannotOpen": "Cannot open this file"
+    "previewError": "Error loading preview",
+    "unsupportedType": "File type not supported for preview"
   },
-  "editOrder": {
-    "title": "Edit Order",
-    "attachments": "Attachments",
-    "attachmentsDescription": "Manage files related to this order",
-    "saveChanges": "Save Changes",
-    "confirmSave": "Are you sure you want to save the changes?",
-    "resetChanges": "Reset Changes",
-    "confirmReset": "Are you sure you want to reset all changes? This will revert to the original values.",
-    "loadingOrder": "Loading order...",
-    "loadError": "Failed to load order",
-    "updateSuccess": "Order updated successfully",
-    "updateError": "Failed to update order",
-    "errors": {
-      "missingFields": "Please complete all required fields",
-      "titleTooShort": "Order title must be at least 3 characters long",
-      "descriptionTooShort": "Order description must be at least 10 characters long"
-    }
-  },
-  "profile": {
-    "title": "Profile",
-    "personalInfo": "Personal Information",
+  "auth": {
+    "backToLoginForm": "← Back to login form",
     "email": "Email",
-    "phone": "Phone",
-    "address": "Address",
-    "company": "Company",
-    "configuration": "Configuration"
-  },
-  "settings": {
-    "title": "Settings",
-    "notifications": "Notifications",
-    "pushNotifications": "Push Notifications",
-    "pushNotificationsDesc": "Receive notifications for new orders",
-    "appearance": "Appearance",
-    "darkMode": "Dark Mode",
-    "darkModeDesc": "Enable dark theme",
-    "data": "Data",
-    "clearCache": "Clear Cache",
-    "clearCacheDesc": "Remove temporary data",
-    "clearCacheConfirm": "Are you sure you want to clear the cache?",
-    "clearCacheSuccess": "Cache cleared successfully",
-    "clearCacheError": "Could not clear cache",
-    "information": "Information",
-    "version": "Version",
-    "termsAndConditions": "Terms and Conditions",
-    "privacyPolicy": "Privacy Policy",
-    "language": "Language",
-    "languageDesc": "Select application language"
-  },
-  "users": {
-    "title": "Users",
-    "edit": "Edit",
-    "noUsers": "No registered users",
-    "totalUsers": "Total Users",
-    "activeUsers": "Active Users",
-    "availableRoles": "Available Roles"
-  },
-  "userManagement": {
-    "title": "User Management",
-    "subtitle": "Manage users, roles and permissions",
-    "editUser": "Edit User",
-    "editUserSubtitle": "Editing user with ID: {{userId}}",
-    "mainActions": "Main Actions",
-    "createUser": "Create User",
-    "createUserDesc": "Add a new user to the system",
-    "manageRoles": "Manage Roles",
-    "manageRolesDesc": "Configure user roles and permissions",
-    "viewReports": "View Reports",
-    "viewReportsDesc": "Generate user activity reports",
-    "exportData": "Export Data",
-    "exportDataDesc": "Export user information",
-    "statistics": "Statistics",
-    "createUserForm": {
-      "firstName": "First Name",
-      "lastName": "Last Name",
-      "email": "Email",
-      "role": "Role",
-      "company": "Company",
-      "phoneNumber": "Phone Number",
-      "address": "Address",
-      "placeholders": {
-        "firstName": "Enter first name",
-        "lastName": "Enter last name",
-        "email": "Enter email address",
-        "role": "Select user role",
-        "company": "Enter company name",
-        "phoneNumber": "Enter phone number",
-        "address": "Enter address"
-      },
-      "userCreatedSuccess": "User created successfully!",
-      "errors": {
-        "missingFields": "Please complete all required fields",
-        "invalidEmail": "Please enter a valid email address",
-        "invalidPhone": "Please enter a valid phone number",
-        "createFailed": "Failed to create user. Please try again."
-      }
+    "errors": {
+      "emailRequired": "The email field is required.",
+      "hookUsage": "useAuth must be used within an AuthProvider",
+      "invalidCredentials": "Invalid credentials",
+      "logout": "Error during logout",
+      "missingFields": "Please enter your email and password",
+      "passwordRequired": "The password field is required.",
+      "storageLoad": "Error loading user from storage",
+      "storageUpdate": "Error updating user in storage"
     },
-    "roles": {
-      "superAdministrator": "Super Administrator",
-      "administrator": "Administrator",
-      "employee": "Employee",
-      "customer": "Customer",
-      "permissions": {
-        "createUsers": "Create Users",
-        "editUsers": "Edit Users",
-        "deleteUsers": "Delete Users",
-        "viewReports": "View Reports"
-      },
-      "permissionsUpdatedSuccess": "Role permissions updated successfully!"
+    "forgotPassword": "Forgot Password?",
+    "forgotPasswordMessage": "Password reset functionality will be implemented soon.",
+    "forgotPasswordSubtitle": "Enter your email to receive a reset link",
+    "forgotPasswordTitle": "Reset Password",
+    "forgotSuccessToast": "You'll receive an email shortly to obtain a new password",
+    "getNewPassword": "Get a new password",
+    "login": "Sign In",
+    "loggingIn": "Signing in...",
+    "loggingOut": "Signing out...",
+    "logout": "Sign Out",
+    "logoutConfirm": "Are you sure you want to sign out?",
+    "mockUser": {
+      "address": "123 Main St",
+      "company": "Lumasachi",
+      "firstName": "Demo User",
+      "lastName": "Test",
+      "phoneNumber": "+1-123-456-7890"
     },
-    "reports": {
-      "userActivity": "User Activity Report",
-      "orderProcessing": "Order Processing Report",
-      "systemPerformance": "System Performance Report",
-      "userRegistration": "User Registration Report",
-      "descriptions": {
-        "userActivity": "Daily user login and activity statistics",
-        "orderProcessing": "Summary of orders processed this week",
-        "systemPerformance": "Application performance metrics",
-        "userRegistration": "New user registrations this month"
-      },
-      "filters": {
-        "all": "All",
-        "user": "User",
-        "order": "Order",
-        "system": "System"
-      },
-      "generated": "Generated:",
-      "viewReport": "View Report",
-      "viewing": "Viewing"
-    },
-    "export": {
-      "titles": {
-        "userData": "User Data Export",
-        "orderData": "Order Data Export",
-        "systemLogs": "System Logs Export",
-        "analytics": "Analytics Data Export"
-      },
-      "descriptions": {
-        "userData": "Export all user information and profiles as PDF",
-        "orderData": "Export order history and details as PDF",
-        "systemLogs": "Export system activity logs as PDF",
-        "analytics": "Export analytics and performance data as PDF"
-      },
-      "infoTitle": "Export Information",
-      "availableOptions": "Available Export Options",
-      "exportOption": "Export option",
-      "exporting": "Exporting...",
-      "exportedSuccessfully": "{{title}} exported successfully as {{format}}",
-      "exportFailed": "Failed to export data. Please try again.",
-      "savedTo": "Saved to",
-      "errors": {
-        "invalidDataType": "Invalid data type",
-        "unsupportedFormat": "Unsupported format - only PDF is supported",
-        "exportFailed": "Export failed",
-        "saveFailed": "Save failed",
-        "noContentToSave": "No content to save"
-      },
-      "mockData": {
-        "users": {
-          "johnDoe": "John Doe",
-          "janeSmith": "Jane Smith",
-          "johnEmail": "john@example.com",
-          "janeEmail": "jane@example.com"
-        },
-        "orders": {
-          "statusCompleted": "completed",
-          "statusPending": "pending"
-        },
-        "systemLogs": {
-          "userLoggedIn": "User logged in",
-          "databaseConnectionFailed": "Database connection failed",
-          "levelInfo": "info",
-          "levelError": "error"
-        }
-      },
-      "infoText": "• All exports are generated as PDF documents\n• Exported files will be available for download\n• Data is filtered based on your permissions\n• Large datasets may take a few moments to process\n• Only PDF format is supported in this version",
-      "footerText": "For custom export requirements or other formats, please contact your system administrator."
-    }
-  },
-  "navigation": {
-    "home": {
-      "title": "Home",
-      "tab": "Home"
-    },
-    "orders": {
-      "title": "Orders",
-      "tab": "Orders"
-    },
-    "users": {
-      "title": "Users",
-      "tab": "Users"
-    },
-    "profile": {
-      "title": "Profile",
-      "tab": "Profile"
-    },
-    "settings": {
-      "title": "Settings",
-      "tab": "Settings"
-    }
+    "password": "Password",
+    "subtitle": "Sign in to your account",
+    "title": "Lumasachi Control"
   },
   "common": {
     "cancel": "Cancel",
-    "save": "Save",
-    "create": "Create",
-    "edit": "Edit",
-    "delete": "Delete",
-    "confirm": "Confirm",
-    "reset": "Reset",
-    "error": "Error",
-    "success": "Success",
-    "loading": "Loading...",
-    "required": "Required",
-    "download": "Download",
-    "retry": "Retry",
-    "resetAndRetry": "Reset & Retry",
-    "ok": "OK",
     "close": "Close",
     "closeModal": "Close modal",
-    "name": "Name",
-    "email": "Email",
-    "phone": "Phone",
     "company": "Company",
-    "as": "as",
-    "unauthorized": "Access Denied",
-    "unauthorizedMessage": "You don't have permission to access this section. Please contact your administrator if you believe this is an error.",
-    "noPermission": "No permission",
-    "loadingPermissions": "Loading permissions...",
-    "noCompany": "No company",
-    "noCompanyAvailable": "No company available",
+    "confirm": "Confirm",
+    "create": "Create",
     "customerTypes": {
       "corporate": "Corporate",
       "individual": "Individual"
     },
-    "mockData": {
-      "companyABC": "Company ABC",
-      "companyXYZ": "Company XYZ",
-      "demoCompany": "Demo Company",
-      "frequentCustomer": "Frequent customer",
-      "vipCustomer": "VIP customer",
-      "testOrder": "Test Order",
-      "testOrderDescription": "Test order description",
-      "repairOrder": "Repair Order",
-      "repairOrderDescription": "Industrial equipment repair",
-      "demoCustomer": "Demo Customer",
-      "customerFirstName": "Customer",
-      "customerLastName": "Demo",
-      "customerEmail": "demo@example.com",
-      "customerAddress": "123 Demo Street",
-      "industrialRepair": "Industrial equipment repair",
-      "repair": "Repair"
-    },
+    "delete": "Delete",
+    "download": "Download",
+    "edit": "Edit",
+    "email": "Email",
+    "file": "file",
+    "loading": "Loading...",
+    "name": "Name",
+    "phone": "Phone",
+    "preview": "Preview",
+    "required": "Required",
+    "retry": "Retry",
+    "save": "Save"
+  },
+  "createOrder": {
+    "attachments": "Attachments",
+    "attachmentsDescription": "Add files related to this order",
+    "attachmentsWillBeUploaded": "{{count}} file(s) will be uploaded after creating the order",
+    "confirmCreate": "Are you sure you want to create this order?",
+    "customerInfo": "Customer Information",
+    "customerItemAccessibility": "Select {{customerName}} from {{company}}",
+    "customerName": "Customer name",
     "errors": {
-      "networkError": "Network connection error. Please check your internet connection and try again.",
-      "unexpectedError": "An unexpected error occurred. Please try again.",
-      "connectionTitle": "Connection Error",
-      "errorTitle": "Something went wrong",
-      "maxRetriesReached": "Maximum retry attempts reached. The error will be reset and you can try again.",
-      "retryAttempt": "Retry attempt {{count}} of {{max}}",
-      "timeoutError": "Request timed out. Please try again.",
-      "serverError": "Server error. Please try again later.",
-      "clientError": "Request error. Please check your input.",
-      "validationError": "Validation error. Please check your input.",
-      "permissionError": "You don't have permission to perform this action.",
-      "authenticationError": "Authentication required. Please sign in.",
-      "permissionTitle": "Permission Denied",
-      "validationTitle": "Validation Error",
-      "timeoutTitle": "Request Timeout",
-      "serverTitle": "Server Error",
-      "clientTitle": "Request Error",
-      "maxRetriesTitle": "Maximum Retries Reached",
-      "maxRetriesMessage": "All retry attempts have been exhausted. Would you like to reset and try again?",
-      "reportError": "Report Error",
-      "reportTitle": "Report Error",
-      "reportSent": "Error report has been logged. Thank you for your feedback.",
-      "offlineTitle": "Offline",
-      "offlineMessage": "You are currently offline. Please check your internet connection.",
-      "backOnline": "Back online"
+      "descriptionTooShort": "Order description must be at least 10 characters long",
+      "loadCustomersFailed": "Failed to load customer data. Please try again.",
+      "missingFields": "Please complete all required fields",
+      "titleTooShort": "Order title must be at least 3 characters long"
     },
-    "dismiss": "Dismiss"
+    "orderDescription": "Describe the order details",
+    "orderDetails": "Order Details",
+    "orderTitle": "Order Title",
+    "priorityButtonAccessibility": "Set priority to {{priority}}",
+    "selectCustomer": "Select Customer",
+    "selectCustomerAccessibility": "Select customer for this order",
+    "submitButtonAccessibility": "Create order with current details",
+    "title": "Create Order",
+    "workCategory": "Work category"
+  },
+  "editOrder": {
+    "attachments": "Attachments",
+    "attachmentsDescription": "Manage files related to this order",
+    "confirmReset": "Are you sure you want to reset all changes? This will revert to the original values.",
+    "confirmSave": "Are you sure you want to save the changes?",
+    "errors": {
+      "descriptionTooShort": "Order description must be at least 10 characters long",
+      "missingFields": "Please complete all required fields",
+      "titleTooShort": "Order title must be at least 3 characters long"
+    },
+    "loadError": "Failed to load order",
+    "loadingOrder": "Loading order...",
+    "resetChanges": "Reset Changes",
+    "saveChanges": "Save Changes",
+    "title": "Edit Order",
+    "updateError": "Failed to update order",
+    "updateSuccess": "Order updated successfully"
   },
   "fileUpload": {
     "errors": {
+      "couldNotEstablishConnection": "Could not establish internet connection",
       "maxFilesExceeded": "Only up to {{maxFiles}} files can be selected",
-      "unknownError": "Unknown error",
       "noFilesSelected": "No files selected",
       "noInternetConnection": "No internet connection. Please check your connection and try again.",
-      "couldNotEstablishConnection": "Could not establish internet connection",
-      "uploadError": "Error uploading files: {{errorMessage}}",
-      "retryError": "Error retrying upload: {{errorMessage}}"
+      "retryError": "Error retrying upload: {{errorMessage}}",
+      "unknownError": "Unknown error",
+      "uploadError": "Error uploading files: {{errorMessage}}"
     },
     "success": {
-      "uploadSuccessful": "Upload successful",
-      "uploadedFiles": "{{successfulFiles}} files uploaded successfully",
-      "partiallySuccessful": "Partially successful upload",
-      "uploadedPartial": "Uploaded {{successfulFiles}} of {{totalFiles}} files.\n\nFailed files: {{failedNames}}",
-      "retrySuccessful": "Retry successful",
+      "additionalFilesUploaded": "{{successfulFiles}} additional files uploaded",
       "allFilesUploaded": "All files uploaded successfully",
+      "partiallySuccessful": "Partially successful upload",
       "retryPartiallySuccessful": "Retry partially successful",
-      "additionalFilesUploaded": "{{successfulFiles}} additional files uploaded"
+      "retrySuccessful": "Retry successful",
+      "uploadPartial": "Uploaded {{successfulFiles}} of {{totalFiles}} files.\n\nFailed files: {{failedNames}}",
+      "uploadSuccessful": "Upload successful",
+      "uploadedFiles": "{{successfulFiles}} files uploaded successfully"
     }
+  },
+  "fileUploader": {
+    "clear": "Clear",
+    "failed": "failed",
+    "file": "file",
+    "files": "files",
+    "retry": "Retry",
+    "selected": "selected",
+    "selectedPlural": "selected",
+    "selectFile": "Select",
+    "selectFiles": "Select files",
+    "status": {
+      "completed": "Completed",
+      "error": "Error",
+      "pending": "Pending",
+      "unknown": "Unknown",
+      "uploading": "Uploading..."
+    },
+    "subtitle": "Select files to upload",
+    "successful": "successful",
+    "title": "Attachments",
+    "totalSize": "Total size",
+    "upload": "Upload",
+    "uploadFiles": "Upload files",
+    "uploadResult": "Upload result"
+  },
+  "home": {
+    "activeOrders": "Active Orders",
+    "adminPanel": "Admin Panel",
+    "completedOrders": "Completed Orders",
+    "createOrder": "Create New Order",
+    "error": {
+      "generic": "Unable to load data. Please try again later."
+    },
+    "greeting": {
+      "afternoon": "Good afternoon",
+      "evening": "Good evening",
+      "morning": "Good morning"
+    },
+    "quickActions": "Quick Actions",
+    "summary": "Summary",
+    "user": "User",
+    "viewOrders": "View My Orders",
+    "viewProfile": "View Profile"
+  },
+  "hooks": {
+    "errors": {
+      "logoutRevokeFailed": "Logout revoke failed",
+      "noInternetConnection": "No internet connection",
+      "retryUploadFailed": "Retry upload failed",
+      "updateUserStorageFailed": "Failed to update user in storage",
+      "uploadFailed": "Upload failed",
+      "useAuthProvider": "useAuth must be used within an AuthProvider",
+      "useOrdersProvider": "useOrders must be used within an OrdersProvider"
+    }
+  },
+  "navigation": {
+    "as": "as",
+    "dismiss": "Dismiss",
+    "error": "Error",
+    "errors": {
+      "authenticationError": "Authentication required. Please sign in.",
+      "backOnline": "Back online",
+      "clientError": "Request error. Please check your input.",
+      "clientTitle": "Request Error",
+      "connectionTitle": "Connection Error",
+      "errorTitle": "Something went wrong",
+      "mainNavigatorNoUser": "MainNavigator rendered without authenticated user",
+      "maxRetriesMessage": "All retry attempts have been exhausted. Would you like to reset and try again?",
+      "maxRetriesReached": "Maximum retry attempts reached. The error will be reset and you can try again.",
+      "maxRetriesTitle": "Maximum Retries Reached",
+      "networkError": "Network connection error. Please check your internet connection and try again.",
+      "offlineMessage": "You are currently offline. Please check your internet connection.",
+      "offlineTitle": "Offline",
+      "permissionError": "You don't have permission to perform this action.",
+      "permissionTitle": "Permission Denied",
+      "reportError": "Report Error",
+      "reportSent": "Error report has been logged. Thank you for your feedback.",
+      "reportTitle": "Report Error",
+      "retryAttempt": "Retry attempt {{count}} of {{max}}",
+      "serverError": "Server error. Please try again later.",
+      "serverTitle": "Server Error",
+      "timeoutError": "Request timed out. Please try again.",
+      "timeoutTitle": "Request Timeout",
+      "unexpectedError": "An unexpected error occurred. Please try again.",
+      "validationError": "Validation error. Please check your input.",
+      "validationTitle": "Validation Error"
+    },
+    "home": {
+      "tab": "Home",
+      "title": "Home"
+    },
+    "loadingPermissions": "Loading permissions...",
+    "mockData": {
+      "companyABC": "Company ABC",
+      "companyXYZ": "Company XYZ",
+      "customerAddress": "123 Demo Street",
+      "customerEmail": "demo@example.com",
+      "customerFirstName": "Customer",
+      "customerLastName": "Demo",
+      "demoCompany": "Demo Company",
+      "demoCustomer": "Demo Customer",
+      "frequentCustomer": "Frequent customer",
+      "industrialRepair": "Industrial equipment repair",
+      "repair": "Repair",
+      "repairOrder": "Repair Order",
+      "repairOrderDescription": "Industrial equipment repair",
+      "testOrder": "Test Order",
+      "testOrderDescription": "Test order description",
+      "vipCustomer": "VIP customer"
+    },
+    "noCompany": "No company",
+    "noCompanyAvailable": "No company available",
+    "noPermission": "No permission",
+    "ok": "OK",
+    "orders": {
+      "tab": "Orders",
+      "title": "Orders"
+    },
+    "profile": {
+      "tab": "Profile",
+      "title": "Profile"
+    },
+    "reset": "Reset",
+    "resetAndRetry": "Reset & Retry",
+    "settings": {
+      "tab": "Settings",
+      "title": "Settings"
+    },
+    "success": "Success",
+    "unauthorized": "Access Denied",
+    "unauthorizedMessage": "You don't have permission to access this section. Please contact your administrator if you believe this is an error.",
+    "users": {
+      "tab": "Users",
+      "title": "Users"
+    }
+  },
+  "orders": {
+    "actualCompletion": "Completion date",
+    "assignedTo": "Assigned to",
+    "category": "Category",
+    "completed": "Completed",
+    "createdAt": "Created Date",
+    "createdBy": "Created by",
+    "createFirstOrder": "Create First Order",
+    "createNewOrder": "Create New Order",
+    "customer": "Customer",
+    "customerInfo": "Customer Information",
+    "customerNotes": "Customer Notes",
+    "customerType": "Customer Type",
+    "description": "Order Description",
+    "descriptionPlaceholder": "This is an example description for the order. Here would be shown detailed information about what is requested in the order.",
+    "editingOrder": "Editing Order",
+    "estimatedCompletion": "Estimated completion",
+    "generalInfo": "General Information",
+    "history": "History",
+    "inProgress": "In Progress",
+    "noHistory": "No activity yet",
+    "noOrdersAvailable": "No orders available",
+    "notes": "Notes",
+    "order": "Order",
+    "orderDetails": "Order Details",
+    "orderTitle": "Title",
+    "priorities": {
+      "high": "High",
+      "low": "Low",
+      "normal": "Normal",
+      "urgent": "Urgent"
+    },
+    "priority": "Priority",
+    "statuses": {
+      "cancelled": "Cancelled",
+      "completed": "Completed",
+      "delivered": "Delivered",
+      "inProgress": "In Progress",
+      "notPaid": "Not Paid",
+      "onHold": "On hold",
+      "open": "Open",
+      "paid": "Paid",
+      "readyForDelivery": "Ready for Delivery",
+      "returned": "Returned"
+    },
+    "status": "Status",
+    "subject": "Subject",
+    "title": "Orders",
+    "updatedAt": "Last Updated"
   },
   "orderStats": {
     "errors": {
       "noInternetConnection": "No internet connection"
     }
-  }
-  ,
+  },
+  "profile": {
+    "address": "Address",
+    "company": "Company",
+    "configuration": "Configuration",
+    "email": "Email",
+    "personalInfo": "Personal Information",
+    "phone": "Phone",
+    "title": "Profile"
+  },
+  "services": {
+    "authService": {
+      "errors": {
+        "fetchUserDataFailed": "Failed to fetch user data",
+        "invalidCredentials": "Invalid credentials",
+        "logoutFailed": "Logout failed",
+        "userNotFound": "User not found"
+      }
+    },
+    "errorService": {
+      "dialogs": {
+        "accessDenied": {
+          "message": "You do not have permission to perform this action.",
+          "ok": "OK",
+          "title": "Access Denied"
+        },
+        "authenticationRequired": {
+          "message": "Please log in to continue.",
+          "ok": "OK",
+          "title": "Authentication Required"
+        },
+        "invalidRequest": {
+          "message": "There was an issue with your request. Please check your input and try again.",
+          "ok": "OK",
+          "title": "Invalid Request"
+        },
+        "networkError": {
+          "message": "Unable to connect to the server. Please try again later.",
+          "ok": "OK",
+          "title": "Network Error"
+        },
+        "noInternetConnection": {
+          "message": "Please check your internet connection and try again.",
+          "ok": "OK",
+          "retry": "Retry",
+          "title": "No Internet Connection"
+        },
+        "requestTimeout": {
+          "message": "The request took too long to complete. Please try again.",
+          "ok": "OK",
+          "title": "Request Timeout"
+        },
+        "serverError": {
+          "message": "The server is currently experiencing issues. Please try again later.",
+          "ok": "OK",
+          "title": "Server Error"
+        },
+        "unexpectedError": {
+          "message": "An unexpected error occurred. Please try again.",
+          "ok": "OK",
+          "title": "Unexpected Error"
+        },
+        "validationError": {
+          "ok": "OK",
+          "title": "Validation Error"
+        }
+      }
+    },
+    "fileService": {
+      "errors": {
+        "deleteAttachmentError": "Error deleting attachment",
+        "downloadUrlError": "Error getting download URL",
+        "fileSizeExceeded": "exceeds 10MB",
+        "fileSizeExceededSingle": "File exceeds maximum size of 10MB",
+        "fileTypeNotAllowed": "file type not allowed",
+        "fileTypeNotAllowedSingle": "File type not allowed: {{type}}",
+        "invalidFiles": "Invalid files: {{files}}",
+        "maxFilesExceeded": "Maximum {{maxFiles}} files allowed",
+        "previewUrlError": "Error getting preview URL",
+        "unknownError": "Unknown error"
+      },
+      "fileSizes": {
+        "bytes": "Bytes",
+        "gb": "GB",
+        "kb": "KB",
+        "mb": "MB"
+      }
+    },
+    "retryService": {
+      "errors": {
+        "noNetworkConnection": "No network connection available",
+        "operationFailed": "Operation failed after retries",
+        "unknownError": "Unknown error"
+      }
+    }
+  },
+  "settings": {
+    "appearance": "Appearance",
+    "clearCache": "Clear Cache",
+    "clearCacheConfirm": "Are you sure you want to clear the cache?",
+    "clearCacheDesc": "Remove temporary data",
+    "clearCacheError": "Could not clear cache",
+    "clearCacheSuccess": "Cache cleared successfully",
+    "darkMode": "Dark Mode",
+    "darkModeDesc": "Enable dark theme",
+    "data": "Data",
+    "information": "Information",
+    "language": "Language",
+    "languageDesc": "Select application language",
+    "languageNames": {
+      "en": "English",
+      "es": "Español"
+    },
+    "notifications": "Notifications",
+    "privacyPolicy": "Privacy Policy",
+    "pushNotifications": "Push Notifications",
+    "pushNotificationsDesc": "Receive notifications for new orders",
+    "termsAndConditions": "Terms and Conditions",
+    "title": "Settings",
+    "version": "Version"
+  },
+  "userManagement": {
+    "createUser": "Create User",
+    "createUserDesc": "Add a new user to the system",
+    "createUserForm": {
+      "address": "Address",
+      "company": "Company",
+      "email": "Email",
+      "errors": {
+        "createFailed": "Failed to create user. Please try again.",
+        "invalidEmail": "Please enter a valid email address",
+        "invalidPhone": "Please enter a valid phone number",
+        "missingFields": "Please complete all required fields"
+      },
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "phoneNumber": "Phone Number",
+      "placeholders": {
+        "address": "Enter address",
+        "company": "Enter company name",
+        "email": "Enter email address",
+        "firstName": "Enter first name",
+        "lastName": "Enter last name",
+        "phoneNumber": "Enter phone number",
+        "role": "Select user role"
+      },
+      "role": "Role",
+      "userCreatedSuccess": "User created successfully!"
+    },
+    "editUser": "Edit User",
+    "editUserSubtitle": "Editing user with ID: {{userId}}",
+    "export": {
+      "availableOptions": "Available Export Options",
+      "descriptions": {
+        "analytics": "Export analytics and performance data as PDF",
+        "orderData": "Export order history and details as PDF",
+        "systemLogs": "Export system activity logs as PDF",
+        "userData": "Export all user information and profiles as PDF"
+      },
+      "errors": {
+        "exportFailed": "Export failed",
+        "invalidDataType": "Invalid data type",
+        "noContentToSave": "No content to save",
+        "saveFailed": "Save failed",
+        "unsupportedFormat": "Unsupported format - only PDF is supported"
+      },
+      "exportedSuccessfully": "{{title}} exported successfully as {{format}}",
+      "exportFailed": "Failed to export data. Please try again.",
+      "exporting": "Exporting...",
+      "exportOption": "Export option",
+      "footerText": "For custom export requirements or other formats, please contact your system administrator.",
+      "infoText": "• All exports are generated as PDF documents\n• Exported files will be available for download\n• Data is filtered based on your permissions\n• Large datasets may take a few moments to process\n• Only PDF format is supported in this version",
+      "infoTitle": "Export Information",
+      "mockData": {
+        "orders": {
+          "statusCompleted": "completed",
+          "statusPending": "pending"
+        },
+        "systemLogs": {
+          "databaseConnectionFailed": "Database connection failed",
+          "levelError": "error",
+          "levelInfo": "info",
+          "userLoggedIn": "User logged in"
+        },
+        "users": {
+          "janeEmail": "jane@example.com",
+          "janeSmith": "Jane Smith",
+          "johnDoe": "John Doe",
+          "johnEmail": "john@example.com"
+        }
+      },
+      "savedTo": "Saved to",
+      "titles": {
+        "analytics": "Analytics Data Export",
+        "orderData": "Order Data Export",
+        "systemLogs": "System Logs Export",
+        "userData": "User Data Export"
+      }
+    },
+    "exportData": "Export Data",
+    "exportDataDesc": "Export user information",
+    "mainActions": "Main Actions",
+    "manageRoles": "Manage Roles",
+    "manageRolesDesc": "Configure user roles and permissions",
+    "reports": {
+      "descriptions": {
+        "orderProcessing": "Summary of orders processed this week",
+        "systemPerformance": "Application performance metrics",
+        "userActivity": "Daily user login and activity statistics",
+        "userRegistration": "New user registrations this month"
+      },
+      "filters": {
+        "all": "All",
+        "order": "Order",
+        "system": "System",
+        "user": "User"
+      },
+      "generated": "Generated:",
+      "orderProcessing": "Order Processing Report",
+      "systemPerformance": "System Performance Report",
+      "userActivity": "User Activity Report",
+      "userRegistration": "User Registration Report",
+      "viewReport": "View Report",
+      "viewing": "Viewing"
+    },
+    "roles": {
+      "administrator": "Administrator",
+      "customer": "Customer",
+      "employee": "Employee",
+      "permissions": {
+        "createUsers": "Create Users",
+        "deleteUsers": "Delete Users",
+        "editUsers": "Edit Users",
+        "viewReports": "View Reports"
+      },
+      "permissionsUpdatedSuccess": "Role permissions updated successfully!",
+      "superAdministrator": "Super Administrator"
+    },
+    "statistics": "Statistics",
+    "subtitle": "Manage users, roles and permissions",
+    "title": "User Management",
+    "viewReports": "View Reports",
+    "viewReportsDesc": "Generate user activity reports"
+  },
+  "users": {
+    "activeUsers": "Active Users",
+    "availableRoles": "Available Roles",
+    "edit": "Edit",
+    "noUsers": "No registered users",
+    "title": "Users",
+    "totalUsers": "Total Users"
+  },
   "validation": {
     "email": {
-      "string": "Email must be a text string.",
+      "invalid": "Please enter a valid email address.",
       "minLength": "Email must be longer than {{count}} characters.",
-      "invalid": "Please enter a valid email address."
+      "string": "Email must be a text string."
+    },
+    "errors": {
+      "descriptionTooShort": "Description is too short",
+      "missingFields": "Missing required fields",
+      "titleTooShort": "Title is too short"
+    },
+    "fallbacks": {
+      "customer": "Customer",
+      "description": "Description",
+      "title": "Title"
     },
     "password": {
-      "string": "Password must be a text string.",
       "minLength": "Password must be longer than {{count}} characters.",
-      "mustContainLettersNumbersSymbols": "Password must include letters, numbers, and symbols."
+      "mustContainLettersNumbersSymbols": "Password must include letters, numbers, and symbols.",
+      "string": "Password must be a text string."
     }
   }
-} 
+}

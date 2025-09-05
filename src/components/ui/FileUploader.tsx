@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { View, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { 
   Button, 
   Card, 
@@ -16,7 +16,6 @@ import {
   Divider
 } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useFileUpload, UseFileUploadOptions } from '../../hooks/useFileUpload';
 import { FileService } from '../../services/fileService';
 import { FileSelection, FileUploadProgress } from '../../types';
@@ -35,8 +34,8 @@ interface FileUploaderProps extends UseFileUploadOptions {
 const FileUploader: React.FC<FileUploaderProps> = ({
   entityType,
   entityId,
-  title = 'Archivos adjuntos',
-  subtitle = 'Selecciona archivos para subir',
+  title,
+  subtitle,
   showUploadButton = true,
   disabled = false,
   compact = false,
@@ -44,6 +43,10 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   ...hookOptions
 }) => {
   const { t } = useTranslation();
+  
+  // Set default translated values
+  const defaultTitle = title || t('fileUploader.title');
+  const defaultSubtitle = subtitle || t('fileUploader.subtitle');
   
   const {
     selectedFiles,
@@ -56,7 +59,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     removeFile,
     clearFiles,
     retryUpload,
-    getTotalSize,
     getFormattedTotalSize,
     hasValidFiles,
     canUpload,
@@ -108,15 +110,15 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   const getProgressStatus = (progress: FileUploadProgress) => {
     switch (progress.status) {
       case 'pending':
-        return { color: '#666', text: 'Pendiente' };
+        return { color: '#666', text: t('fileUploader.status.pending') };
       case 'uploading':
-        return { color: '#2196F3', text: 'Subiendo...' };
+        return { color: '#2196F3', text: t('fileUploader.status.uploading') };
       case 'completed':
-        return { color: '#4CAF50', text: 'Completado' };
+        return { color: '#4CAF50', text: t('fileUploader.status.completed') };
       case 'error':
-        return { color: '#F44336', text: 'Error' };
+        return { color: '#F44336', text: t('fileUploader.status.error') };
       default:
-        return { color: '#666', text: 'Desconocido' };
+        return { color: '#666', text: t('fileUploader.status.unknown') };
     }
   };
 
@@ -176,21 +178,21 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     return (
       <Surface style={styles.compactContainer}>
         <View style={styles.compactHeader}>
-          <Text variant="titleSmall">{title}</Text>
+          <Text variant="titleSmall">{defaultTitle}</Text>
           <Button 
             mode="outlined" 
             onPress={handleSelectFiles}
             disabled={disabled || uploading}
             compact
           >
-            {hookOptions.allowMultiple === false ? 'Seleccionar' : 'Seleccionar archivos'}
+            {hookOptions.allowMultiple === false ? t('fileUploader.selectFile') : t('fileUploader.selectFiles')}
           </Button>
         </View>
         
         {hasValidFiles() && (
           <View style={styles.compactFiles}>
             <Text variant="bodySmall">
-              {selectedFiles.length} archivo{selectedFiles.length > 1 ? 's' : ''} 
+              {selectedFiles.length} {selectedFiles.length > 1 ? t('fileUploader.files') : t('fileUploader.file')} 
               ({getFormattedTotalSize()})
             </Text>
             {showUploadButton && (
@@ -201,7 +203,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                 loading={uploading}
                 compact
               >
-                Subir
+                {t('fileUploader.upload')}
               </Button>
             )}
           </View>
@@ -215,9 +217,9 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       <Card.Content>
         <View style={styles.header}>
           <View style={styles.titleContainer}>
-            <Text variant="titleMedium">{title}</Text>
+            <Text variant="titleMedium">{defaultTitle}</Text>
             <Text variant="bodySmall" style={styles.subtitle}>
-              {subtitle}
+              {defaultSubtitle}
             </Text>
           </View>
           
@@ -227,7 +229,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
             disabled={disabled || uploading}
             icon="attach-file"
           >
-            {hookOptions.allowMultiple === false ? 'Seleccionar' : 'Seleccionar archivos'}
+            {hookOptions.allowMultiple === false ? t('fileUploader.selectFile') : t('fileUploader.selectFiles')}
           </Button>
         </View>
 
@@ -237,10 +239,10 @@ const FileUploader: React.FC<FileUploaderProps> = ({
             
             <View style={styles.summary}>
               <Text variant="bodyMedium">
-                {selectedFiles.length} archivo{selectedFiles.length > 1 ? 's' : ''} seleccionado{selectedFiles.length > 1 ? 's' : ''}
+                {selectedFiles.length} {selectedFiles.length > 1 ? t('fileUploader.files') : t('fileUploader.file')} {selectedFiles.length > 1 ? t('fileUploader.selectedPlural') : t('fileUploader.selected')}
               </Text>
               <Text variant="bodySmall" style={styles.totalSize}>
-                Tamaño total: {getFormattedTotalSize()}
+                {t('fileUploader.totalSize')}: {getFormattedTotalSize()}
               </Text>
             </View>
 
@@ -255,7 +257,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                 disabled={uploading}
                 icon="clear"
               >
-                Limpiar
+                {t('fileUploader.clear')}
               </Button>
               
               {showUploadButton && (
@@ -266,7 +268,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                   loading={uploading}
                   icon="cloud-upload"
                 >
-                  Subir archivos
+                  {t('fileUploader.uploadFiles')}
                 </Button>
               )}
               
@@ -277,7 +279,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                   disabled={uploading}
                   icon="refresh"
                 >
-                  Reintentar
+                  {t('fileUploader.retry')}
                 </Button>
               )}
             </View>
@@ -288,14 +290,14 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           <>
             <Divider style={styles.divider} />
             <View style={styles.results}>
-              <Text variant="titleSmall">Resultado del upload:</Text>
+              <Text variant="titleSmall">{t('fileUploader.uploadResult')}:</Text>
               <View style={styles.resultStats}>
                 <Chip 
                   icon="check-circle" 
                   style={[styles.chip, { backgroundColor: '#E8F5E8' }]}
                   textStyle={{ color: '#2E7D32' }}
                 >
-                  {uploadResult.successfulFiles} exitosos
+                  {uploadResult.successfulFiles} {t('fileUploader.successful')}
                 </Chip>
                 {uploadResult.failedCount > 0 && (
                   <Chip 
@@ -303,7 +305,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                     style={[styles.chip, { backgroundColor: '#FFEBEE' }]}
                     textStyle={{ color: '#C62828' }}
                   >
-                    {uploadResult.failedCount} fallidos
+                    {uploadResult.failedCount} {t('fileUploader.failed')}
                   </Chip>
                 )}
               </View>

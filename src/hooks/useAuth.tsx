@@ -114,7 +114,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({children}) 
         if (!token) return;
         const result = await authService.logout({ token });
         if (!result.ok) {
-          await errorService.logError(new Error(result.message || 'Logout revoke failed'), {
+          await errorService.logError(new Error(result.message || t('hooks.errors.logoutRevokeFailed') as string), {
             context: 'logout',
             action: 'revoke-token',
             status: result.status,
@@ -150,7 +150,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({children}) 
       );
 
       if (!result.success) {
-        throw result.error || new Error('Failed to update user in storage');
+        throw result.error || new Error(t('hooks.errors.updateUserStorageFailed') as string);
       }
     } catch (error) {
       await errorService.logError(error as Error, {

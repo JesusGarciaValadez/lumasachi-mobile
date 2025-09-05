@@ -1,463 +1,602 @@
 {
   "app": {
-    "name": "Lumasachi Control",
-    "loading": "Cargando..."
-  },
-  "auth": {
-    "title": "Lumasachi Control",
-    "subtitle": "Inicia sesión en tu cuenta",
-    "email": "Email",
-    "password": "Contraseña",
-    "login": "Iniciar Sesión",
-    "loggingIn": "Iniciando sesión...",
-    "logout": "Cerrar Sesión",
-    "loggingOut": "Cerrando Sesión...",
-    "logoutConfirm": "¿Estás seguro de que quieres cerrar sesión?",
-    "mockUser": {
-      "firstName": "Usuario Demo",
-      "lastName": "Prueba",
-      "company": "Lumasachi",
-      "address": "Calle Principal 123",
-      "phoneNumber": "+52-123-456-7890"
-    },
-    "errors": {
-      "missingFields": "Por favor ingresa tu email y contraseña",
-      "emailRequired": "El campo email es obligatorio.",
-      "passwordRequired": "El campo contraseña es obligatorio.",
-      "invalidCredentials": "Credenciales inválidas",
-      "storageLoad": "Error cargando usuario desde almacenamiento",
-      "logout": "Error durante el cierre de sesión",
-      "storageUpdate": "Error actualizando usuario en almacenamiento",
-      "hookUsage": "useAuth debe usarse dentro de un AuthProvider"
-    },
-    "forgotPassword": "¿Olvidaste tu contraseña?",
-    "forgotPasswordTitle": "Restablecer Contraseña",
-    "forgotPasswordMessage": "La funcionalidad de restablecimiento de contraseña se implementará pronto.",
-    "getNewPassword": "Obtener una nueva contraseña",
-    "backToLoginForm": "← Volver al formulario de login",
-    "forgotPasswordSubtitle": "Ingresa tu email para obtener un enlace de restablecimiento",
-    "forgotSuccessToast": "En breve recibirás un correo en tu bandeja de entrada para obtener una nueva contraseña"
-  },
-  "home": {
-    "greeting": {
-      "morning": "Buenos días",
-      "afternoon": "Buenas tardes",
-      "evening": "Buenas noches"
-    },
-    "user": "Usuario",
-    "quickActions": "Acciones Rápidas",
-    "createOrder": "Crear Nueva Orden",
-    "viewOrders": "Ver Mis Órdenes",
-    "viewProfile": "Ver Perfil",
-    "adminPanel": "Panel de Administración",
-    "summary": "Resumen",
-    "activeOrders": "Órdenes Activas",
-    "completedOrders": "Órdenes Completadas",
-    "error": {
-      "generic": "No se pueden cargar los datos. Por favor intenta de nuevo más tarde."
-    }
-  },
-  "orders": {
-    "title": "Órdenes",
-    "order": "Orden",
-    "customer": "Cliente",
-    "status": "Estado",
-    "description": "Descripción de la Orden",
-    "priority": "Prioridad",
-    "category": "Categoría",
-    "orderTitle": "Título",
-    "history": "Historial de Cambios",
-    "noHistory": "No hay cambios aún",
-    "createdAt": "Fecha de Creación",
-    "updatedAt": "Última Actualización",
-    "editingOrder": "Editando Orden",
-    "orderDetails": "Detalles de la Orden",
-    "generalInfo": "Información General",
-    "createFirstOrder": "Crear Primera Orden",
-    "createNewOrder": "Crear una nueva Órden",
-    "noOrdersAvailable": "No hay órdenes disponibles",
-    "inProgress": "En Progreso",
-    "assignedTo": "Asignado a",
-    "completed": "Completado",
-    "createdBy": "Creado por",
-    "estimatedCompletion": "Fecha estimada de cumplimiento",
-    "actualCompletion": "Fecha de cumplimiento",
-    "notes": "Notas",
-    "statuses": {
-      "open": "Abierto",
-      "inProgress": "En Progreso",
-      "readyForDelivery": "Listo para entrega",
-      "completed": "Completado",
-      "delivered": "Entregado",
-      "paid": "Pagado",
-      "returned": "Devuelto",
-      "notPaid": "No Pagado",
-      "onHold": "En espera",
-      "cancelled": "Cancelado"
-    },
-    "subject": "Asunto",
-    "priorities": {
-      "low": "Baja",
-      "normal": "Normal",
-      "high": "Alta",
-      "urgent": "Urgente"
-    },
-    "customerType": "Tipo de Cliente",
-    "customerNotes": "Notas del Cliente",
-    "descriptionPlaceholder": "Esta es una descripción de ejemplo para la orden. Aquí se mostraría información detallada sobre lo que se solicita en la orden."
-  },
-  "createOrder": {
-    "title": "Crear Orden",
-    "customerInfo": "Información del Cliente",
-    "orderDetails": "Detalles de la Orden",
-    "attachments": "Archivos Adjuntos",
-    "attachmentsDescription": "Agrega archivos relacionados con esta orden",
-    "customerName": "Nombre del cliente",
-    "orderDescription": "Describe los detalles de la orden",
-    "workCategory": "Categoría del trabajo",
-    "confirmCreate": "¿Estás seguro de que quieres crear esta orden?",
-    "attachmentsWillBeUploaded": "{{count}} archivo(s) será(n) subido(s) después de crear la orden",
-    "selectCustomer": "Seleccionar Cliente",
-    "selectCustomerAccessibility": "Seleccionar cliente para esta orden",
-    "orderTitle": "Título de la Orden",
-    "priorityButtonAccessibility": "Establecer prioridad a {{priority}}",
-    "submitButtonAccessibility": "Crear orden con los detalles actuales",
-    "customerItemAccessibility": "Seleccionar {{customerName}} de {{company}}",
-    "errors": {
-      "missingFields": "Por favor completa todos los campos obligatorios",
-      "titleTooShort": "El título de la orden debe tener al menos 3 caracteres",
-      "descriptionTooShort": "La descripción de la orden debe tener al menos 10 caracteres",
-      "loadCustomersFailed": "Error al cargar los datos del cliente. Por favor intenta de nuevo."
-    }
+    "loading": "Cargando...",
+    "name": "Lumasachi Control"
   },
   "attachments": {
-    "noPreview": "No hay vista previa disponible",
-    "previewError": "Error al cargar la vista previa",
+    "cannotOpen": "No se puede abrir este archivo",
     "imageLoadError": "Error al cargar la imagen",
     "loadError": "Error al cargar el archivo",
-    "unsupportedType": "Tipo de archivo no soportado para vista previa",
+    "noPreview": "No hay vista previa disponible",
     "openExternally": "Abrir externamente",
     "openWith": "Abrir con...",
-    "cannotOpen": "No se puede abrir este archivo"
+    "previewError": "Error al cargar la vista previa",
+    "unsupportedType": "Tipo de archivo no soportado para vista previa"
   },
-  "editOrder": {
-    "title": "Editar Orden",
-    "attachments": "Archivos Adjuntos",
-    "attachmentsDescription": "Gestionar archivos relacionados con esta orden",
-    "saveChanges": "Guardar Cambios",
-    "confirmSave": "¿Estás seguro de que quieres guardar los cambios?",
-    "resetChanges": "Restablecer Cambios",
-    "confirmReset": "¿Estás seguro de que quieres restablecer todos los cambios? Esto revertirá a los valores originales.",
-    "loadingOrder": "Cargando orden...",
-    "loadError": "No se pudo cargar la orden",
-    "updateSuccess": "Orden actualizada correctamente",
-    "updateError": "No se pudo actualizar la orden",
-    "errors": {
-      "missingFields": "Por favor completa todos los campos obligatorios",
-      "titleTooShort": "El título de la orden debe tener al menos 3 caracteres",
-      "descriptionTooShort": "La descripción de la orden debe tener al menos 10 caracteres"
-    }
-  },
-  "profile": {
-    "title": "Perfil",
-    "personalInfo": "Información Personal",
+  "auth": {
+    "backToLoginForm": "← Volver al formulario de login",
     "email": "Email",
-    "phone": "Teléfono",
-    "address": "Dirección",
-    "company": "Empresa",
-    "configuration": "Configuración"
-  },
-  "settings": {
-    "title": "Configuración",
-    "notifications": "Notificaciones",
-    "pushNotifications": "Notificaciones Push",
-    "pushNotificationsDesc": "Recibir notificaciones de nuevas órdenes",
-    "appearance": "Apariencia",
-    "darkMode": "Modo Oscuro",
-    "darkModeDesc": "Activar tema oscuro",
-    "data": "Datos",
-    "clearCache": "Limpiar Cache",
-    "clearCacheDesc": "Eliminar datos temporales",
-    "clearCacheConfirm": "¿Estás seguro de que quieres limpiar el cache?",
-    "clearCacheSuccess": "Cache eliminado correctamente",
-    "clearCacheError": "No se pudo eliminar el cache",
-    "information": "Información",
-    "version": "Versión",
-    "termsAndConditions": "Términos y Condiciones",
-    "privacyPolicy": "Política de Privacidad",
-    "language": "Idioma",
-    "languageDesc": "Seleccionar idioma de la aplicación"
-  },
-  "users": {
-    "title": "Usuarios",
-    "edit": "Editar",
-    "noUsers": "No hay usuarios registrados",
-    "totalUsers": "Usuarios Totales",
-    "activeUsers": "Usuarios Activos",
-    "availableRoles": "Roles Disponibles"
-  },
-  "userManagement": {
-    "title": "Gestión de Usuarios",
-    "subtitle": "Administra usuarios, roles y permisos",
-    "editUser": "Editar Usuario",
-    "editUserSubtitle": "Editando usuario con ID: {{userId}}",
-    "mainActions": "Acciones Principales",
-    "createUser": "Crear Usuario",
-    "createUserDesc": "Agregar un nuevo usuario al sistema",
-    "manageRoles": "Gestionar Roles",
-    "manageRolesDesc": "Configurar roles y permisos de usuarios",
-    "viewReports": "Ver Reportes",
-    "viewReportsDesc": "Generar reportes de actividad de usuarios",
-    "exportData": "Exportar Datos",
-    "exportDataDesc": "Exportar información de usuarios",
-    "statistics": "Estadísticas",
-    "createUserForm": {
-      "firstName": "Nombre",
-      "lastName": "Apellido",
-      "email": "Email",
-      "role": "Rol",
-      "company": "Empresa",
-      "phoneNumber": "Número de Teléfono",
-      "address": "Dirección",
-      "placeholders": {
-        "firstName": "Ingrese el nombre",
-        "lastName": "Ingrese el apellido",
-        "email": "Ingrese el correo electrónico",
-        "role": "Seleccione el rol del usuario",
-        "company": "Ingrese el nombre de la empresa",
-        "phoneNumber": "Ingrese el número de teléfono",
-        "address": "Ingrese la dirección"
-      },
-      "userCreatedSuccess": "¡Usuario creado exitosamente!",
-      "errors": {
-        "missingFields": "Por favor complete todos los campos requeridos",
-        "invalidEmail": "Por favor ingrese un correo electrónico válido",
-        "invalidPhone": "Por favor ingrese un número de teléfono válido",
-        "createFailed": "Error al crear usuario. Por favor inténtelo de nuevo."
-      }
+    "errors": {
+      "emailRequired": "El campo email es obligatorio.",
+      "hookUsage": "useAuth debe usarse dentro de un AuthProvider",
+      "invalidCredentials": "Credenciales inválidas",
+      "logout": "Error durante el cierre de sesión",
+      "missingFields": "Por favor ingresa tu email y contraseña",
+      "passwordRequired": "El campo contraseña es obligatorio.",
+      "storageLoad": "Error cargando usuario desde almacenamiento",
+      "storageUpdate": "Error actualizando usuario en almacenamiento"
     },
-    "roles": {
-      "superAdministrator": "Super Administrador",
-      "administrator": "Administrador",
-      "employee": "Empleado",
-      "customer": "Cliente",
-      "permissions": {
-        "createUsers": "Crear Usuarios",
-        "editUsers": "Editar Usuarios",
-        "deleteUsers": "Eliminar Usuarios",
-        "viewReports": "Ver Reportes"
-      },
-      "permissionsUpdatedSuccess": "¡Permisos de rol actualizados exitosamente!"
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "forgotPasswordMessage": "La funcionalidad de restablecimiento de contraseña se implementará pronto.",
+    "forgotPasswordSubtitle": "Ingresa tu email para obtener un enlace de restablecimiento",
+    "forgotPasswordTitle": "Restablecer Contraseña",
+    "forgotSuccessToast": "En breve recibirás un correo en tu bandeja de entrada para obtener una nueva contraseña",
+    "getNewPassword": "Obtener una nueva contraseña",
+    "login": "Iniciar Sesión",
+    "loggingIn": "Iniciando sesión...",
+    "loggingOut": "Cerrando Sesión...",
+    "logout": "Cerrar Sesión",
+    "logoutConfirm": "¿Estás seguro de que quieres cerrar sesión?",
+    "mockUser": {
+      "address": "Calle Principal 123",
+      "company": "Lumasachi",
+      "firstName": "Usuario Demo",
+      "lastName": "Prueba",
+      "phoneNumber": "+52-123-456-7890"
     },
-    "reports": {
-      "userActivity": "Reporte de Actividad de Usuarios",
-      "orderProcessing": "Reporte de Procesamiento de Órdenes",
-      "systemPerformance": "Reporte de Rendimiento del Sistema",
-      "userRegistration": "Reporte de Registro de Usuarios",
-      "descriptions": {
-        "userActivity": "Estadísticas diarias de inicio de sesión y actividad de usuarios",
-        "orderProcessing": "Resumen de órdenes procesadas esta semana",
-        "systemPerformance": "Métricas de rendimiento de la aplicación",
-        "userRegistration": "Nuevos registros de usuarios este mes"
-      },
-      "filters": {
-        "all": "Todos",
-        "user": "Usuario",
-        "order": "Orden",
-        "system": "Sistema"
-      },
-      "generated": "Generado:",
-      "viewReport": "Ver Reporte",
-      "viewing": "Visualizando"
-    },
-    "export": {
-      "titles": {
-        "userData": "Exportar Datos de Usuario",
-        "orderData": "Exportar Datos de Órdenes",
-        "systemLogs": "Exportar Logs del Sistema",
-        "analytics": "Exportar Datos de Análisis"
-      },
-      "descriptions": {
-        "userData": "Exportar toda la información y perfiles de usuarios como PDF",
-        "orderData": "Exportar historial y detalles de órdenes como PDF",
-        "systemLogs": "Exportar registros de actividad del sistema como PDF",
-        "analytics": "Exportar datos de análisis y rendimiento como PDF"
-      },
-      "infoTitle": "Información de Exportación",
-      "availableOptions": "Opciones de Exportación Disponibles",
-      "exportOption": "Opción de exportación",
-      "exporting": "Exportando...",
-      "exportedSuccessfully": "{{title}} exportado exitosamente como {{format}}",
-      "exportFailed": "Error al exportar los datos. Por favor intente de nuevo.",
-      "savedTo": "Guardado en",
-      "errors": {
-        "invalidDataType": "Tipo de datos inválido",
-        "unsupportedFormat": "Formato no soportado - solo se admite PDF",
-        "exportFailed": "Error al exportar",
-        "saveFailed": "Error al guardar",
-        "noContentToSave": "No hay contenido para guardar"
-      },
-      "mockData": {
-        "users": {
-          "johnDoe": "Juan Pérez",
-          "janeSmith": "María García",
-          "johnEmail": "juan@ejemplo.com",
-          "janeEmail": "maria@ejemplo.com"
-        },
-        "orders": {
-          "statusCompleted": "completada",
-          "statusPending": "pendiente"
-        },
-        "systemLogs": {
-          "userLoggedIn": "Usuario inició sesión",
-          "databaseConnectionFailed": "Falló la conexión a la base de datos",
-          "levelInfo": "información",
-          "levelError": "error"
-        }
-      },
-      "infoText": "• Todas las exportaciones se generan como documentos PDF\n• Los archivos exportados estarán disponibles para descarga\n• Los datos se filtran según sus permisos\n• Los conjuntos de datos grandes pueden tardar unos momentos en procesarse\n• Solo se admite formato PDF en esta versión",
-      "footerText": "Para requisitos de exportación personalizados u otros formatos, por favor contacte a su administrador del sistema."
-    }
-  },
-  "navigation": {
-    "home": {
-      "title": "Inicio",
-      "tab": "Inicio"
-    },
-    "orders": {
-      "title": "Órdenes",
-      "tab": "Órdenes"
-    },
-    "users": {
-      "title": "Usuarios",
-      "tab": "Usuarios"
-    },
-    "profile": {
-      "title": "Perfil",
-      "tab": "Perfil"
-    },
-    "settings": {
-      "title": "Configuración",
-      "tab": "Config"
-    }
+    "password": "Contraseña",
+    "subtitle": "Inicia sesión en tu cuenta",
+    "title": "Lumasachi Control"
   },
   "common": {
     "cancel": "Cancelar",
-    "save": "Guardar",
-    "create": "Crear",
-    "edit": "Editar",
-    "delete": "Eliminar",
-    "confirm": "Confirmar",
-    "reset": "Restablecer",
-    "error": "Error",
-    "success": "Éxito",
-    "loading": "Cargando...",
-    "download": "Descargar",
-    "required": "Obligatorio",
-    "retry": "Reintentar",
-    "resetAndRetry": "Reiniciar y Reintentar",
-    "ok": "OK",
     "close": "Cerrar",
     "closeModal": "Cerrar modal",
-    "name": "Nombre",
-    "email": "Email",
-    "phone": "Teléfono",
     "company": "Empresa",
-    "as": "como",
-    "unauthorized": "Acceso Denegado",
-    "unauthorizedMessage": "No tienes permisos para acceder a esta sección. Por favor contacta a tu administrador si crees que esto es un error.",
-    "noPermission": "Sin permiso",
-    "loadingPermissions": "Cargando permisos...",
-    "noCompany": "Sin empresa",
-    "noCompanyAvailable": "Sin empresa disponible",
+    "confirm": "Confirmar",
+    "create": "Crear",
     "customerTypes": {
       "corporate": "Corporativo",
       "individual": "Individual"
     },
-    "mockData": {
-      "companyABC": "Empresa ABC",
-      "companyXYZ": "Empresa XYZ",
-      "demoCompany": "Demo Company",
-      "frequentCustomer": "Cliente frecuente",
-      "vipCustomer": "Cliente VIP",
-      "testOrder": "Orden de Prueba",
-      "testOrderDescription": "Descripción de la orden de prueba",
-      "repairOrder": "Orden de Reparación",
-      "repairOrderDescription": "Reparación de equipo industrial",
-      "demoCustomer": "Cliente Demo",
-      "customerFirstName": "Cliente",
-      "customerLastName": "Demo",
-      "customerEmail": "demo@example.com",
-      "customerAddress": "123 Demo Street",
-      "industrialRepair": "Reparación de equipo industrial",
-      "repair": "Reparación"
-    },
+    "delete": "Eliminar",
+    "download": "Descargar",
+    "edit": "Editar",
+    "email": "Email",
+    "file": "archivo",
+    "loading": "Cargando...",
+    "name": "Nombre",
+    "phone": "Teléfono",
+    "preview": "Vista previa",
+    "required": "Obligatorio",
+    "retry": "Reintentar",
+    "save": "Guardar"
+  },
+  "createOrder": {
+    "attachments": "Archivos Adjuntos",
+    "attachmentsDescription": "Agrega archivos relacionados con esta orden",
+    "attachmentsWillBeUploaded": "{{count}} archivo(s) será(n) subido(s) después de crear la orden",
+    "confirmCreate": "¿Estás seguro de que quieres crear esta orden?",
+    "customerInfo": "Información del Cliente",
+    "customerItemAccessibility": "Seleccionar {{customerName}} de {{company}}",
+    "customerName": "Nombre del cliente",
     "errors": {
-      "networkError": "Error de conexión a la red. Por favor verifica tu conexión a internet e inténtalo nuevamente.",
-      "unexpectedError": "Ocurrió un error inesperado. Por favor inténtalo nuevamente.",
-      "connectionTitle": "Error de Conexión",
-      "errorTitle": "Algo salió mal",
-      "maxRetriesReached": "Se alcanzó el número máximo de reintentos. El error se reiniciará y podrás intentarlo nuevamente.",
-      "retryAttempt": "Intento {{count}} de {{max}}",
-      "timeoutError": "La solicitud ha expirado. Por favor inténtalo nuevamente.",
-      "serverError": "Error del servidor. Por favor inténtalo más tarde.",
-      "clientError": "Error en la solicitud. Por favor verifica tu información.",
-      "validationError": "Error de validación. Por favor verifica tu información.",
-      "permissionError": "No tienes permisos para realizar esta acción.",
-      "authenticationError": "Autenticación requerida. Por favor inicia sesión.",
-      "permissionTitle": "Permiso Denegado",
-      "validationTitle": "Error de Validación",
-      "timeoutTitle": "Tiempo de Espera Agotado",
-      "serverTitle": "Error del Servidor",
-      "clientTitle": "Error de Solicitud",
-      "maxRetriesTitle": "Reintentos Máximos Alcanzados",
-      "maxRetriesMessage": "Se han agotado todos los intentos de reintento. ¿Te gustaría reiniciar e intentar nuevamente?",
-      "reportError": "Reportar Error",
-      "reportTitle": "Reportar Error",
-      "reportSent": "El reporte de error ha sido registrado. Gracias por tu retroalimentación.",
-      "offlineTitle": "Sin Conexión",
-      "offlineMessage": "Actualmente estás sin conexión. Por favor verifica tu conexión a internet.",
-      "backOnline": "Conectado nuevamente"
+      "descriptionTooShort": "La descripción de la orden debe tener al menos 10 caracteres",
+      "loadCustomersFailed": "Error al cargar los datos del cliente. Por favor intenta de nuevo.",
+      "missingFields": "Por favor completa todos los campos obligatorios",
+      "titleTooShort": "El título de la orden debe tener al menos 3 caracteres"
     },
-    "dismiss": "Descartar"
+    "orderDescription": "Describe los detalles de la orden",
+    "orderDetails": "Detalles de la Orden",
+    "orderTitle": "Título de la Orden",
+    "priorityButtonAccessibility": "Establecer prioridad a {{priority}}",
+    "selectCustomer": "Seleccionar Cliente",
+    "selectCustomerAccessibility": "Seleccionar cliente para esta orden",
+    "submitButtonAccessibility": "Crear orden con los detalles actuales",
+    "title": "Crear Orden",
+    "workCategory": "Categoría del trabajo"
+  },
+  "editOrder": {
+    "attachments": "Archivos Adjuntos",
+    "attachmentsDescription": "Gestionar archivos relacionados con esta orden",
+    "confirmReset": "¿Estás seguro de que quieres restablecer todos los cambios? Esto revertirá a los valores originales.",
+    "confirmSave": "¿Estás seguro de que quieres guardar los cambios?",
+    "errors": {
+      "descriptionTooShort": "La descripción de la orden debe tener al menos 10 caracteres",
+      "missingFields": "Por favor completa todos los campos obligatorios",
+      "titleTooShort": "El título de la orden debe tener al menos 3 caracteres"
+    },
+    "loadError": "No se pudo cargar la orden",
+    "loadingOrder": "Cargando orden...",
+    "resetChanges": "Restablecer Cambios",
+    "saveChanges": "Guardar Cambios",
+    "title": "Editar Orden",
+    "updateError": "No se pudo actualizar la orden",
+    "updateSuccess": "Orden actualizada correctamente"
   },
   "fileUpload": {
     "errors": {
+      "couldNotEstablishConnection": "No se pudo establecer conexión a internet",
       "maxFilesExceeded": "Solo se pueden seleccionar hasta {{maxFiles}} archivos",
-      "unknownError": "Error desconocido",
       "noFilesSelected": "No hay archivos seleccionados",
       "noInternetConnection": "No hay conexión a internet. Verifica tu conexión e inténtalo nuevamente.",
-      "couldNotEstablishConnection": "No se pudo establecer conexión a internet",
-      "uploadError": "Error subiendo archivos: {{errorMessage}}",
-      "retryError": "Error reintentando upload: {{errorMessage}}"
+      "retryError": "Error reintentando upload: {{errorMessage}}",
+      "unknownError": "Error desconocido",
+      "uploadError": "Error subiendo archivos: {{errorMessage}}"
     },
     "success": {
-      "uploadSuccessful": "Upload exitoso",
-      "uploadedFiles": "Se subieron {{successfulFiles}} archivos correctamente",
-      "partiallySuccessful": "Upload parcialmente exitoso",
-      "uploadedPartial": "Se subieron {{successfulFiles}} de {{totalFiles}} archivos.\n\nArchivos fallidos: {{failedNames}}",
-      "retrySuccessful": "Reintento exitoso",
+      "additionalFilesUploaded": "Se subieron {{successfulFiles}} archivos adicionales",
       "allFilesUploaded": "Todos los archivos se subieron correctamente",
+      "partiallySuccessful": "Upload parcialmente exitoso",
       "retryPartiallySuccessful": "Reintento parcialmente exitoso",
-      "additionalFilesUploaded": "Se subieron {{successfulFiles}} archivos adicionales"
+      "retrySuccessful": "Reintento exitoso",
+      "uploadPartial": "Se subieron {{successfulFiles}} de {{totalFiles}} archivos.\n\nArchivos fallidos: {{failedNames}}",
+      "uploadSuccessful": "Upload exitoso",
+      "uploadedFiles": "Se subieron {{successfulFiles}} archivos correctamente"
     }
+  },
+  "fileUploader": {
+    "clear": "Limpiar",
+    "failed": "fallidos",
+    "file": "archivo",
+    "files": "archivos",
+    "retry": "Reintentar",
+    "selected": "seleccionado",
+    "selectedPlural": "seleccionados",
+    "selectFile": "Seleccionar",
+    "selectFiles": "Seleccionar archivos",
+    "status": {
+      "completed": "Completado",
+      "error": "Error",
+      "pending": "Pendiente",
+      "unknown": "Desconocido",
+      "uploading": "Subiendo..."
+    },
+    "subtitle": "Selecciona archivos para subir",
+    "successful": "exitosos",
+    "title": "Archivos adjuntos",
+    "totalSize": "Tamaño total",
+    "upload": "Subir",
+    "uploadFiles": "Subir archivos",
+    "uploadResult": "Resultado del upload"
+  },
+  "home": {
+    "activeOrders": "Órdenes Activas",
+    "adminPanel": "Panel de Administración",
+    "completedOrders": "Órdenes Completadas",
+    "createOrder": "Crear Nueva Orden",
+    "error": {
+      "generic": "No se pueden cargar los datos. Por favor intenta de nuevo más tarde."
+    },
+    "greeting": {
+      "afternoon": "Buenas tardes",
+      "evening": "Buenas noches",
+      "morning": "Buenos días"
+    },
+    "quickActions": "Acciones Rápidas",
+    "summary": "Resumen",
+    "user": "Usuario",
+    "viewOrders": "Ver Mis Órdenes",
+    "viewProfile": "Ver Perfil"
+  },
+  "hooks": {
+    "errors": {
+      "logoutRevokeFailed": "Falló la revocación del logout",
+      "noInternetConnection": "No hay conexión a internet",
+      "retryUploadFailed": "Reintento de upload falló",
+      "updateUserStorageFailed": "Error al actualizar usuario en almacenamiento",
+      "uploadFailed": "Upload falló",
+      "useAuthProvider": "useAuth debe usarse dentro de un AuthProvider",
+      "useOrdersProvider": "useOrders debe usarse dentro de un OrdersProvider"
+    }
+  },
+  "navigation": {
+    "as": "como",
+    "dismiss": "Descartar",
+    "error": "Error",
+    "errors": {
+      "authenticationError": "Autenticación requerida. Por favor inicia sesión.",
+      "backOnline": "Conectado nuevamente",
+      "clientError": "Error en la solicitud. Por favor verifica tu información.",
+      "clientTitle": "Error de Solicitud",
+      "connectionTitle": "Error de Conexión",
+      "errorTitle": "Algo salió mal",
+      "mainNavigatorNoUser": "MainNavigator renderizado sin usuario autenticado",
+      "maxRetriesMessage": "Se han agotado todos los intentos de reintento. ¿Te gustaría reiniciar e intentar nuevamente?",
+      "maxRetriesReached": "Se alcanzó el número máximo de reintentos. El error se reiniciará y podrás intentarlo nuevamente.",
+      "maxRetriesTitle": "Reintentos Máximos Alcanzados",
+      "networkError": "Error de conexión a la red. Por favor verifica tu conexión a internet e inténtalo nuevamente.",
+      "offlineMessage": "Actualmente estás sin conexión. Por favor verifica tu conexión a internet.",
+      "offlineTitle": "Sin Conexión",
+      "permissionError": "No tienes permisos para realizar esta acción.",
+      "permissionTitle": "Permiso Denegado",
+      "reportError": "Reportar Error",
+      "reportSent": "El reporte de error ha sido registrado. Gracias por tu retroalimentación.",
+      "reportTitle": "Reportar Error",
+      "retryAttempt": "Intento {{count}} de {{max}}",
+      "serverError": "Error del servidor. Por favor inténtalo más tarde.",
+      "serverTitle": "Error del Servidor",
+      "timeoutError": "La solicitud ha expirado. Por favor inténtalo nuevamente.",
+      "timeoutTitle": "Tiempo de Espera Agotado",
+      "unexpectedError": "Ocurrió un error inesperado. Por favor inténtalo nuevamente.",
+      "validationError": "Error de validación. Por favor verifica tu información.",
+      "validationTitle": "Error de Validación"
+    },
+    "home": {
+      "tab": "Inicio",
+      "title": "Inicio"
+    },
+    "loadingPermissions": "Cargando permisos...",
+    "mockData": {
+      "companyABC": "Empresa ABC",
+      "companyXYZ": "Empresa XYZ",
+      "customerAddress": "123 Demo Street",
+      "customerEmail": "demo@example.com",
+      "customerFirstName": "Cliente",
+      "customerLastName": "Demo",
+      "demoCompany": "Demo Company",
+      "demoCustomer": "Cliente Demo",
+      "frequentCustomer": "Cliente frecuente",
+      "industrialRepair": "Reparación de equipo industrial",
+      "repair": "Reparación",
+      "repairOrder": "Orden de Reparación",
+      "repairOrderDescription": "Reparación de equipo industrial",
+      "testOrder": "Orden de Prueba",
+      "testOrderDescription": "Descripción de la orden de prueba",
+      "vipCustomer": "Cliente VIP"
+    },
+    "noCompany": "Sin empresa",
+    "noCompanyAvailable": "Sin empresa disponible",
+    "noPermission": "Sin permiso",
+    "ok": "OK",
+    "orders": {
+      "tab": "Órdenes",
+      "title": "Órdenes"
+    },
+    "profile": {
+      "tab": "Perfil",
+      "title": "Perfil"
+    },
+    "reset": "Restablecer",
+    "resetAndRetry": "Reiniciar y Reintentar",
+    "settings": {
+      "tab": "Config",
+      "title": "Configuración"
+    },
+    "success": "Éxito",
+    "unauthorized": "Acceso Denegado",
+    "unauthorizedMessage": "No tienes permisos para acceder a esta sección. Por favor contacta a tu administrador si crees que esto es un error.",
+    "users": {
+      "tab": "Usuarios",
+      "title": "Usuarios"
+    }
+  },
+  "orders": {
+    "actualCompletion": "Fecha de cumplimiento",
+    "assignedTo": "Asignado a",
+    "category": "Categoría",
+    "completed": "Completado",
+    "createdAt": "Fecha de Creación",
+    "createdBy": "Creado por",
+    "createFirstOrder": "Crear Primera Orden",
+    "createNewOrder": "Crear una nueva Órden",
+    "customer": "Cliente",
+    "customerInfo": "Información del Cliente",
+    "customerNotes": "Notas del Cliente",
+    "customerType": "Tipo de Cliente",
+    "description": "Descripción de la Orden",
+    "descriptionPlaceholder": "Esta es una descripción de ejemplo para la orden. Aquí se mostraría información detallada sobre lo que se solicita en la orden.",
+    "editingOrder": "Editando Orden",
+    "estimatedCompletion": "Fecha estimada de cumplimiento",
+    "generalInfo": "Información General",
+    "history": "Historial",
+    "inProgress": "En Progreso",
+    "noHistory": "No hay actividad aún",
+    "noOrdersAvailable": "No hay órdenes disponibles",
+    "notes": "Notas",
+    "order": "Orden",
+    "orderDetails": "Detalles de la Orden",
+    "orderTitle": "Título",
+    "priorities": {
+      "high": "Alta",
+      "low": "Baja",
+      "normal": "Normal",
+      "urgent": "Urgente"
+    },
+    "priority": "Prioridad",
+    "statuses": {
+      "cancelled": "Cancelado",
+      "completed": "Completado",
+      "delivered": "Entregado",
+      "inProgress": "En Progreso",
+      "notPaid": "No Pagado",
+      "onHold": "En espera",
+      "open": "Abierto",
+      "paid": "Pagado",
+      "readyForDelivery": "Listo para entrega",
+      "returned": "Devuelto"
+    },
+    "status": "Estado",
+    "subject": "Asunto",
+    "title": "Órdenes",
+    "updatedAt": "Última Actualización"
   },
   "orderStats": {
     "errors": {
       "noInternetConnection": "No hay conexión a internet"
     }
-  }
-  ,
+  },
+  "profile": {
+    "address": "Dirección",
+    "company": "Empresa",
+    "configuration": "Configuración",
+    "email": "Email",
+    "personalInfo": "Información Personal",
+    "phone": "Teléfono",
+    "title": "Perfil"
+  },
+  "services": {
+    "authService": {
+      "errors": {
+        "fetchUserDataFailed": "Error al obtener datos del usuario",
+        "invalidCredentials": "Credenciales inválidas",
+        "logoutFailed": "Error al cerrar sesión",
+        "userNotFound": "Usuario no encontrado"
+      }
+    },
+    "errorService": {
+      "dialogs": {
+        "accessDenied": {
+          "message": "No tienes permisos para realizar esta acción.",
+          "ok": "OK",
+          "title": "Acceso Denegado"
+        },
+        "authenticationRequired": {
+          "message": "Por favor inicia sesión para continuar.",
+          "ok": "OK",
+          "title": "Autenticación Requerida"
+        },
+        "invalidRequest": {
+          "message": "Hubo un problema con tu solicitud. Revisa la información e intenta de nuevo.",
+          "ok": "OK",
+          "title": "Solicitud Inválida"
+        },
+        "networkError": {
+          "message": "No se puede conectar al servidor. Intenta más tarde.",
+          "ok": "OK",
+          "title": "Error de Red"
+        },
+        "noInternetConnection": {
+          "message": "Por favor revisa tu conexión a internet e intenta de nuevo.",
+          "ok": "OK",
+          "retry": "Reintentar",
+          "title": "Sin Conexión a Internet"
+        },
+        "requestTimeout": {
+          "message": "La solicitud tardó demasiado en completarse. Intenta de nuevo.",
+          "ok": "OK",
+          "title": "Tiempo de Espera Agotado"
+        },
+        "serverError": {
+          "message": "El servidor está experimentando problemas. Intenta más tarde.",
+          "ok": "OK",
+          "title": "Error del Servidor"
+        },
+        "unexpectedError": {
+          "message": "Ocurrió un error inesperado. Intenta de nuevo.",
+          "ok": "OK",
+          "title": "Error Inesperado"
+        },
+        "validationError": {
+          "ok": "OK",
+          "title": "Error de Validación"
+        }
+      }
+    },
+    "fileService": {
+      "errors": {
+        "deleteAttachmentError": "Error eliminando archivo adjunto",
+        "downloadUrlError": "Error obteniendo URL de descarga",
+        "fileSizeExceeded": "excede 10MB",
+        "fileSizeExceededSingle": "Archivo excede el tamaño máximo de 10MB",
+        "fileTypeNotAllowed": "tipo no permitido",
+        "fileTypeNotAllowedSingle": "Tipo de archivo no permitido: {{type}}",
+        "invalidFiles": "Archivos inválidos: {{files}}",
+        "maxFilesExceeded": "Máximo {{maxFiles}} archivos permitidos",
+        "previewUrlError": "Error obteniendo URL de vista previa",
+        "unknownError": "Error desconocido"
+      },
+      "fileSizes": {
+        "bytes": "Bytes",
+        "gb": "GB",
+        "kb": "KB",
+        "mb": "MB"
+      }
+    },
+    "retryService": {
+      "errors": {
+        "noNetworkConnection": "Sin conexión de red disponible",
+        "operationFailed": "Operación falló después de reintentos",
+        "unknownError": "Error desconocido"
+      }
+    }
+  },
+  "settings": {
+    "appearance": "Apariencia",
+    "clearCache": "Limpiar Cache",
+    "clearCacheConfirm": "¿Estás seguro de que quieres limpiar el cache?",
+    "clearCacheDesc": "Eliminar datos temporales",
+    "clearCacheError": "No se pudo eliminar el cache",
+    "clearCacheSuccess": "Cache eliminado correctamente",
+    "darkMode": "Modo Oscuro",
+    "darkModeDesc": "Activar tema oscuro",
+    "data": "Datos",
+    "information": "Información",
+    "language": "Idioma",
+    "languageDesc": "Seleccionar idioma de la aplicación",
+    "languageNames": {
+      "en": "English",
+      "es": "Español"
+    },
+    "notifications": "Notificaciones",
+    "privacyPolicy": "Política de Privacidad",
+    "pushNotifications": "Notificaciones Push",
+    "pushNotificationsDesc": "Recibir notificaciones de nuevas órdenes",
+    "termsAndConditions": "Términos y Condiciones",
+    "title": "Configuración",
+    "version": "Versión"
+  },
+  "userManagement": {
+    "createUser": "Crear Usuario",
+    "createUserDesc": "Agregar un nuevo usuario al sistema",
+    "createUserForm": {
+      "address": "Dirección",
+      "company": "Empresa",
+      "email": "Email",
+      "errors": {
+        "createFailed": "Error al crear usuario. Por favor inténtelo de nuevo.",
+        "invalidEmail": "Por favor ingrese un correo electrónico válido",
+        "invalidPhone": "Por favor ingrese un número de teléfono válido",
+        "missingFields": "Por favor complete todos los campos requeridos"
+      },
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "phoneNumber": "Número de Teléfono",
+      "placeholders": {
+        "address": "Ingrese la dirección",
+        "company": "Ingrese el nombre de la empresa",
+        "email": "Ingrese el correo electrónico",
+        "firstName": "Ingrese el nombre",
+        "lastName": "Ingrese el apellido",
+        "phoneNumber": "Ingrese el número de teléfono",
+        "role": "Seleccione el rol del usuario"
+      },
+      "role": "Rol",
+      "userCreatedSuccess": "¡Usuario creado exitosamente!"
+    },
+    "editUser": "Editar Usuario",
+    "editUserSubtitle": "Editando usuario con ID: {{userId}}",
+    "export": {
+      "availableOptions": "Opciones de Exportación Disponibles",
+      "descriptions": {
+        "analytics": "Exportar datos de análisis y rendimiento como PDF",
+        "orderData": "Exportar historial y detalles de órdenes como PDF",
+        "systemLogs": "Exportar registros de actividad del sistema como PDF",
+        "userData": "Exportar toda la información y perfiles de usuarios como PDF"
+      },
+      "errors": {
+        "exportFailed": "Error al exportar",
+        "invalidDataType": "Tipo de datos inválido",
+        "noContentToSave": "No hay contenido para guardar",
+        "saveFailed": "Error al guardar",
+        "unsupportedFormat": "Formato no soportado - solo se admite PDF"
+      },
+      "exportedSuccessfully": "{{title}} exportado exitosamente como {{format}}",
+      "exportFailed": "Error al exportar los datos. Por favor intente de nuevo.",
+      "exporting": "Exportando...",
+      "exportOption": "Opción de exportación",
+      "footerText": "Para requisitos de exportación personalizados u otros formatos, por favor contacte a su administrador del sistema.",
+      "infoText": "• Todas las exportaciones se generan como documentos PDF\n• Los archivos exportados estarán disponibles para descarga\n• Los datos se filtran según sus permisos\n• Los conjuntos de datos grandes pueden tardar unos momentos en procesarse\n• Solo se admite formato PDF en esta versión",
+      "infoTitle": "Información de Exportación",
+      "mockData": {
+        "orders": {
+          "statusCompleted": "completada",
+          "statusPending": "pendiente"
+        },
+        "systemLogs": {
+          "databaseConnectionFailed": "Falló la conexión a la base de datos",
+          "levelError": "error",
+          "levelInfo": "información",
+          "userLoggedIn": "Usuario inició sesión"
+        },
+        "users": {
+          "janeEmail": "maria@ejemplo.com",
+          "janeSmith": "María García",
+          "johnDoe": "Juan Pérez",
+          "johnEmail": "juan@ejemplo.com"
+        }
+      },
+      "savedTo": "Guardado en",
+      "titles": {
+        "analytics": "Exportar Datos de Análisis",
+        "orderData": "Exportar Datos de Órdenes",
+        "systemLogs": "Exportar Logs del Sistema",
+        "userData": "Exportar Datos de Usuario"
+      }
+    },
+    "exportData": "Exportar Datos",
+    "exportDataDesc": "Exportar información de usuarios",
+    "mainActions": "Acciones Principales",
+    "manageRoles": "Gestionar Roles",
+    "manageRolesDesc": "Configurar roles y permisos de usuarios",
+    "reports": {
+      "descriptions": {
+        "orderProcessing": "Resumen de órdenes procesadas esta semana",
+        "systemPerformance": "Métricas de rendimiento de la aplicación",
+        "userActivity": "Estadísticas diarias de inicio de sesión y actividad de usuarios",
+        "userRegistration": "Nuevos registros de usuarios este mes"
+      },
+      "filters": {
+        "all": "Todos",
+        "order": "Orden",
+        "system": "Sistema",
+        "user": "Usuario"
+      },
+      "generated": "Generado:",
+      "orderProcessing": "Reporte de Procesamiento de Órdenes",
+      "systemPerformance": "Reporte de Rendimiento del Sistema",
+      "userActivity": "Reporte de Actividad de Usuarios",
+      "userRegistration": "Reporte de Registro de Usuarios",
+      "viewReport": "Ver Reporte",
+      "viewing": "Visualizando"
+    },
+    "roles": {
+      "administrator": "Administrador",
+      "customer": "Cliente",
+      "employee": "Empleado",
+      "permissions": {
+        "createUsers": "Crear Usuarios",
+        "deleteUsers": "Eliminar Usuarios",
+        "editUsers": "Editar Usuarios",
+        "viewReports": "Ver Reportes"
+      },
+      "permissionsUpdatedSuccess": "¡Permisos de rol actualizados exitosamente!",
+      "superAdministrator": "Super Administrador"
+    },
+    "statistics": "Estadísticas",
+    "subtitle": "Administra usuarios, roles y permisos",
+    "title": "Gestión de Usuarios",
+    "viewReports": "Ver Reportes",
+    "viewReportsDesc": "Generar reportes de actividad de usuarios"
+  },
+  "users": {
+    "activeUsers": "Usuarios Activos",
+    "availableRoles": "Roles Disponibles",
+    "edit": "Editar",
+    "noUsers": "No hay usuarios registrados",
+    "title": "Usuarios",
+    "totalUsers": "Usuarios Totales"
+  },
   "validation": {
     "email": {
-      "string": "El email debe ser una cadena de texto.",
+      "invalid": "Por favor ingresa un correo electrónico válido.",
       "minLength": "El email debe tener más de {{count}} caracteres.",
-      "invalid": "Por favor ingresa un correo electrónico válido."
+      "string": "El email debe ser una cadena de texto."
+    },
+    "errors": {
+      "descriptionTooShort": "La descripción es demasiado corta",
+      "missingFields": "Campos requeridos faltantes",
+      "titleTooShort": "El título es demasiado corto"
+    },
+    "fallbacks": {
+      "customer": "Cliente",
+      "description": "Descripción",
+      "title": "Título"
     },
     "password": {
-      "string": "La contraseña debe ser una cadena de texto.",
       "minLength": "La contraseña debe tener más de {{count}} caracteres.",
-      "mustContainLettersNumbersSymbols": "La contraseña debe incluir letras, números y signos."
+      "mustContainLettersNumbersSymbols": "La contraseña debe incluir letras, números y signos.",
+      "string": "La contraseña debe ser una cadena de texto."
     }
   }
-} 
+}

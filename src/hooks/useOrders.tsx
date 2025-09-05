@@ -38,7 +38,7 @@ export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         if (networkService.isOffline()) {
           const connected = await networkService.waitForConnection(5000);
           if (!connected) {
-            throw new Error('No hay conexión a internet');
+            throw new Error('No internet connection');
           }
         }
 
