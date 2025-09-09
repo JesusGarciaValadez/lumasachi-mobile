@@ -2,7 +2,7 @@
  * FileUploader component for handling multiple file uploads with progress tracking
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { 
   Button, 
@@ -29,6 +29,7 @@ interface FileUploaderProps extends UseFileUploadOptions {
   disabled?: boolean;
   compact?: boolean;
   onFilesChanged?: (files: FileSelection[]) => void;
+  isScreenFocused?: boolean;
 }
 
 const FileUploader: React.FC<FileUploaderProps> = ({
@@ -40,6 +41,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   disabled = false,
   compact = false,
   onFilesChanged,
+  isScreenFocused,
   ...hookOptions
 }) => {
   const { t } = useTranslation();
@@ -64,6 +66,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     canUpload,
   } = useFileUpload({
     ...hookOptions,
+    isScreenFocused,
     onUploadComplete: (result) => {
       hookOptions.onUploadComplete?.(result);
       if (onFilesChanged) {
@@ -71,6 +74,20 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       }
     },
   });
+
+  // Notify parent whenever the local selection changes
+  useEffect(() => {
+    if (onFilesChanged) {
+      if (__DEV__) {
+        try {
+          const names = selectedFiles.map(f => f.name).join(', ');
+          // Log for debugging selection propagation
+          console.log('DEBUG FileUploader: onFilesChanged -> count:', selectedFiles.length, 'names:', names);
+        } catch (_) {}
+      }
+      onFilesChanged(selectedFiles);
+    }
+  }, [selectedFiles, onFilesChanged]);
 
   const handleSelectFiles = async () => {
     if (hookOptions.allowMultiple === false) {
@@ -227,7 +244,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({
             mode="outlined" 
             onPress={handleSelectFiles}
             disabled={disabled || uploading}
-            icon="attach-file"
           >
             {hookOptions.allowMultiple === false ? t('fileUploader.selectFile') : t('fileUploader.selectFiles')}
           </Button>
@@ -255,7 +271,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                 mode="outlined" 
                 onPress={clearFiles}
                 disabled={uploading}
-                icon="clear"
               >
                 {t('fileUploader.clear')}
               </Button>

@@ -8,6 +8,8 @@ import {
   ActivityIndicator,
   Share,
   Linking,
+  Alert,
+  Platform,
 } from 'react-native';
 // date-fns format not needed; using custom formatter
 import { formatDateTimeLocal } from '../utils/datetime';
@@ -16,6 +18,10 @@ import {OrderDetailsScreenProps} from '../types/navigation';
 import {useTranslationSafe} from '../hooks/useTranslationSafe';
 import DetailRow from '../components/DetailRow';
 import {getStatusTranslation} from '../utils/roleTranslations';
+import {
+  getLedTone,
+} from '../utils/orderVisuals';
+import LedIndicator from '../components/ui/LedIndicator';
 import ErrorBoundary from '../components/ErrorBoundary';
 import ErrorMessage from '../components/ErrorMessage';
 import {useErrorHandler} from '../hooks/useErrorHandler';
@@ -25,6 +31,10 @@ import { orderService, RawOrderHistoryEntry, PaginatedResponse } from '../servic
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { httpClient } from '../utils/httpClient';
 import SimpleAttachmentPreviewModal from '../components/SimpleAttachmentPreviewModal';
+import RNBlobUtil from 'react-native-blob-util';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { STORAGE_KEYS, API_BASE_URL_CONFIG } from '../constants';
+import Toast from 'react-native-toast-message';
 
 const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
   navigation,
@@ -91,7 +101,10 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
 
   const handleEditOrder = () => {
     try {
-      navigation.navigate('EditOrder', { orderUuid: String(order?.id ?? orderKey) });
+      navigation.navigate('EditOrder', { 
+        orderUuid: String((order as any)?.uuid ?? order?.id ?? orderKey),
+        orderData: order
+      });
       errorService.logSuccess('navigateToEdit', {
         component: 'OrderDetailsScreen',
         orderId: orderKey,
@@ -202,20 +215,216 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
     setPreviewAttachment(null);
   };
 
+  // Descargar a caché y abrir Share sheet
+  const downloadAndShare = async (
+    url: string,
+    fileName: string,
+    mime: string,
+    headers?: Record<string, string>
+  ) => {
+    const tempPath = `${RNBlobUtil.fs.dirs.CacheDir}/${fileName}`;
+    const res = await RNBlobUtil.config({ path: tempPath, fileCache: true }).fetch('GET', url, headers);
+    const localPath = res.path();
+    await Share.share({ url: 'file://' + localPath, message: fileName, title: fileName });
+    Toast.show({ type: 'success', text1: t('common.success') as string || 'Éxito', text2: t('downloads.readyToShare') as string });
+  };
+
+  // Guardar en Descargas mediante DownloadManager (Android, solo con URL pública/firmada)
+  const downloadToAndroidDownloads = async (
+    url: string,
+    fileName: string,
+    mime: string
+  ) => {
+    await RNBlobUtil.config({
+      addAndroidDownloads: {
+        useDownloadManager: true,
+        title: fileName,
+        description: 'Descargando adjunto…',
+        mime,
+        mediaScannable: true,
+        notification: true,
+        path: `${RNBlobUtil.fs.dirs.DownloadDir}/${fileName}`,
+      },
+    }).fetch('GET', url);
+    Toast.show({ type: 'success', text1: t('downloads.started') as string, text2: t('downloads.savedToDownloadsAs', { fileName }) as string });
+  };
+
+  // Guardar como... usando Storage Access Framework (Android)
+  const androidSaveAsUsingSAF = async (
+    url: string,
+    fileName: string,
+    mime: string,
+    headers?: Record<string, string>
+  ) => {
+    // Descarga a cache primero
+    const tmpPath = `${RNBlobUtil.fs.dirs.CacheDir}/${fileName}`;
+    const res = await RNBlobUtil.config({ path: tmpPath, fileCache: true }).fetch('GET', url, headers);
+    const localPath = res.path();
+
+    // Carga lib en tiempo de ejecución para evitar fallar si no está instalada
+    let SAF: any = null;
+    try {
+      const mod = require('react-native-saf-x');
+      SAF = mod?.default || mod;
+    } catch (e) {
+      SAF = null;
+    }
+
+    if (!SAF) {
+      // Fallback elegante
+      await downloadAndShare(url, fileName, mime, headers);
+Toast.show({ type: 'info', text1: t('common.info') as string, text2: t('downloads.safNotFound') as string });
+      return;
+    }
+
+    try {
+      // Crear documento con nombre sugerido
+      const createFn = SAF.createDocument || SAF.createFile || SAF.Document?.createFile;
+      let targetUri: string | undefined = undefined;
+      if (createFn) {
+        try {
+          // Algunas implementaciones aceptan objeto, otras (name, mime)
+          targetUri = await createFn({ fileName, mimeType: mime });
+        } catch (_) {
+          try {
+            targetUri = await createFn(fileName, mime);
+          } catch (e) {
+            // Reintentos fallidos
+          }
+        }
+      }
+
+      if (!targetUri) {
+        throw new Error('No se pudo crear el documento con SAF');
+      }
+
+      // Escribir el archivo
+      const base64 = await RNBlobUtil.fs.readFile(localPath, 'base64');
+      const writeFn = SAF.writeFile || SAF.Document?.writeFile || SAF.overwriteFile;
+      if (writeFn) {
+        try {
+          await writeFn({ uri: targetUri, base64, mimeType: mime });
+        } catch (_) {
+          await writeFn(targetUri, base64, mime); // otra firma común
+        }
+      } else {
+        throw new Error('No se encontró método SAF.writeFile');
+      }
+
+Toast.show({ type: 'success', text1: t('downloads.saved') as string, text2: t('downloads.savedAs', { fileName }) as string });
+      await errorService.logSuccess('downloadAttachmentSaveAs', {
+        component: 'OrderDetailsScreen',
+        orderId: orderKey,
+        attachmentId: String(fileName),
+      });
+    } catch (e: any) {
+      await errorService.logError(e as Error, {
+        component: 'OrderDetailsScreen',
+        operation: 'androidSaveAsUsingSAF',
+        fileName,
+      });
+Toast.show({ type: 'error', text1: t('common.error') as string, text2: e?.message || (t('downloads.saveError') as string) });
+      await downloadAndShare(url, fileName, mime, headers);
+    }
+  };
+
+  const showAndroidDownloadOptions = async (
+    url: string,
+    fileName: string,
+    mime: string,
+    headers?: Record<string, string>
+  ) => {
+    // Si requiere Authorization, evitar DownloadManager (no pasa headers)
+    if (headers && headers.Authorization) {
+      await downloadAndShare(url, fileName, mime, headers);
+      await errorService.logSuccess('downloadAttachmentSharedForced', {
+        component: 'OrderDetailsScreen',
+        orderId: orderKey,
+        attachmentId: fileName,
+        reason: 'auth-required',
+      });
+      return;
+    }
+
+    Alert.alert(
+      t('common.download') as string || 'Descargar',
+t('downloads.chooseHowToSave') as string,
+      [
+        {
+text: (t('downloads.shareOrSave') as string) || 'Compartir/Guardar',
+          onPress: async () => {
+            await downloadAndShare(url, fileName, mime);
+            await errorService.logSuccess('downloadAttachmentShared', {
+              component: 'OrderDetailsScreen',
+              orderId: orderKey,
+              attachmentId: String(fileName),
+            });
+          },
+        },
+        {
+text: (t('downloads.saveToDownloads') as string) || 'Guardar en Descargas',
+          onPress: async () => {
+            await downloadToAndroidDownloads(url, fileName, mime);
+            await errorService.logSuccess('downloadAttachmentToDownloads', {
+              component: 'OrderDetailsScreen',
+              orderId: orderKey,
+              attachmentId: String(fileName),
+            });
+          },
+        },
+        {
+text: (t('downloads.saveAs') as string) || 'Guardar como…',
+          onPress: async () => {
+            await androidSaveAsUsingSAF(url, fileName, mime, headers);
+          },
+        },
+        { text: t('common.cancel') as string || 'Cancelar', style: 'cancel' },
+      ]
+    );
+  };
+
   const handleDownloadAttachment = async (attachment: any) => {
     try {
-      // Prefer dedicated download endpoint to get a signed URL or direct download
-      const resp = await httpClient.get(`/v1/attachments/${attachment.id}/download`);
-      const downloadUrl = resp?.data?.downloadUrl || resp?.data?.url || attachment?.url;
-      if (downloadUrl) {
-        // Let the OS/browser handle save location
-        await Linking.openURL(downloadUrl);
-        await errorService.logSuccess('downloadAttachmentOpened', {
+      // 1) Obtener URL de descarga (idealmente firmada)
+      const resp = await httpClient.get(`/v1/attachments/${attachment.uuid || attachment.id}/download`);
+      const downloadUrl: string | undefined = resp?.data?.downloadUrl || resp?.data?.url || attachment?.url;
+      if (!downloadUrl) {
+throw new Error(t('downloads.noDownloadUrl') as string);
+      }
+
+      // 2) Preparar nombre de archivo y MIME
+      const rawName = decodeURIComponent(attachment?.file_name || attachment?.name || 'archivo');
+      const safeName = rawName.replace(/[\\/:*?\"<>|]+/g, '_');
+      const mime = (attachment?.mime_type || 'application/octet-stream').toString();
+
+      // 3) Construir headers solo si el host coincide con el API (posible necesidad de Authorization)
+      let headers: Record<string, string> | undefined = undefined;
+      try {
+        if (API_BASE_URL_CONFIG) {
+          const urlHost = new URL(downloadUrl).host;
+          const apiHost = new URL(API_BASE_URL_CONFIG).host;
+          if (urlHost === apiHost) {
+            const token = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+            if (token) {
+              headers = { Authorization: `Bearer ${token}` };
+            }
+          }
+        }
+      } catch {
+        // Si URL parsing falla, continuamos sin headers
+      }
+
+      // 4) Android: ofrecer opciones; iOS: compartir directamente
+      if (Platform.OS === 'android') {
+        await showAndroidDownloadOptions(downloadUrl, safeName, mime, headers);
+      } else {
+        await downloadAndShare(downloadUrl, safeName, mime, headers);
+        await errorService.logSuccess('downloadAttachmentShared', {
           component: 'OrderDetailsScreen',
           orderId: orderKey,
           attachmentId: String(attachment?.id || ''),
+          fileName: safeName,
         });
-        return;
       }
     } catch (err) {
       await errorService.logError(err as Error, {
@@ -223,16 +432,15 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
         operation: 'downloadAttachment',
         orderId: orderKey,
       });
-    }
-
-    // Fallback: share the preview URL if available
-    try {
-      const url = attachment?.url;
-      if (url) {
-        await Share.share({ url });
-      }
-    } catch (_shareErr) {
-      // no-op
+      try {
+        // Fallback: si existe una URL simple, intentar compartirla (menos ideal, pero evita bloqueo UX)
+        const url = attachment?.url;
+        if (url) {
+          await Share.share({ url });
+Toast.show({ type: 'info', text1: t('common.info') as string, text2: t('downloads.linkShared') as string });
+          return;
+        }
+      } catch {}
     }
   };
 
@@ -268,22 +476,29 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
                 <View style={styles.detailRowCustom}>
                   <Text style={styles.detailLabel}>{t('orders.status') as string}:</Text>
                   <View style={styles.inlineRight}>
+                    {!!statusLedColor && <LedIndicator color={statusLedColor} />}
                     <Text style={styles.detailValue}>{t(getStatusTranslation(order?.status || 'Open')) as string}</Text>
-                    {!!statusLedColor && renderLed(getLedTone(statusLedColor))}
                   </View>
                 </View>
-                <DetailRow label={t('orders.orderTitle') as string} value={order?.title || ''} />
-                <DetailRow label={t('orders.category') as string} value={order?.category || ''} />
+                <DetailRow label={t('orders.orderTitle') as string} value={order?.title || '-'} />
+                <DetailRow 
+                  label={t('orders.category') as string} 
+                  value={(() => {
+                    const cats: any[] = Array.isArray((order as any)?.categories) ? (order as any).categories : [];
+                    if (cats.length) return cats.map((c: any) => c?.name || c?.title || c?.label || '').filter(Boolean).join(', ');
+                    return (order as any)?.category || '';
+                  })()} 
+                />
                 <View style={styles.detailRowCustom}>
                   <Text style={styles.detailLabel}>{t('orders.priority') as string}:</Text>
                   <View style={styles.inlineRight}>
+                    <LedIndicator color={getPriorityColor(order?.priority)} />
                     <Text style={styles.detailValue}>{t(priorityTranslationKey(order?.priority)) as string}</Text>
-                    {renderLed(getPriorityColor(order?.priority))}
                   </View>
                 </View>
                 <DetailRow label={t('orders.createdAt') as string} value={formatDateTime(order?.created_at)} />
-                <DetailRow label={t('orders.createdBy') as string} value={order?.created_by?.full_name || ''} />
-                <DetailRow label={t('orders.assignedTo') as string} value={order?.assigned_to?.full_name || ''} />
+                <DetailRow label={t('orders.createdBy') as string} value={order?.created_by?.full_name || '-'} />
+                <DetailRow label={t('orders.assignedTo') as string} value={order?.assigned_to?.full_name || '-'} />
                 <DetailRow label={t('orders.updatedAt') as string} value={formatDateTime(order?.updated_at)} />
                 {!!order?.estimated_completion && (
                   <DetailRow label={t('orders.estimatedCompletion') as string} value={formatDateTime(order?.estimated_completion)} />
@@ -291,7 +506,7 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
                 {!!order?.actual_completion && (
                   <DetailRow label={t('orders.actualCompletion') as string} value={formatDateTime(order?.actual_completion)} />
                 )}
-                <DetailRow label={t('orders.notes') as string} value={order?.notes || ''} valueFlex={2} />
+                <DetailRow label={t('orders.notes') as string} value={order?.notes || '-'} valueFlex={2} />
               </View>
             </View>
 
@@ -690,28 +905,9 @@ const styles = StyleSheet.create({
 export default OrderDetailsScreen; 
 
 // Helpers
-function withAlpha(hex: string, alpha: number): string {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
-
-function getLedTone(color: string): string {
-  const lower = color.toLowerCase();
-  if (lower === '#34c759' || lower === '#66d17a') {
-    return '#22C55E';
-  }
-  if (lower === '#ff3b30' || lower === '#ff6b6b') {
-    return '#EF4444';
-  }
-  return color;
-}
-
-function renderLed(color: string) {
+function renderLed(color: string, styles: StyleSheet.NamedStyles<any>) {
   return (
-    <View style={[styles.ledOuter, { backgroundColor: withAlpha(color, 0.15) }]}
-    >
+    <View style={[styles.ledOuter, { backgroundColor: withAlpha(color, 0.15) }]} >
       <View
         style={[
           styles.ledInner,

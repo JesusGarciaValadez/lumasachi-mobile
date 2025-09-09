@@ -28,15 +28,15 @@ const ALLOWED_MIME_TYPES = [
   'image/jpeg',
   'image/png',
   'image/gif',
-  'application/zip',
-  'application/x-rar-compressed',
+  'image/heic', // Added HEIC
+  'image/webp', // Added WEBP
 ];
 
 export class FileService {
   /**
    * Open document picker to select multiple files
    */
-  static async pickMultipleFiles(): Promise<FileSelection[]> {
+  static async pickMultipleFiles(allowedFileTypes?: string[]): Promise<FileSelection[]> {
     try {
       const results = await DocumentPicker.pick({
         allowMultiSelection: true,
@@ -54,8 +54,9 @@ export class FileService {
           continue;
         }
 
-        // Validate MIME type
-        if (result.type && !ALLOWED_MIME_TYPES.includes(result.type)) {
+        // Validate MIME type against either provided types or default allowed types
+        const typesToValidate = allowedFileTypes || ALLOWED_MIME_TYPES;
+        if (result.type && !typesToValidate.includes(result.type)) {
           invalidFiles.push(`${result.name} (tipo no permitido)`);
           continue;
         }
@@ -89,7 +90,7 @@ export class FileService {
   /**
    * Open document picker to select a single file
    */
-  static async pickSingleFile(): Promise<FileSelection | null> {
+  static async pickSingleFile(allowedFileTypes?: string[]): Promise<FileSelection | null> {
     try {
       const result = await DocumentPicker.pickSingle({
         type: [DocumentPicker.types.allFiles],
@@ -101,8 +102,9 @@ export class FileService {
         throw new Error(`Archivo excede el tamaño máximo de 10MB`);
       }
 
-      // Validate MIME type
-      if (result.type && !ALLOWED_MIME_TYPES.includes(result.type)) {
+      // Validate MIME type against either provided types or default allowed types
+      const typesToValidate = allowedFileTypes || ALLOWED_MIME_TYPES;
+      if (result.type && !typesToValidate.includes(result.type)) {
         throw new Error(`Tipo de archivo no permitido: ${result.type}`);
       }
 

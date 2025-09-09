@@ -3,7 +3,8 @@
  */
 
 import { useState, useCallback } from 'react';
-import { Alert } from 'react-native';
+import { Alert, InteractionManager, AppState } from 'react-native';
+import Toast from 'react-native-toast-message';
 import { FileService } from '../services/fileService';
 import { 
   FileSelection, 
@@ -23,6 +24,8 @@ export interface UseFileUploadOptions {
   onUploadError?: (error: string) => void;
   maxFiles?: number;
   allowMultiple?: boolean;
+  allowedFileTypes?: string[]; // Added allowedFileTypes prop
+  isScreenFocused?: boolean; // New: helps avoid Android activity errors
 }
 
 export interface UseFileUploadReturn {
@@ -53,6 +56,8 @@ export const useFileUpload = (options: UseFileUploadOptions = {}): UseFileUpload
     onUploadError,
     maxFiles = 10,
     allowMultiple = true,
+    allowedFileTypes, // Destructure allowedFileTypes
+    isScreenFocused,
   } = options;
 
   const [selectedFiles, setSelectedFiles] = useState<FileSelection[]>([]);
@@ -60,6 +65,77 @@ export const useFileUpload = (options: UseFileUploadOptions = {}): UseFileUpload
   const [uploading, setUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<MultipleFileUploadResult | null>(null);
   const { t } = useTranslationSafe();
+
+  const waitForUIReady = async (timeoutMs: number = 2000) => {
+    if (__DEV__) console.log('DEBUG useFileUpload: waiting UI ready...');
+    // Ensure interactions are done
+    await new Promise<void>((resolve) => InteractionManager.runAfterInteractions(() => resolve()));
+    // Ensure app is active
+    if (AppState.currentState !== 'active') {
+      if (__DEV__) console.log('DEBUG useFileUpload: AppState not active, waiting...');
+      await new Promise<void>((resolve) => setTimeout(resolve, Math.min(250, timeoutMs)));
+    }
+    // Ensure current screen is focused (Android)
+    if (isScreenFocused === false) {
+      const started = Date.now();
+      if (__DEV__) console.log('DEBUG useFileUpload: screen not focused, polling focus...');
+      while (Date.now() - started < timeoutMs && isScreenFocused === false) {
+        await new Promise<void>((r) => setTimeout(r, 100));
+      }
+    }
+  };
+
+  const pickMultipleWithRetry = async (): Promise<FileSelection[] | null> => {
+    try {
+      await waitForUIReady();
+      const files = await FileService.pickMultipleFiles(allowedFileTypes);
+      return files;
+    } catch (err: any) {
+      const msg = String(err?.message || '');
+      if (__DEV__) console.log('DEBUG useFileUpload: pickMultipleFiles error', msg);
+      if (msg.includes('Current activity does not exist')) {
+        for (let attempt = 1; attempt <= 2; attempt++) {
+          if (__DEV__) console.log('DEBUG useFileUpload: retry pickMultipleFiles, attempt', attempt);
+          await new Promise((r) => setTimeout(r, 300 * attempt));
+          await waitForUIReady(2500);
+          try {
+            const files = await FileService.pickMultipleFiles(allowedFileTypes);
+            return files;
+          } catch (e: any) {
+            const again = String(e?.message || '');
+            if (!again.includes('Current activity does not exist')) throw e;
+          }
+        }
+      }
+      throw err;
+    }
+  };
+
+  const pickSingleWithRetry = async (): Promise<FileSelection | null> => {
+    try {
+      await waitForUIReady();
+      const file = await FileService.pickSingleFile(allowedFileTypes);
+      return file;
+    } catch (err: any) {
+      const msg = String(err?.message || '');
+      if (__DEV__) console.log('DEBUG useFileUpload: pickSingleFile error', msg);
+      if (msg.includes('Current activity does not exist')) {
+        for (let attempt = 1; attempt <= 2; attempt++) {
+          if (__DEV__) console.log('DEBUG useFileUpload: retry pickSingleFile, attempt', attempt);
+          await new Promise((r) => setTimeout(r, 300 * attempt));
+          await waitForUIReady(2500);
+          try {
+            const file = await FileService.pickSingleFile(allowedFileTypes);
+            return file;
+          } catch (e: any) {
+            const again = String(e?.message || '');
+            if (!again.includes('Current activity does not exist')) throw e;
+          }
+        }
+      }
+      throw err;
+    }
+  };
 
   const selectFiles = useCallback(async () => {
     if (!allowMultiple) {
@@ -70,9 +146,9 @@ export const useFileUpload = (options: UseFileUploadOptions = {}): UseFileUpload
     try {
       const result = await retryService.executeWithRetry(
         async () => {
-          const files = await FileService.pickMultipleFiles();
+          const files = await pickMultipleWithRetry();
           
-          if (files.length === 0) {
+          if (!files || files.length === 0) {
             return null; // User cancelled
           }
 
@@ -106,19 +182,21 @@ export const useFileUpload = (options: UseFileUploadOptions = {}): UseFileUpload
         allowMultiple,
       });
 
-      Alert.alert(t('common.error') as string, errorMessage);
-      
+      // Use Toast to avoid Android Activity issues with Alert during background/transition
+      InteractionManager.runAfterInteractions(() => {
+        Toast.show({ type: 'error', text1: t('common.error') as string, text2: errorMessage, visibilityTime: 3000 });
+      });
       if (onUploadError) {
         onUploadError(errorMessage);
       }
     }
-  }, [allowMultiple, maxFiles, onUploadError]);
+  }, [allowMultiple, maxFiles, onUploadError, allowedFileTypes, t]);
 
   const selectSingleFile = useCallback(async () => {
     try {
       const result = await retryService.executeWithRetry(
         async () => {
-          const file = await FileService.pickSingleFile();
+          const file = await pickSingleWithRetry();
           
           if (!file) {
             return null; // User cancelled
@@ -147,13 +225,14 @@ export const useFileUpload = (options: UseFileUploadOptions = {}): UseFileUpload
         action: 'single-file-selection',
       });
 
-      Alert.alert(t('common.error') as string, errorMessage);
-      
+      InteractionManager.runAfterInteractions(() => {
+        Toast.show({ type: 'error', text1: t('common.error') as string, text2: errorMessage, visibilityTime: 3000 });
+      });
       if (onUploadError) {
         onUploadError(errorMessage);
       }
     }
-  }, [onUploadError]);
+  }, [onUploadError, allowedFileTypes, t]);
 
   const uploadFiles = useCallback(async (entityType: string, entityId: string) => {
     if (selectedFiles.length === 0) {
