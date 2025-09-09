@@ -37,6 +37,7 @@ const SimpleAttachmentPreviewModal: React.FC<SimpleAttachmentPreviewModalProps> 
   const [previewData, setPreviewData] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [fileType, setFileType] = useState<'image' | 'pdf' | 'other'>('other');
+  const [triedDownloadFallback, setTriedDownloadFallback] = useState<boolean>(false);
 
 
   useEffect(() => {
@@ -88,51 +89,60 @@ const SimpleAttachmentPreviewModal: React.FC<SimpleAttachmentPreviewModalProps> 
         setFileType('other');
       }
 
-      console.log('📥 Downloading file...');
+      console.log('📥 Fetching preview content from preview endpoint...');
       
-      // Download file as ArrayBuffer
+      // Try preview endpoint first; it may return either JSON with a URL or the raw bytes
       const response = await httpClient.get(
         `/v1/attachments/${attachmentId}/preview`,
         {
           headers: {
-            'Authorization': token ? `Bearer ${token}` : '',
-            'Accept': mimeType || '*/*',
+            Accept: '*/*',
           },
           responseType: 'arraybuffer',
         }
       );
 
       if (!response.data) {
-        throw new Error('No file data received');
+        throw new Error('No preview data received');
       }
 
-      console.log('✅ File downloaded, size:', response.data.byteLength, 'bytes');
+      const contentType = String((response as any)?.headers?.['content-type'] || '').toLowerCase();
+      const byteLength = (response.data as ArrayBuffer).byteLength || 0;
+      console.log('🔎 Preview response meta:', { contentType, byteLength });
+      const looksLikeImage = contentType.includes('image/') || isImage;
+      const looksLikePdf = contentType.includes('application/pdf') || isPdf;
 
-      // Debug: Check first few bytes for PDF validation
-      if (isPdf && response.data instanceof ArrayBuffer) {
-        const firstBytes = new Uint8Array(response.data.slice(0, 20));
-        console.log('🔍 First 20 bytes:', Array.from(firstBytes).map(b => b.toString(16).padStart(2, '0')).join(' '));
-        
-        // Check if it's a valid PDF (should start with %PDF) - using manual conversion instead of TextDecoder
-        const headerBytes = new Uint8Array(response.data.slice(0, 4));
-        const pdfHeader = String.fromCharCode(...headerBytes);
-        console.log('📄 PDF Header check:', pdfHeader, pdfHeader === '%PDF' ? '✅ Valid PDF' : '❌ Invalid PDF');
-        
-        // Check PDF version - using manual conversion
-        const versionBytes = new Uint8Array(response.data.slice(0, 8));
-        const pdfVersion = String.fromCharCode(...versionBytes);
-        console.log('📄 PDF Version:', pdfVersion);
+      // If JSON, parse and try to extract a URL
+      if (contentType.includes('application/json') || contentType.includes('text/plain')) {
+        const text = arrayBufferToUtf8String(response.data);
+        try {
+          const json = JSON.parse(text);
+          const urlFromJson: string | null = json?.previewUrl || json?.url || (typeof json === 'string' ? json : null);
+          if (!urlFromJson) throw new Error('No URL in JSON');
+          console.log('✅ Preview URL obtained from JSON:', urlFromJson);
+          setPreviewData(urlFromJson);
+          setTriedDownloadFallback(false);
+        } catch (e) {
+          throw new Error('Invalid preview JSON payload');
+        }
+      } else if (looksLikeImage || looksLikePdf) {
+        // Convert to data URI when bytes are returned
+        const base64Data = arrayBufferToBase64(response.data);
+        const dataUri = `data:${contentType || mimeType || 'application/octet-stream'};base64,${base64Data}`;
+        console.log('✅ Preview data URI prepared');
+        setPreviewData(dataUri);
+        setTriedDownloadFallback(false);
+      } else {
+        // Unknown content-type; attempt to interpret as string URL
+        const maybeText = arrayBufferToUtf8String(response.data);
+        if (maybeText.startsWith('http')) {
+          console.log('✅ Preview URL obtained (text):', maybeText);
+          setPreviewData(maybeText);
+          setTriedDownloadFallback(false);
+        } else {
+          throw new Error(`Unsupported preview content-type: ${contentType || 'unknown'}`);
+        }
       }
-
-      // Convert ArrayBuffer to base64
-      const base64Data = arrayBufferToBase64(response.data);
-      
-      // Create data URI for all file types
-      const dataUri = `data:${mimeType || 'application/octet-stream'};base64,${base64Data}`;
-      
-      setPreviewData(dataUri);
-
-      // PDFs use data URI approach only - no temporary files needed
       
     } catch (err: any) {
       console.error('❌ Error loading preview:', err);
@@ -140,6 +150,25 @@ const SimpleAttachmentPreviewModal: React.FC<SimpleAttachmentPreviewModalProps> 
       setError(errorMessage);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchPreviewBinaryFallback = async () => {
+    try {
+      const attachmentId = attachment?.uuid || attachment?.id;
+      const resp = await httpClient.get(`/v1/attachments/${attachmentId}/preview`, {
+        headers: { Accept: '*/*' },
+        responseType: 'arraybuffer',
+      });
+      const ct = String((resp as any)?.headers?.['content-type'] || '').toLowerCase();
+      const base64Data = arrayBufferToBase64(resp.data);
+      const dataUri = `data:${ct || (attachment?.mime_type || 'application/octet-stream')};base64,${base64Data}`;
+      console.log('🔁 Fallback preview data URI prepared');
+      setPreviewData(dataUri);
+      setError(null);
+    } catch (e: any) {
+      console.error('❌ Fallback preview binary error:', e?.message || e);
+      setError('Error cargando imagen');
     }
   };
 
@@ -198,9 +227,15 @@ const SimpleAttachmentPreviewModal: React.FC<SimpleAttachmentPreviewModalProps> 
               source={{ uri: previewData }}
               style={styles.previewImage}
               resizeMode="contain"
-              onError={(e) => {
+              onError={async (e) => {
                 console.error('Image load error:', e.nativeEvent.error);
-                setError('Error cargando imagen');
+                // Try fallback to binary preview once
+                if (!triedDownloadFallback) {
+                  setTriedDownloadFallback(true);
+                  await fetchPreviewBinaryFallback();
+                } else {
+                  setError('Error cargando imagen');
+                }
               }}
             />
           </ScrollView>
@@ -288,7 +323,7 @@ const SimpleAttachmentPreviewModal: React.FC<SimpleAttachmentPreviewModalProps> 
                 color="#007AFF" 
               />
               <Text style={styles.fileName} numberOfLines={1}>
-                {attachment?.file_name || attachment?.name || 'File'}
+                {decodeURIComponent(attachment?.file_name || attachment?.name || 'File')}
               </Text>
             </View>
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
@@ -329,7 +364,7 @@ const getFileIcon = (attachment: any): string => {
   return 'attach-file';
 };
 
-// Helper function to convert ArrayBuffer to base64
+// Helpers: ArrayBuffer conversions
 const arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
   let binary = '';
   const bytes = new Uint8Array(buffer);
@@ -338,6 +373,20 @@ const arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
     binary += String.fromCharCode(bytes[i]);
   }
   return btoa(binary);
+};
+
+const arrayBufferToUtf8String = (buffer: ArrayBuffer): string => {
+  const bytes = new Uint8Array(buffer);
+  let result = '';
+  for (let i = 0; i < bytes.length; i++) {
+    result += String.fromCharCode(bytes[i]);
+  }
+  try {
+    // Decode UTF-8
+    return decodeURIComponent(escape(result));
+  } catch {
+    return result;
+  }
 };
 
 const styles = StyleSheet.create({

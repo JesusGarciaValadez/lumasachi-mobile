@@ -14,6 +14,92 @@ import {getStatusTranslation} from '../utils/roleTranslations';
 import {useOrders} from '../hooks/useOrders';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import { formatDateTimeLocal, formatDateLocal } from '../utils/datetime';
+import {
+  getLedTone,
+  LIGHT_BLUE,
+  LIGHT_GRAY,
+  LIGHTEST_GRAY,
+  GRAY,
+  DARK_GRAY,
+  DARKEST_GRAY,
+  BLUE,
+  GREEN,
+  LIGHT_GREEN,
+  RED,
+  LIGHT_RED,
+  YELLOW,
+  ORANGE,
+} from '../utils/orderVisuals';
+import LedIndicator from '../components/ui/LedIndicator';
+
+type Visuals = {backgroundColor: string; textColor: string; statusLedColor: string | null; showPriority: boolean};
+
+const statusToVisuals = (status: string): Visuals => {
+  switch (status) {
+    case 'Open':
+      return {backgroundColor: LIGHTEST_GRAY, textColor: DARKEST_GRAY, statusLedColor: LIGHT_BLUE, showPriority: true};
+    case 'In Progress':
+      return {backgroundColor: BLUE, textColor: '#FFFFFF', statusLedColor: BLUE, showPriority: false};
+    case 'Ready for delivery':
+      return {backgroundColor: GREEN, textColor: '#FFFFFF', statusLedColor: GREEN, showPriority: false};
+    case 'Completed':
+      return {backgroundColor: GREEN, textColor: '#FFFFFF', statusLedColor: GREEN, showPriority: false};
+    case 'Delivered':
+      return {backgroundColor: GREEN, textColor: '#FFFFFF', statusLedColor: GREEN, showPriority: false};
+    case 'Paid':
+      return {backgroundColor: LIGHT_GREEN, textColor: '#FFFFFF', statusLedColor: LIGHT_GREEN, showPriority: false};
+    case 'Returned':
+      return {backgroundColor: LIGHT_RED, textColor: DARK_GRAY, statusLedColor: null, showPriority: false};
+    case 'Not paid':
+      return {backgroundColor: RED, textColor: '#FFFFFF', statusLedColor: null, showPriority: false};
+    case 'On hold':
+      return {backgroundColor: LIGHT_GRAY, textColor: DARK_GRAY, statusLedColor: null, showPriority: false};
+    case 'Cancelled':
+      return {backgroundColor: GRAY, textColor: DARK_GRAY, statusLedColor: null, showPriority: false};
+    default:
+      return {backgroundColor: '#FFFFFF', textColor: '#333333', statusLedColor: null, showPriority: true};
+  }
+};
+
+const getCardVisuals = (status: string): Visuals => statusToVisuals(status);
+
+const priorityTranslationKey = (priority: string): string => {
+  const map: Record<string, string> = {
+    Low: 'orders.priorities.low',
+    Normal: 'orders.priorities.normal',
+    High: 'orders.priorities.high',
+    Urgent: 'orders.priorities.urgent',
+  };
+  return map[priority] || 'orders.priorities.normal';
+};
+
+const getPriorityColor = (priority: string): string => {
+  switch (priority) {
+    case 'Low':
+      return GREEN;
+    case 'Normal':
+      return YELLOW;
+    case 'High':
+      return ORANGE;
+    case 'Urgent':
+      return RED;
+    default:
+      return YELLOW;
+  }
+};
+
+function getSecondaryTextColor(primaryColor: string, isDark: boolean): string {
+  // If primary text is light (white), make secondary slightly lighter but still readable
+  if (primaryColor === '#FFFFFF') {
+    return isDark ? '#E5E5EA' : '#F2F2F7';
+  }
+  // For dark primaries, use a softened variant
+  if (primaryColor === DARKEST_GRAY || primaryColor === DARK_GRAY) {
+    return isDark ? '#A1A1AA' : '#6B7280';
+  }
+  // Fallback
+  return isDark ? '#C7C7CC' : '#666666';
+}
 
 const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
   const {t} = useTranslation();
@@ -41,6 +127,12 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
 
   const handleCreateOrder = () => {
     navigation.navigate('CreateOrder');
+  };
+
+  const getCategoriesDisplay = (order: any): string => {
+    const cats: any[] = Array.isArray(order?.categories) ? order.categories : [];
+    if (cats.length) return cats.map((c: any) => c?.name || c?.title || c?.label || '').filter(Boolean).join(', ');
+    return order?.category || '';
   };
 
   const renderOrderItem = ({item}: {item: any}) => {
@@ -75,7 +167,7 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
               {t('orders.status')}: <Text style={[styles.value, {color: textColor}]}>{t(getStatusTranslation(item.status))}</Text>
             </Text>
             {!!statusLedColor && (
-              renderLed(getLedTone(statusLedColor))
+              <LedIndicator tone={getLedTone(statusLedColor)} />
             )}
           </View>
         </View>
@@ -89,7 +181,7 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
           {showPriority && (
             <View style={styles.priorityContainer}>
               <Text style={[styles.label, {color: secondaryColor}]}> {t('orders.priority')}: <Text style={[styles.value, {color: textColor}]}>{t(priorityTranslationKey(item.priority))}</Text></Text>
-              {renderLed(getLedTone(getPriorityColor(item.priority)))}
+              <LedIndicator tone={getLedTone(getPriorityColor(item.priority))} />
             </View>
           )}
         </View>
@@ -105,6 +197,14 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
             {t('orders.subject')}: <Text style={[styles.value, {color: textColor}]}>{item.title}</Text>
           </Text>
         </View>
+
+        {!!getCategoriesDisplay(item) && (
+          <View style={styles.rowBetween}>
+            <Text style={[styles.label, {color: secondaryColor}]}> 
+              {t('orders.category')}: <Text style={[styles.value, {color: textColor}]}>{getCategoriesDisplay(item)}</Text>
+            </Text>
+          </View>
+        )}
 
         {completedAt && (
           <View style={styles.rowBetween}>
@@ -298,123 +398,3 @@ const styles = StyleSheet.create({
 });
 
 export default OrdersScreen; 
-
-// Helpers
-const LIGHT_BLUE = '#74B9FF';
-const LIGHT_GRAY = '#E5E5EA';
-const LIGHTEST_GRAY = '#F5F5F7';
-const GRAY = '#8E8E93';
-const DARK_GRAY = '#3A3A3C';
-const DARKEST_GRAY = '#1C1C1E';
-const BLUE = '#007AFF';
-const GREEN = '#34C759';
-const LIGHT_GREEN = '#66D17A';
-const RED = '#FF3B30';
-const LIGHT_RED = '#FF6B6B';
-const YELLOW = '#FFD60A';
-const ORANGE = '#FF9500';
-
-type Visuals = {backgroundColor: string; textColor: string; statusLedColor: string | null; showPriority: boolean};
-
-const statusToVisuals = (status: string): Visuals => {
-  switch (status) {
-    case 'Open':
-      // LED only rule -> background/text fallback
-      return {backgroundColor: LIGHTEST_GRAY, textColor: DARKEST_GRAY, statusLedColor: LIGHT_BLUE, showPriority: true};
-    case 'In Progress':
-      return {backgroundColor: BLUE, textColor: '#FFFFFF', statusLedColor: BLUE, showPriority: false};
-    case 'Ready for delivery':
-      return {backgroundColor: GREEN, textColor: '#FFFFFF', statusLedColor: GREEN, showPriority: false};
-    case 'Completed':
-      return {backgroundColor: GREEN, textColor: '#FFFFFF', statusLedColor: GREEN, showPriority: false};
-    case 'Delivered':
-      return {backgroundColor: GREEN, textColor: '#FFFFFF', statusLedColor: GREEN, showPriority: false};
-    case 'Paid':
-      return {backgroundColor: LIGHT_GREEN, textColor: '#FFFFFF', statusLedColor: LIGHT_GREEN, showPriority: false};
-    case 'Returned':
-      return {backgroundColor: LIGHT_RED, textColor: DARK_GRAY, statusLedColor: null, showPriority: false};
-    case 'Not paid':
-      return {backgroundColor: RED, textColor: '#FFFFFF', statusLedColor: null, showPriority: false};
-    case 'On hold':
-      return {backgroundColor: LIGHT_GRAY, textColor: DARK_GRAY, statusLedColor: null, showPriority: false};
-    case 'Cancelled':
-      return {backgroundColor: GRAY, textColor: DARK_GRAY, statusLedColor: null, showPriority: false};
-    default:
-      return {backgroundColor: '#FFFFFF', textColor: '#333333', statusLedColor: null, showPriority: true};
-  }
-};
-
-const priorityTranslationKey = (priority: string): string => {
-  const map: Record<string, string> = {
-    Low: 'orders.priorities.low',
-    Normal: 'orders.priorities.normal',
-    High: 'orders.priorities.high',
-    Urgent: 'orders.priorities.urgent',
-  };
-  return map[priority] || 'orders.priorities.normal';
-};
-
-const getCardVisuals = (status: string): Visuals => statusToVisuals(status);
-
-const getPriorityColor = (priority: string): string => {
-  switch (priority) {
-    case 'Low':
-      return GREEN;
-    case 'Normal':
-      return YELLOW;
-    case 'High':
-      return ORANGE;
-    case 'Urgent':
-      return RED;
-    default:
-      return YELLOW;
-  }
-};
-
-function getSecondaryTextColor(primaryColor: string, isDark: boolean): string {
-  // If primary text is light (white), make secondary slightly lighter but still readable
-  if (primaryColor === '#FFFFFF') {
-    return isDark ? '#E5E5EA' : '#F2F2F7';
-  }
-  // For dark primaries, use a softened variant
-  if (primaryColor === DARKEST_GRAY || primaryColor === DARK_GRAY) {
-    return isDark ? '#A1A1AA' : '#6B7280';
-  }
-  // Fallback
-  return isDark ? '#C7C7CC' : '#666666';
-}
-
-function withAlpha(hex: string, alpha: number): string {
-  // hex like #RRGGBB
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
-
-function getLedTone(color: string): string {
-  // Normalize greens and reds to match the reference tones
-  // Softer green and red while keeping others unchanged
-  const lower = color.toLowerCase();
-  if (lower === GREEN.toLowerCase() || lower === LIGHT_GREEN.toLowerCase()) {
-    return '#22C55E'; // Tailwind emerald-500 like
-  }
-  if (lower === RED.toLowerCase() || lower === LIGHT_RED.toLowerCase()) {
-    return '#EF4444'; // Tailwind red-500 like
-  }
-  return color;
-}
-
-function renderLed(color: string) {
-  return (
-    <View style={[styles.ledOuter, { backgroundColor: withAlpha(color, 0.15) }]}
-    >
-      <View
-        style={[
-          styles.ledInner,
-          { backgroundColor: color, borderColor: withAlpha(color, 0.35) },
-        ]}
-      />
-    </View>
-  );
-}

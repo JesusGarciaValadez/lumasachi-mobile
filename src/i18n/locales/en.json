@@ -62,6 +62,7 @@
     },
     "delete": "Delete",
     "dismiss": "Dismiss",
+    "done": "Done",
     "download": "Download",
     "edit": "Edit",
     "email": "Email",
@@ -94,6 +95,7 @@
       "validationTitle": "Validation Error"
     },
     "file": "file",
+    "finalizing": "Finalizing...",
     "info": "info",
     "loadingPermissions": "Loading permissions...",
     "loading": "Loading...",
@@ -151,6 +153,8 @@
     "priorityButtonAccessibility": "Set priority to {{priority}}",
     "selectCustomer": "Select Customer",
     "selectCustomerAccessibility": "Select customer for this order",
+    "selectCategory": "Select Category",
+    "selectEmployee": "Select Employee",
     "submitButtonAccessibility": "Create order with current details",
     "title": "Create Order",
     "workCategory": "Work category"
@@ -162,6 +166,18 @@
     "confirmSave": "Are you sure you want to save the changes?",
     "errors": {
       "descriptionTooShort": "Order description must be at least 10 characters long",
+      "invalidCustomer": "Selected customer is invalid",
+      "invalidCategory": "Selected category is invalid",
+      "categoryRequired": "At least one category is required.",
+      "invalidEmployee": "Selected employee is invalid",
+      "invalidStatus": "Selected status is invalid",
+      "invalidPriority": "Selected priority is invalid",
+      "invalidDate": "Invalid date format",
+      "titleTooLong": "Title cannot exceed 255 characters",
+      "dateTooOld": "Date cannot be more than one year in the past",
+      "estimatedAfterActual": "Estimated completion cannot be after actual completion date",
+      "actualBeforeEstimated": "Actual completion cannot be before estimated date",
+      "dateFormatHelp": "Format: YYYY-MM-DD HH:MM (ex: 2024-12-25 14:30)",
       "missingFields": "Please complete all required fields",
       "titleTooShort": "Order title must be at least 3 characters long"
     },
@@ -171,7 +187,12 @@
     "saveChanges": "Save Changes",
     "title": "Edit Order",
     "updateError": "Failed to update order",
-    "updateSuccess": "Order updated successfully"
+    "updateSuccess": "Order updated successfully",
+    "validationError": "Validation error in submitted data",
+    "orderNotFound": "Order was not found",
+    "noPermission": "You don't have permission to edit this order",
+    "attachmentsUploadSuccess": "Attachments uploaded successfully.",
+    "attachmentsUploadError": "Error uploading attachments. Please try again."
   },
   "fileUpload": {
     "errors": {
@@ -195,7 +216,7 @@
     }
   },
   "fileUploader": {
-    "clear": "Clear",
+    "clear": "Remove files",
     "failed": "failed",
     "file": "file",
     "files": "files",
@@ -330,9 +351,25 @@
       "title": "Users"
     }
   },
+  "downloads": {
+    "chooseHowToSave": "Choose how to save the file",
+    "shareOrSave": "Share/Save",
+    "saveToDownloads": "Save to Downloads",
+    "saveAs": "Save as…",
+    "readyToShare": "File ready to save or share",
+    "started": "Download started",
+    "savedToDownloadsAs": "Saved to Downloads as {{fileName}}",
+    "linkShared": "Download link shared",
+    "safNotFound": "SAF not available, using share",
+    "saved": "Saved",
+    "savedAs": "File saved as {{fileName}}",
+    "saveError": "Error saving with SAF, using share",
+    "noDownloadUrl": "Could not get download URL"
+  },
   "orders": {
-    "actualCompletion": "Completion date",
+    "actualCompletion": "Real completion date",
     "assignedTo": "Assigned to",
+    "selectDate": "Select date",
     "category": "Category",
     "completed": "Completed",
     "createdAt": "Created Date",
@@ -343,18 +380,26 @@
     "customerInfo": "Customer Information",
     "customerNotes": "Customer Notes",
     "customerType": "Customer Type",
+    "day": "Day",
+    "datePreview": "Preview",
     "description": "Order Description",
     "descriptionPlaceholder": "This is an example description for the order. Here would be shown detailed information about what is requested in the order.",
     "editingOrder": "Editing Order",
     "estimatedCompletion": "Estimated completion",
     "generalInfo": "General Information",
     "history": "History",
+    "hour": "Hour",
     "inProgress": "In Progress",
+    "invalidDate": "Invalid date",
+    "minute": "Minute",
+    "month": "Month", 
     "noHistory": "No activity yet",
     "noOrdersAvailable": "No orders available",
     "notes": "Notes",
+    "notesPlaceholder": "Add additional notes about this order...",
     "order": "Order",
     "orderDetails": "Order Details",
+    "orderInfo": "Order Information",
     "orderTitle": "Title",
     "priorities": {
       "high": "High",
@@ -376,9 +421,13 @@
       "returned": "Returned"
     },
     "status": "Status",
+    "selectAllFields": "Select all fields",
     "subject": "Subject",
     "title": "Orders",
-    "updatedAt": "Last Updated"
+    "updatedAt": "Last Updated",
+    "updatedBy": "Updated by",
+    "uuid": "UUID",
+    "year": "Year"
   },
   "orderStats": {
     "errors": {

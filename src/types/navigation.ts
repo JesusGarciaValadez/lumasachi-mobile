@@ -11,7 +11,7 @@ export type RootStackParamList = {
   Login: undefined;
   OrderDetails: {orderUuid: string};
   CreateOrder: undefined;
-  EditOrder: {orderUuid: string};
+  EditOrder: {orderUuid: string; orderData?: any};
   Profile: undefined;
   UserManagement: {userUuid?: string};
   Settings: undefined;

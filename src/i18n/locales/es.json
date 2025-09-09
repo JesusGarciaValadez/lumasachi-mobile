@@ -62,6 +62,7 @@
     },
     "delete": "Eliminar",
     "dismiss": "Descartar",
+    "done": "Listo",
     "download": "Descargar",
     "edit": "Editar",
     "email": "Email",
@@ -94,6 +95,7 @@
       "validationTitle": "Error de Validación"
     },
     "file": "archivo",
+    "finalizing": "Finalizando...",
     "info": "info",
     "loadingPermissions": "Cargando permisos...",
     "loading": "Cargando...",
@@ -151,6 +153,8 @@
     "priorityButtonAccessibility": "Establecer prioridad a {{priority}}",
     "selectCustomer": "Seleccionar Cliente",
     "selectCustomerAccessibility": "Seleccionar cliente para esta orden",
+    "selectCategory": "Seleccionar Categoría",
+    "selectEmployee": "Seleccionar Empleado",
     "submitButtonAccessibility": "Crear orden con los detalles actuales",
     "title": "Crear Orden",
     "workCategory": "Categoría del trabajo"
@@ -162,6 +166,18 @@
     "confirmSave": "¿Estás seguro de que quieres guardar los cambios?",
     "errors": {
       "descriptionTooShort": "La descripción de la orden debe tener al menos 10 caracteres",
+      "invalidCustomer": "Cliente seleccionado no válido",
+      "invalidCategory": "Categoría seleccionada no válida",
+      "categoryRequired": "Se requiere al menos una categoría.",
+      "invalidEmployee": "Empleado seleccionado no válido",
+      "invalidStatus": "Estado seleccionado no válido",
+      "invalidPriority": "Prioridad seleccionada no válida",
+      "invalidDate": "Formato de fecha no válido",
+      "titleTooLong": "El título no puede exceder 255 caracteres",
+      "dateTooOld": "La fecha no puede ser anterior a un año",
+      "estimatedAfterActual": "La fecha estimada no puede ser posterior a la fecha real de cumplimiento",
+      "actualBeforeEstimated": "La fecha real no puede ser anterior a la fecha estimada",
+      "dateFormatHelp": "Formato: YYYY-MM-DD HH:MM (ej: 2024-12-25 14:30)",
       "missingFields": "Por favor completa todos los campos obligatorios",
       "titleTooShort": "El título de la orden debe tener al menos 3 caracteres"
     },
@@ -171,7 +187,12 @@
     "saveChanges": "Guardar Cambios",
     "title": "Editar Orden",
     "updateError": "No se pudo actualizar la orden",
-    "updateSuccess": "Orden actualizada correctamente"
+    "updateSuccess": "Orden actualizada correctamente",
+    "validationError": "Error de validación en los datos enviados",
+    "orderNotFound": "La orden no fue encontrada",
+    "noPermission": "No tienes permisos para editar esta orden",
+    "attachmentsUploadSuccess": "Archivos adjuntos subidos exitosamente.",
+    "attachmentsUploadError": "Error al subir los archivos adjuntos. Por favor, inténtalo de nuevo."
   },
   "fileUpload": {
     "errors": {
@@ -195,7 +216,7 @@
     }
   },
   "fileUploader": {
-    "clear": "Limpiar",
+    "clear": "Eliminar archivos",
     "failed": "fallidos",
     "file": "archivo",
     "files": "archivos",
@@ -330,9 +351,25 @@
       "title": "Usuarios"
     }
   },
+  "downloads": {
+    "chooseHowToSave": "Elige cómo guardar el archivo",
+    "shareOrSave": "Compartir/Guardar",
+    "saveToDownloads": "Guardar en Descargas",
+    "saveAs": "Guardar como…",
+    "readyToShare": "Archivo listo para guardar o compartir",
+    "started": "Descarga iniciada",
+    "savedToDownloadsAs": "Guardado en Descargas como {{fileName}}",
+    "linkShared": "Se compartió el enlace de descarga",
+    "safNotFound": "No se encontró SAF, usando compartir",
+    "saved": "Guardado",
+    "savedAs": "Archivo guardado como {{fileName}}",
+    "saveError": "Error guardando con SAF, usando compartir",
+    "noDownloadUrl": "No se pudo obtener la URL de descarga"
+  },
   "orders": {
-    "actualCompletion": "Fecha de cumplimiento",
+    "actualCompletion": "Fecha de cumplimiento real",
     "assignedTo": "Asignado a",
+    "selectDate": "Seleccionar fecha",
     "category": "Categoría",
     "completed": "Completado",
     "createdAt": "Fecha de Creación",
@@ -343,18 +380,26 @@
     "customerInfo": "Información del Cliente",
     "customerNotes": "Notas del Cliente",
     "customerType": "Tipo de Cliente",
+    "day": "Día",
+    "datePreview": "Vista previa",
     "description": "Descripción de la Orden",
     "descriptionPlaceholder": "Esta es una descripción de ejemplo para la orden. Aquí se mostraría información detallada sobre lo que se solicita en la orden.",
     "editingOrder": "Editando Orden",
     "estimatedCompletion": "Fecha estimada de cumplimiento",
     "generalInfo": "Información General",
     "history": "Historial",
+    "hour": "Hora",
     "inProgress": "En Progreso",
+    "invalidDate": "Fecha inválida",
+    "minute": "Minuto",
+    "month": "Mes", 
     "noHistory": "No hay actividad aún",
     "noOrdersAvailable": "No hay órdenes disponibles",
     "notes": "Notas",
+    "notesPlaceholder": "Agregar notas adicionales sobre esta orden...",
     "order": "Orden",
     "orderDetails": "Detalles de la Orden",
+    "orderInfo": "Información de la Orden",
     "orderTitle": "Título",
     "priorities": {
       "high": "Alta",
@@ -363,6 +408,7 @@
       "urgent": "Urgente"
     },
     "priority": "Prioridad",
+    "selectAllFields": "Selecciona todos los campos",
     "statuses": {
       "cancelled": "Cancelado",
       "completed": "Completado",
@@ -378,7 +424,10 @@
     "status": "Estado",
     "subject": "Asunto",
     "title": "Órdenes",
-    "updatedAt": "Última Actualización"
+    "updatedAt": "Última Actualización",
+    "updatedBy": "Actualizado por",
+    "uuid": "UUID",
+    "year": "Año"
   },
   "orderStats": {
     "errors": {
