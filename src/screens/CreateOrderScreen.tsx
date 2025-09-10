@@ -957,57 +957,64 @@ const CreateOrderScreen: React.FC = () => {
         </Modal>
 
         {/* Estimated Date Picker Modal */}
-        <Modal visible={showEstimatedDatePicker} animationType="slide" presentationStyle="pageSheet">
-          <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{t('orders.estimatedCompletion') as string}</Text>
-              <TouchableOpacity onPress={() => {
-                const iso = assembleDateFromPickers(estimatedYear, estimatedMonth, estimatedDay, estimatedHour, estimatedMinute);
-                if (iso) handleInputChange('estimated_completion', iso);
-                setShowEstimatedDatePicker(false);
-              }}>
-                <Text style={styles.modalCloseButton}>{t('common.done') as string}</Text>
-              </TouchableOpacity>
-            </View>
+        <Modal visible={showEstimatedDatePicker} animationType="slide" transparent>
+          <View style={styles.dateModalOverlay}>
+            <View style={styles.dateModalContainer}>
+              <View style={styles.dateModalHeader}>
+                <TouchableOpacity onPress={() => setShowEstimatedDatePicker(false)}>
+                  <Text style={styles.dateModalCancel}>{t('common.cancel') as string}</Text>
+                </TouchableOpacity>
+                <Text style={styles.dateModalTitle}>{t('orders.estimatedCompletion') as string}</Text>
+                <TouchableOpacity onPress={() => {
+                  const iso = assembleDateFromPickers(estimatedYear, estimatedMonth, estimatedDay, estimatedHour, estimatedMinute);
+                  if (iso) handleInputChange('estimated_completion', iso);
+                  setShowEstimatedDatePicker(false);
+                }}>
+                  <Text style={styles.dateModalConfirm}>{t('common.ok') as string}</Text>
+                </TouchableOpacity>
+              </View>
 
-            <View style={{ padding: 20 }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <View style={styles.pickerContainer}>
-                  <Text style={styles.pickerLabel}>{t('orders.year') as string}</Text>
-                  <Picker selectedValue={estimatedYear} onValueChange={setEstimatedYear} style={styles.picker}>
-                    {generateYears().map(y => (<Picker.Item key={y.value} label={y.label} value={y.value} />))}
-                  </Picker>
+              <View style={styles.datePickerContent}>
+                <View style={styles.pickerRow}>
+                  <View style={styles.pickerContainer}>
+                    <Text style={styles.pickerLabel}>{t('orders.year') as string}</Text>
+                    <Picker selectedValue={estimatedYear} onValueChange={setEstimatedYear} style={styles.picker}>
+                      {generateYears().map(y => (<Picker.Item key={y.value} label={y.label} value={y.value} />))}
+                    </Picker>
+                  </View>
+                  <View style={styles.pickerContainer}>
+                    <Text style={styles.pickerLabel}>{t('orders.month') as string}</Text>
+                    <Picker selectedValue={estimatedMonth} onValueChange={setEstimatedMonth} style={styles.picker}>
+                      {generateMonths().map(m => (<Picker.Item key={m.value} label={m.label} value={m.value} />))}
+                    </Picker>
+                  </View>
+                  <View style={styles.pickerContainer}>
+                    <Text style={styles.pickerLabel}>{t('orders.day') as string}</Text>
+                    <Picker selectedValue={estimatedDay} onValueChange={setEstimatedDay} style={styles.picker}>
+                      {generateDays(estimatedYear, estimatedMonth).map(d => (<Picker.Item key={d.value} label={d.label} value={d.value} />))}
+                    </Picker>
+                  </View>
                 </View>
-                <View style={styles.pickerContainer}>
-                  <Text style={styles.pickerLabel}>{t('orders.month') as string}</Text>
-                  <Picker selectedValue={estimatedMonth} onValueChange={setEstimatedMonth} style={styles.picker}>
-                    {generateMonths().map(m => (<Picker.Item key={m.value} label={m.label} value={m.value} />))}
-                  </Picker>
+
+                <View style={styles.pickerRow}>
+                  <View style={styles.pickerContainer}>
+                    <Text style={styles.pickerLabel}>{t('orders.hour') as string}</Text>
+                    <Picker selectedValue={estimatedHour} onValueChange={setEstimatedHour} style={styles.picker}>
+                      {generateHours().map(h => (<Picker.Item key={h.value} label={h.label} value={h.value} />))}
+                    </Picker>
+                  </View>
+                  <View style={styles.pickerContainer}>
+                    <Text style={styles.pickerLabel}>{t('orders.minute') as string}</Text>
+                    <Picker selectedValue={estimatedMinute} onValueChange={setEstimatedMinute} style={styles.picker}>
+                      {generateMinutes().map(min => (<Picker.Item key={min.value} label={min.label} value={min.value} />))}
+                    </Picker>
+                  </View>
                 </View>
-                <View style={styles.pickerContainer}>
-                  <Text style={styles.pickerLabel}>{t('orders.day') as string}</Text>
-                  <Picker selectedValue={estimatedDay} onValueChange={setEstimatedDay} style={styles.picker}>
-                    {generateDays(estimatedYear, estimatedMonth).map(d => (<Picker.Item key={d.value} label={d.label} value={d.value} />))}
-                  </Picker>
+
+                <View style={styles.datePreviewContainer}>
+                  <Text style={styles.datePreviewLabel}>{t('orders.datePreview') as string}:</Text>
+                  <Text style={styles.datePreviewText}>{getEstimatedDatePreview()}</Text>
                 </View>
-              </View>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 }}>
-                <View style={styles.pickerContainer}>
-                  <Text style={styles.pickerLabel}>{t('orders.hour') as string}</Text>
-                  <Picker selectedValue={estimatedHour} onValueChange={setEstimatedHour} style={styles.picker}>
-                    {generateHours().map(h => (<Picker.Item key={h.value} label={h.label} value={h.value} />))}
-                  </Picker>
-                </View>
-                <View style={styles.pickerContainer}>
-                  <Text style={styles.pickerLabel}>{t('orders.minute') as string}</Text>
-                  <Picker selectedValue={estimatedMinute} onValueChange={setEstimatedMinute} style={styles.picker}>
-                    {generateMinutes().map(min => (<Picker.Item key={min.value} label={min.label} value={min.value} />))}
-                  </Picker>
-                </View>
-              </View>
-              <View style={styles.datePreviewContainer}>
-                <Text style={styles.datePreviewLabel}>{t('orders.datePreview') as string}:</Text>
-                <Text style={styles.datePreviewText}>{getEstimatedDatePreview()}</Text>
               </View>
             </View>
           </View>
@@ -1067,12 +1074,21 @@ const styles = StyleSheet.create({
 
   datePickerButton: { borderWidth: 1, borderColor: '#ddd', borderRadius: 6, padding: 12, backgroundColor: '#f9f9f9', justifyContent: 'center' },
   datePickerText: { fontSize: 16, color: '#333333' },
-  pickerContainer: { flex: 1, marginHorizontal: 4 },
-  pickerLabel: { fontSize: 14, color: '#666', marginBottom: 4 },
-  picker: { height: 44 },
-  datePreviewContainer: { marginTop: 12 },
-  datePreviewLabel: { fontSize: 14, color: '#666' },
-  datePreviewText: { fontSize: 14, color: '#333', fontWeight: '500' },
+  // Date modal styles (match EditOrderScreen)
+  dateModalOverlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center' },
+  dateModalContainer: { backgroundColor: '#ffffff', borderRadius: 20, maxHeight: '85%', shadowColor: '#000', shadowOffset: { width: 0, height: -2 }, shadowOpacity: 0.25, shadowRadius: 4, elevation: 5 },
+  dateModalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#e0e0e0', backgroundColor: '#f8f9fa', borderTopLeftRadius: 20, borderTopRightRadius: 20 },
+  dateModalTitle: { fontSize: 18, fontWeight: '600', color: '#333333', flex: 1, textAlign: 'center' },
+  dateModalCancel: { fontSize: 16, color: '#FF3B30', fontWeight: '500' },
+  dateModalConfirm: { fontSize: 16, color: '#007AFF', fontWeight: '600' },
+  datePickerContent: { padding: 10 },
+  pickerRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 0 },
+  pickerContainer: { flex: 1, marginHorizontal: 4, backgroundColor: '#f8f9fa', borderRadius: 12, padding: 2 },
+  pickerLabel: { fontSize: 11, fontWeight: '600', color: '#007AFF', marginBottom: 3, textAlign: 'center', textTransform: 'uppercase' },
+  picker: { height: 50, backgroundColor: 'transparent' },
+  datePreviewContainer: { backgroundColor: '#007AFF', borderRadius: 12, padding: 12, margin: 10, marginBottom: 20, alignItems: 'center' },
+  datePreviewLabel: { fontSize: 13, fontWeight: '500', color: '#ffffff', marginBottom: 3 },
+  datePreviewText: { fontSize: 15, fontWeight: '600', color: '#ffffff', textAlign: 'center' },
 
   fileUploader: { marginTop: 8 },
 
