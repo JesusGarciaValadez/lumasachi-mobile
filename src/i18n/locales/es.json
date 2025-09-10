@@ -141,7 +141,17 @@
     "customerInfo": "Información del Cliente",
     "customerItemAccessibility": "Seleccionar {{customerName}} de {{company}}",
     "customerName": "Nombre del cliente",
+    "createOrderButton": "Crear Orden",
     "errors": {
+      "customerRequired": "El cliente es obligatorio.",
+      "titleRequired": "El título de la orden es obligatorio.",
+      "descriptionRequired": "La descripción de la orden es obligatoria.",
+      "statusRequired": "El estado de la orden es obligatorio.",
+      "priorityRequired": "La prioridad de la orden es obligatoria.",
+      "invalidCategory": "Categorías inválidas (duplicadas o inexistentes).",
+      "estimatedDateInvalid": "La fecha estimada no es válida.",
+      "estimatedDateMustBeFuture": "La fecha estimada debe ser en el futuro.",
+      "assignedToRequired": "El empleado asignado es obligatorio.",
       "descriptionTooShort": "La descripción de la orden debe tener al menos 10 caracteres",
       "loadCustomersFailed": "Error al cargar los datos del cliente. Por favor intenta de nuevo.",
       "missingFields": "Por favor completa todos los campos obligatorios",
@@ -157,7 +167,10 @@
     "selectEmployee": "Seleccionar Empleado",
     "submitButtonAccessibility": "Crear orden con los detalles actuales",
     "title": "Crear Orden",
-    "workCategory": "Categoría del trabajo"
+    "workCategory": "Categoría del trabajo",
+    "success": {
+      "createSuccess": "Orden creada correctamente"
+    }
   },
   "editOrder": {
     "attachments": "Archivos Adjuntos",

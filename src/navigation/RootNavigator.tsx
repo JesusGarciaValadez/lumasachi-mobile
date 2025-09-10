@@ -116,6 +116,9 @@ const RootNavigator: React.FC = () => {
               options={{
                 headerShown: true,
                 title: t('createOrder.title') as string,
+                headerStyle: { backgroundColor: '#007AFF' },
+                headerTintColor: '#ffffff',
+                headerTitleStyle: { color: '#ffffff' },
                 headerBackTitle: '',
               }}
             />
