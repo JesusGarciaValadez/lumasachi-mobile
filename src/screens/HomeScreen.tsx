@@ -79,6 +79,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
           <Text style={styles.actionButtonText}>{t('home.viewProfile')}</Text>
         </TouchableOpacity>
         
+        {/*
         <RequireAdmin hideIfUnauthorized>
           <TouchableOpacity
             style={styles.actionButton}
@@ -86,6 +87,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
             <Text style={styles.actionButtonText}>{t('home.adminPanel')}</Text>
           </TouchableOpacity>
         </RequireAdmin>
+        */}
       </View>
 
       <View style={styles.summary}>

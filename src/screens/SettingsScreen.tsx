@@ -213,6 +213,7 @@ const SettingsScreen: React.FC = () => {
           />
         )}
 
+        {/*
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{t('settings.notifications') as string}</Text>
           <View style={styles.card}>
@@ -238,6 +239,7 @@ const SettingsScreen: React.FC = () => {
             />
           </View>
         </View>
+        */}
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{t('settings.language') as string}</Text>
