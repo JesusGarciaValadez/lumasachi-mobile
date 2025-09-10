@@ -141,7 +141,17 @@
     "customerInfo": "Customer Information",
     "customerItemAccessibility": "Select {{customerName}} from {{company}}",
     "customerName": "Customer name",
+    "createOrderButton": "Create Order",
     "errors": {
+      "customerRequired": "Customer is required.",
+      "titleRequired": "Order title is required.",
+      "descriptionRequired": "Order description is required.",
+      "statusRequired": "Order status is required.",
+      "priorityRequired": "Order priority is required.",
+      "invalidCategory": "Invalid categories (duplicated or non-existent).",
+      "estimatedDateInvalid": "Estimated date is invalid.",
+      "estimatedDateMustBeFuture": "Estimated date must be in the future.",
+      "assignedToRequired": "Assigned employee is required.",
       "descriptionTooShort": "Order description must be at least 10 characters long",
       "loadCustomersFailed": "Failed to load customer data. Please try again.",
       "missingFields": "Please complete all required fields",
@@ -157,7 +167,10 @@
     "selectEmployee": "Select Employee",
     "submitButtonAccessibility": "Create order with current details",
     "title": "Create Order",
-    "workCategory": "Work category"
+    "workCategory": "Work category",
+    "success": {
+      "createSuccess": "Order created successfully"
+    }
   },
   "editOrder": {
     "attachments": "Attachments",
