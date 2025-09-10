@@ -1,114 +1,104 @@
-import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  RefreshControl,
-} from 'react-native';
-import {User} from '../types';
-import {UsersScreenProps} from '../types/navigation';
-import {useTranslationSafe} from '../hooks/useTranslationSafe';
-import {translateRole} from '../utils/roleTranslations';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import { View, Text, StyleSheet, FlatList, RefreshControl } from 'react-native';
+import { Searchbar, Chip } from 'react-native-paper';
+import { UsersScreenProps } from '../types/navigation';
+import { useTranslationSafe } from '../hooks/useTranslationSafe';
 import ErrorBoundary from '../components/ErrorBoundary';
 import ErrorMessage from '../components/ErrorMessage';
-import {useErrorHandler} from '../hooks/useErrorHandler';
-import {errorService} from '../services/errorService';
+import { useErrorHandler } from '../hooks/useErrorHandler';
+import { errorService } from '../services/errorService';
+import { fetchCompanyEmployees, EmployeeListItem } from '../services/userService';
+import UserCard from '../components/users/UserCard';
 
-const UsersScreen: React.FC<UsersScreenProps> = ({navigation}) => {
-  const {t} = useTranslationSafe();
-  const {handleError, clearError, hasError, error} = useErrorHandler();
-  const [users, setUsers] = useState<User[]>([]);
+const UsersScreen: React.FC<UsersScreenProps> = () => {
+  const { t } = useTranslationSafe();
+  const { handleError, clearError, hasError, error } = useErrorHandler();
+  const [users, setUsers] = useState<EmployeeListItem[]>([]);
+  const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [query, setQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
-  const onRefresh = async () => {
+  const load = useCallback(async (signal?: AbortSignal) => {
     try {
       clearError();
-      setRefreshing(true);
-      
-      // TODO: Implement actual data loading when backend is ready
-      // loadUsers().then(setUsers).finally(() => setRefreshing(false));
-      
-      // Simular carga de datos - remove when backend is implemented
-      setTimeout(() => {
-        setRefreshing(false);
-      }, 1000);
-      
-      errorService.logSuccess('refreshUsers', {
-        component: 'UsersScreen',
-        usersCount: users.length,
-      });
-    } catch (error) {
-      await errorService.logError(error as Error, {
-        component: 'UsersScreen',
-        operation: 'refreshUsers',
-      });
-      handleError(error as Error);
+      setLoading(true);
+      const list = await fetchCompanyEmployees(signal);
+      setUsers(list);
+      errorService.logSuccess('fetchEmployees', { component: 'UsersScreen', count: list.length });
+    } catch (e) {
+      await errorService.logError(e as Error, { component: 'UsersScreen', operation: 'fetchEmployees' });
+      handleError(e as Error);
+    } finally {
+      setLoading(false);
+    }
+  }, [clearError, handleError]);
+
+  useEffect(() => {
+    const c = new AbortController();
+    load(c.signal);
+    return () => c.abort();
+  }, [load]);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      const c = new AbortController();
+      await load(c.signal);
+    } finally {
       setRefreshing(false);
     }
   };
 
-  // TODO: Implement data loading function when backend is ready
-  // const loadUsers = async () => {
-  //   try {
-  //     const response = await httpClient.get('/users');
-  //     setUsers(response.data);
-  //   } catch (error) {
-  //     console.error('Error loading users:', error);
-  //   }
-  // };
+  const filteredUsers = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return users.filter(u => {
+      if (statusFilter === 'active' && !u.isActive) return false;
+      if (statusFilter === 'inactive' && u.isActive) return false;
+      if (!q) return true;
+      const hay = `${u.fullName} ${u.email}`.toLowerCase();
+      return hay.includes(q);
+    });
+  }, [users, query, statusFilter]);
 
-  // TODO: Call loadUsers on component mount when backend is ready
-  // useEffect(() => {
-  //   loadUsers();
-  // }, []);
+  const renderUserItem = useCallback(({ item }: { item: EmployeeListItem }) => (
+    <UserCard item={item} />
+  ), []);
 
-  const handleEditUser = async (userId: string) => {
-    try {
-      clearError();
-      navigation.navigate('UserManagement', {userId});
-      
-      errorService.logSuccess('navigateToEditUser', {
-        component: 'UsersScreen',
-        userId,
-      });
-    } catch (error) {
-      await errorService.logError(error as Error, {
-        component: 'UsersScreen',
-        operation: 'navigateToEditUser',
-        userId,
-      });
-      handleError(error as Error);
-    }
-  };
-
-  const renderUserItem = ({item}: {item: User}) => {
-    const translatedRole = translateRole(item.role, (key: string) => t(key) as string);
-    
-    return (
-      <TouchableOpacity 
-        style={styles.userItem}
-        accessibilityRole="button"
-        accessibilityLabel={`User: ${item.firstName} ${item.lastName}, Email: ${item.email}, Role: ${translatedRole}`}
-        onPress={() => handleEditUser(item.id)}>
-        <View style={styles.userInfo}>
-          <Text style={styles.userName}>
-            {item.firstName} {item.lastName}
-          </Text>
-          <Text style={styles.userEmail}>{item.email}</Text>
-          <Text style={styles.userRole}>{translatedRole}</Text>
-        </View>
-        <View style={styles.userActions}>
-          <TouchableOpacity 
-            style={styles.actionButton}
-            onPress={() => handleEditUser(item.id)}>
-            <Text style={styles.actionButtonText}>{t('users.edit') as string}</Text>
-          </TouchableOpacity>
-        </View>
-      </TouchableOpacity>
-    );
-  };
+  const ListHeader = () => (
+    <View style={styles.header}>
+      <Searchbar
+        placeholder={t('users.searchPlaceholder') as string || 'Buscar por nombre o email'}
+        value={query}
+        onChangeText={setQuery}
+        style={styles.search}
+        inputStyle={styles.searchInput}
+      />
+      <View style={styles.filtersRow}>
+        <Chip
+          selected={statusFilter === 'all'}
+          onPress={() => setStatusFilter('all')}
+          style={[styles.filterChip, statusFilter === 'all' && styles.filterChipSelected]}
+        >
+          {t('users.filters.all') as string || 'Todos'}
+        </Chip>
+        <Chip
+          selected={statusFilter === 'active'}
+          onPress={() => setStatusFilter('active')}
+          style={[styles.filterChip, statusFilter === 'active' && styles.filterChipSelected]}
+        >
+          {t('users.filters.active') as string || 'Activos'}
+        </Chip>
+        <Chip
+          selected={statusFilter === 'inactive'}
+          onPress={() => setStatusFilter('inactive')}
+          style={[styles.filterChip, statusFilter === 'inactive' && styles.filterChipSelected]}
+        >
+          {t('users.filters.inactive') as string || 'Inactivos'}
+        </Chip>
+      </View>
+    </View>
+  );
 
   const EmptyComponent = () => (
     <View style={styles.emptyContainer}>
@@ -120,22 +110,20 @@ const UsersScreen: React.FC<UsersScreenProps> = ({navigation}) => {
     <ErrorBoundary>
       <View style={styles.container}>
         {hasError && (
-          <ErrorMessage 
-            error={error}
-            onRetry={clearError}
-            onDismiss={clearError}
-          />
+          <ErrorMessage error={error} onRetry={() => load()} onDismiss={clearError} />
         )}
-        
+
         <FlatList
-          data={users}
+          data={filteredUsers}
           renderItem={renderUserItem}
           keyExtractor={(item) => item.id}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-          ListEmptyComponent={EmptyComponent}
-          contentContainerStyle={users.length === 0 ? styles.emptyList : undefined}
+          refreshControl={<RefreshControl refreshing={refreshing || loading} onRefresh={onRefresh} />}
+          ListEmptyComponent={!loading ? EmptyComponent : null}
+          initialNumToRender={12}
+          windowSize={10}
+          removeClippedSubviews
+          ListHeaderComponent={ListHeader}
+          contentContainerStyle={filteredUsers.length === 0 ? styles.emptyList : undefined}
         />
       </View>
     </ErrorBoundary>
@@ -147,55 +135,32 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
-  userItem: {
+  header: {
+    paddingHorizontal: 12,
+    paddingTop: 8,
+    paddingBottom: 4,
+    backgroundColor: 'transparent',
+  },
+  search: {
+    elevation: 0,
     backgroundColor: '#ffffff',
-    margin: 10,
-    padding: 15,
-    borderRadius: 8,
+    borderRadius: 10,
+  },
+  searchInput: {
+    fontSize: 14,
+  },
+  filtersRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-    elevation: 3,
+    gap: 8,
+    marginTop: 8,
   },
-  userInfo: {
-    flex: 1,
+  filterChip: {
+    backgroundColor: '#EFEFF4',
   },
-  userName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginBottom: 5,
+  filterChipSelected: {
+    backgroundColor: '#E6F0FF',
   },
-  userEmail: {
-    fontSize: 14,
-    color: '#666666',
-    marginBottom: 5,
-  },
-  userRole: {
-    fontSize: 14,
-    color: '#007AFF',
-    fontWeight: '500',
-  },
-  userActions: {
-    flexDirection: 'row',
-  },
-  actionButton: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 6,
-  },
-  actionButtonText: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '500',
-  },
+  // Old styles for clickable item removed; cards are rendered by UserCard component
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
