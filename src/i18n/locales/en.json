@@ -696,7 +696,22 @@
     "edit": "Edit",
     "noUsers": "No registered users",
     "title": "Users",
-    "totalUsers": "Total Users"
+    "totalUsers": "Total Users",
+    "verified": "Verified",
+    "unverified": "Unverified",
+    "active": "Active",
+    "inactive": "Inactive",
+    "createdAt": "Created",
+    "role": "Role",
+    "type": "Type",
+    "phone": "Phone",
+    "notes": "Notes",
+    "searchPlaceholder": "Search by name or email",
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive"
+    }
   },
   "validation": {
     "email": {
