@@ -124,6 +124,10 @@ const MainNavigator: React.FC = () => {
         headerTintColor: '#ffffff',
         headerTitleStyle: {
           fontWeight: 'bold',
+          textTransform: 'uppercase',
+        },
+        tabBarLabelStyle: {
+          textTransform: 'uppercase',
         },
         // Ocultar el tab si el usuario no tiene permisos
         tabBarButton: canAccessScreen(route.name) ? undefined : () => null,

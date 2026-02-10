@@ -167,6 +167,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#007AFF',
     textAlign: 'center',
+    textTransform: 'uppercase',
   },
   summary: {
     margin: 20,

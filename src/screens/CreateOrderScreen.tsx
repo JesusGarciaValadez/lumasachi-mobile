@@ -1094,10 +1094,10 @@ const styles = StyleSheet.create({
 
   buttonContainer: { margin: 20, flexDirection: 'row', justifyContent: 'space-between', gap: 10 },
   resetButton: { flex: 1, backgroundColor: '#ffffff', padding: 15, borderRadius: 8, alignItems: 'center', borderWidth: 1, borderColor: '#FF3B30' },
-  resetButtonText: { color: '#FF3B30', fontSize: 16, fontWeight: 'bold' },
+  resetButtonText: { color: '#FF3B30', fontSize: 16, fontWeight: 'bold', textTransform: 'uppercase' },
   submitButton: { flex: 1, backgroundColor: '#007AFF', padding: 15, borderRadius: 8, alignItems: 'center' },
   submitButtonDisabled: { backgroundColor: '#cccccc' },
-  submitButtonText: { color: '#ffffff', fontSize: 16, fontWeight: 'bold' },
+  submitButtonText: { color: '#ffffff', fontSize: 16, fontWeight: 'bold', textTransform: 'uppercase' },
 
   modalContainer: { flex: 1, backgroundColor: '#fff' },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: '#e0e0e0' },
