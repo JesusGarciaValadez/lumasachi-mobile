@@ -505,6 +505,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: 'bold',
+    textTransform: 'uppercase',
   },
   loadingOverlay: {
     position: 'absolute',

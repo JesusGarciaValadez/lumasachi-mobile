@@ -389,6 +389,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: '500',
+    textTransform: 'uppercase',
   },
   fabContainer: {
     position: 'absolute',

@@ -1805,6 +1805,7 @@ const styles = StyleSheet.create({
     color: '#FF3B30',
     fontSize: 16,
     fontWeight: 'bold',
+    textTransform: 'uppercase',
   },
   submitButton: {
     flex: 1,
@@ -1820,6 +1821,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: 'bold',
+    textTransform: 'uppercase',
   },
   inputError: {
     borderColor: '#FF3B30',
