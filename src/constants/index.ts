@@ -1,8 +1,8 @@
-import { UserRole } from '../types';
+import { UserRole, OrderLifecycleStatus } from '@/types';
 import { APP_ENV, API_BASE_URL, STAGING_API_BASE_URL, PRODUCTION_API_BASE_URL } from '@env';
 
 // API Constants
-export let API_BASE_URL_CONFIG: string|null = null;
+export let API_BASE_URL_CONFIG: string|null;
 switch(APP_ENV) {
   case 'local': 
     API_BASE_URL_CONFIG = API_BASE_URL;
@@ -13,7 +13,7 @@ switch(APP_ENV) {
   default: 
     API_BASE_URL_CONFIG = PRODUCTION_API_BASE_URL;
     break;
-};
+}
 
 export const API_ENDPOINTS = {
   AUTH: {
@@ -25,11 +25,21 @@ export const API_ENDPOINTS = {
     RESET_PASSWORD: '/auth/reset-password',
   },
   ORDERS: {
-    LIST: '/orders',
-    CREATE: '/orders',
-    UPDATE: '/orders',
-    DELETE: '/orders',
-    TIMELINE: '/orders/timeline',
+    LIST: '/v1/orders',
+    CREATE: '/v1/orders',
+    DETAIL: '/v1/orders', // + /{uuid}
+    UPDATE: '/v1/orders', // + /{uuid}
+    DELETE: '/v1/orders', // + /{uuid}
+    HISTORY: '/v1/orders', // + /{uuid}/history
+    BUDGET: '/v1/orders', // + /{uuid}/budget
+    CUSTOMER_APPROVAL: '/v1/orders', // + /{uuid}/customer-approval
+    WORK_COMPLETED: '/v1/orders', // + /{uuid}/work-completed
+    READY_FOR_DELIVERY: '/v1/orders', // + /{uuid}/ready-for-delivery
+    DELIVER: '/v1/orders', // + /{uuid}/deliver
+    TRACK: '/v1/orders/track',
+  },
+  CATALOG: {
+    ENGINE_OPTIONS: '/v1/catalog/engine-options',
   },
   USERS: {
     PROFILE: '/v1/user',
@@ -80,7 +90,7 @@ export const USER_ROLES = {
   CUSTOMER: { key: UserRole.CUSTOMER, displayName: 'Customer' },
 } as const;
 
-// Order Statuses
+// Order Statuses (legacy — kept for backward compatibility)
 export const ORDER_STATUSES = {
   OPEN: 'Open',
   IN_PROGRESS: 'In Progress',
@@ -91,6 +101,29 @@ export const ORDER_STATUSES = {
   NOT_PAID: 'Not paid',
   CANCELLED: 'Cancelled',
 } as const;
+
+// Order Lifecycle Statuses (matches backend OrderStatus enum)
+export const ORDER_LIFECYCLE_STATUSES: Record<string, OrderLifecycleStatus> = {
+  RECEIVED: 'Received',
+  AWAITING_REVIEW: 'Awaiting Review',
+  REVIEWED: 'Reviewed',
+  AWAITING_CUSTOMER_APPROVAL: 'Awaiting Customer Approval',
+  READY_FOR_WORK: 'Ready for Work',
+  IN_PROGRESS: 'In Progress',
+  READY_FOR_DELIVERY: 'Ready for Delivery',
+  DELIVERED: 'Delivered',
+} as const;
+
+// Item type keys (matches backend OrderItemType enum)
+export const ITEM_TYPE_KEYS = {
+  CYLINDER_HEAD: 'cylinder_head',
+  ENGINE_BLOCK: 'engine_block',
+  CRANKSHAFT: 'crankshaft',
+  CONNECTING_RODS: 'connecting_rods',
+  OTHERS: 'others',
+} as const;
+
+export type ItemTypeKey = typeof ITEM_TYPE_KEYS[keyof typeof ITEM_TYPE_KEYS];
 
 // Publishing Statuses
 export const PUBLISHING_STATUSES = {

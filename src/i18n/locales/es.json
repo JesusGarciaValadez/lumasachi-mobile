@@ -171,6 +171,50 @@
     "workCategory": "Categoría del trabajo",
     "success": {
       "createSuccess": "Orden creada correctamente"
+    },
+    "wizard": {
+      "step1": "Info Básica",
+      "step2": "Motor",
+      "step3": "Artículos",
+      "step4": "Adjuntos",
+      "step5": "Revisión",
+      "next": "Siguiente",
+      "back": "Atrás",
+      "stepOf": "Paso {{current}} de {{total}}"
+    },
+    "motor": {
+      "title": "Información del Motor",
+      "brand": "Marca",
+      "brandPlaceholder": "ej. Nissan, Toyota",
+      "liters": "Litros",
+      "litersPlaceholder": "ej. 2.5",
+      "year": "Año",
+      "yearPlaceholder": "ej. 2019",
+      "model": "Modelo",
+      "modelPlaceholder": "ej. Altima, Camry",
+      "cylinderCount": "Cilindros",
+      "cylinderCountPlaceholder": "ej. 4, 6, 8"
+    },
+    "items": {
+      "title": "Artículos Recibidos",
+      "description": "Selecciona los tipos de artículo recibidos y marca los componentes incluidos.",
+      "selectItemTypes": "Seleccionar tipos de artículo",
+      "components": "Componentes",
+      "noItemsSelected": "Sin artículos seleccionados. Toca un tipo arriba para comenzar.",
+      "itemsRequired": "Se requiere al menos un tipo de artículo."
+    },
+    "review": {
+      "title": "Revisar y Crear",
+      "basicInfo": "Información Básica",
+      "motorInfo": "Información del Motor",
+      "itemsReceived": "Artículos Recibidos",
+      "attachments": "Adjuntos",
+      "noAttachments": "Sin adjuntos",
+      "noMotorInfo": "Sin información de motor",
+      "component": "componente",
+      "components": "componentes",
+      "file": "archivo",
+      "files": "archivos"
     }
   },
   "editOrder": {
