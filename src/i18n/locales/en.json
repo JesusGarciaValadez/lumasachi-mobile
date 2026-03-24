@@ -171,6 +171,50 @@
     "workCategory": "Work Category",
     "success": {
       "createSuccess": "Order created successfully"
+    },
+    "wizard": {
+      "step1": "Basic Info",
+      "step2": "Motor",
+      "step3": "Items",
+      "step4": "Attachments",
+      "step5": "Review",
+      "next": "Next",
+      "back": "Back",
+      "stepOf": "Step {{current}} of {{total}}"
+    },
+    "motor": {
+      "title": "Motor Information",
+      "brand": "Brand",
+      "brandPlaceholder": "e.g. Nissan, Toyota",
+      "liters": "Liters",
+      "litersPlaceholder": "e.g. 2.5",
+      "year": "Year",
+      "yearPlaceholder": "e.g. 2019",
+      "model": "Model",
+      "modelPlaceholder": "e.g. Altima, Camry",
+      "cylinderCount": "Cylinders",
+      "cylinderCountPlaceholder": "e.g. 4, 6, 8"
+    },
+    "items": {
+      "title": "Items Received",
+      "description": "Select the item types received and check which components were included.",
+      "selectItemTypes": "Select item types",
+      "components": "Components",
+      "noItemsSelected": "No items selected. Tap an item type above to begin.",
+      "itemsRequired": "At least one item type is required."
+    },
+    "review": {
+      "title": "Review & Submit",
+      "basicInfo": "Basic Information",
+      "motorInfo": "Motor Information",
+      "itemsReceived": "Items Received",
+      "attachments": "Attachments",
+      "noAttachments": "No attachments",
+      "noMotorInfo": "No motor info provided",
+      "component": "component",
+      "components": "components",
+      "file": "file",
+      "files": "files"
     }
   },
   "editOrder": {

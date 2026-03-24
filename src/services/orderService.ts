@@ -1,4 +1,16 @@
-import { httpClient } from '../utils/httpClient';
+import { httpClient } from '@utils/httpClient';
+import { API_ENDPOINTS } from '@/constants';
+import type {
+  MotorInfo,
+  OrderItem,
+  OrderServiceEntry,
+  EngineCatalog,
+  SingleItemCatalog,
+} from '@/types';
+
+// ---------------------------------------------------------------------------
+// Raw API response shapes
+// ---------------------------------------------------------------------------
 
 export interface RawOrderUser {
   id: number;
@@ -30,6 +42,9 @@ export interface RawOrder {
   notes: string | null;
   created_by: RawOrderUser;
   assigned_to: RawOrderUser | null;
+  motor_info: MotorInfo | null;
+  items: OrderItem[] | null;
+  services: OrderServiceEntry[] | null;
   created_at: string;
   updated_at: string;
 }
@@ -56,16 +71,129 @@ export interface PaginatedResponse<T> {
   meta?: any;
 }
 
+// ---------------------------------------------------------------------------
+// Request payload types
+// ---------------------------------------------------------------------------
+
+export interface BudgetServicePayload {
+  order_item_id: number;
+  service_key: string;
+  measurement?: string | null;
+  notes?: string | null;
+}
+
+export interface CustomerApprovalPayload {
+  authorized_service_ids: number[];
+  down_payment?: number;
+}
+
+export interface WorkCompletedPayload {
+  completed_service_ids: number[];
+}
+
+export interface TrackOrderPayload {
+  uuid: string;
+  created_date: string; // YYYY-MM-DD
+}
+
+// ---------------------------------------------------------------------------
+// Service
+// ---------------------------------------------------------------------------
+
 export const orderService = {
+  // ---- Existing ----
+
   async fetchOrders(signal?: AbortSignal) {
-    // Base URL likely already includes "/api"; use "/v1/orders" to produce "/api/v1/orders"
-    const response = await httpClient.get<RawOrder[]>('/v1/orders', { signal });
+    const response = await httpClient.get<RawOrder[]>(API_ENDPOINTS.ORDERS.LIST, { signal });
     return response.data;
   },
 
   async fetchOrderHistory(orderUuid: string, signal?: AbortSignal) {
-    const response = await httpClient.get<PaginatedResponse<RawOrderHistoryEntry>>(`/v1/orders/${orderUuid}/history`, { signal });
-    return response.data; // returns { data: [...], links, meta }
+    const response = await httpClient.get<PaginatedResponse<RawOrderHistoryEntry>>(
+      `${API_ENDPOINTS.ORDERS.HISTORY}/${orderUuid}/history`,
+      { signal },
+    );
+    return response.data;
+  },
+
+  // ---- Order detail ----
+
+  async fetchOrderDetail(orderUuid: string, signal?: AbortSignal) {
+    const response = await httpClient.get<RawOrder>(
+      `${API_ENDPOINTS.ORDERS.DETAIL}/${orderUuid}`,
+      { signal },
+    );
+    return response.data;
+  },
+
+  // ---- Catalog ----
+
+  /** Fetch the full engine catalog (all item types). */
+  async fetchCatalog(signal?: AbortSignal): Promise<EngineCatalog> {
+    const response = await httpClient.get<EngineCatalog>(
+      API_ENDPOINTS.CATALOG.ENGINE_OPTIONS,
+      { signal },
+    );
+    return response.data;
+  },
+
+  /** Fetch catalog for a specific item type. */
+  async fetchCatalogByItemType(itemType: string, signal?: AbortSignal): Promise<SingleItemCatalog> {
+    const response = await httpClient.get<SingleItemCatalog>(
+      API_ENDPOINTS.CATALOG.ENGINE_OPTIONS,
+      { params: { item_type: itemType }, signal },
+    );
+    return response.data;
+  },
+
+  // ---- Lifecycle actions ----
+
+  async submitBudget(orderUuid: string, services: BudgetServicePayload[]) {
+    const response = await httpClient.post<{ message: string; order: RawOrder }>(
+      `${API_ENDPOINTS.ORDERS.BUDGET}/${orderUuid}/budget`,
+      { services },
+    );
+    return response.data;
+  },
+
+  async customerApproval(orderUuid: string, payload: CustomerApprovalPayload) {
+    const response = await httpClient.post<{ message: string; order: RawOrder }>(
+      `${API_ENDPOINTS.ORDERS.CUSTOMER_APPROVAL}/${orderUuid}/customer-approval`,
+      payload,
+    );
+    return response.data;
+  },
+
+  async markWorkCompleted(orderUuid: string, payload: WorkCompletedPayload) {
+    const response = await httpClient.post<{ message: string; order: RawOrder }>(
+      `${API_ENDPOINTS.ORDERS.WORK_COMPLETED}/${orderUuid}/work-completed`,
+      payload,
+    );
+    return response.data;
+  },
+
+  async markReadyForDelivery(orderUuid: string) {
+    const response = await httpClient.post<{ message: string; order: RawOrder }>(
+      `${API_ENDPOINTS.ORDERS.READY_FOR_DELIVERY}/${orderUuid}/ready-for-delivery`,
+    );
+    return response.data;
+  },
+
+  async deliverOrder(orderUuid: string) {
+    const response = await httpClient.post<{ message: string; order: RawOrder }>(
+      `${API_ENDPOINTS.ORDERS.DELIVER}/${orderUuid}/deliver`,
+    );
+    return response.data;
+  },
+
+  // ---- Public tracking ----
+
+  async trackOrder(payload: TrackOrderPayload) {
+    const response = await httpClient.post<RawOrder>(
+      API_ENDPOINTS.ORDERS.TRACK,
+      payload,
+    );
+    return response.data;
   },
 };
 

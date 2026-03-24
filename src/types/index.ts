@@ -60,13 +60,114 @@ export interface Status {
   statusName: 'Open' | 'In Progress' | 'Ready for delivery' | 'Delivered' | 'Paid' | 'Returned' | 'Not paid' | 'Cancelled';
 }
 
+// --- Order Lifecycle Status (matches backend OrderStatus enum) ---
+
+export type OrderLifecycleStatus =
+  | 'Received'
+  | 'Awaiting Review'
+  | 'Reviewed'
+  | 'Awaiting Customer Approval'
+  | 'Ready for Work'
+  | 'In Progress'
+  | 'Ready for Delivery'
+  | 'Delivered';
+
+// --- Motor / Items / Services ---
+
+export interface MotorInfo {
+  id: number;
+  uuid: string;
+  brand: string | null;
+  liters: string | null;
+  year: string | null;
+  model: string | null;
+  cylinder_count: string | null;
+  down_payment: number;
+  total_cost: number;
+  is_fully_paid: boolean;
+  center_torque: string | null;
+  rod_torque: string | null;
+  first_gap: string | null;
+  second_gap: string | null;
+  third_gap: string | null;
+  center_clearance: string | null;
+  rod_clearance: string | null;
+}
+
+export interface OrderItemComponent {
+  id: number;
+  uuid: string;
+  component_name: string;
+  is_received: boolean;
+}
+
+export interface OrderItem {
+  id: number;
+  uuid: string;
+  item_type: string;
+  is_received: boolean;
+  components: OrderItemComponent[];
+}
+
+export interface OrderServiceEntry {
+  id: number;
+  uuid: string;
+  order_item_id: number;
+  service_key: string;
+  service_name: string | null;
+  measurement: string | null;
+  is_budgeted: boolean;
+  is_authorized: boolean;
+  is_completed: boolean;
+  notes: string | null;
+  base_price: string | null;
+  net_price: string | null;
+}
+
+// --- Catalog types (from GET /v1/catalog/engine-options) ---
+
+export interface CatalogComponent {
+  key: string;
+  label: string;
+}
+
+export interface CatalogService {
+  service_key: string;
+  service_name: string;
+  base_price: string;
+  net_price: string;
+  requires_measurement: boolean;
+  display_order: number;
+  item_type: string;
+}
+
+export interface CatalogItemType {
+  key: string;
+  label: string;
+}
+
+/** Full catalog response (no item_type filter). */
+export interface EngineCatalog {
+  item_types: CatalogItemType[];
+  components_by_type: Record<string, CatalogComponent[]>;
+  services_by_type: Record<string, CatalogService[]>;
+}
+
+/** Single-type catalog response (with item_type filter). */
+export interface SingleItemCatalog {
+  item_type: string;
+  item_type_label: string;
+  components: CatalogComponent[];
+  services: CatalogService[];
+}
+
 export interface Order {
   id: string;
   customerId: string;
   customer?: User; // Reference to the customer user
   title: string;
   description: string;
-  status: Status['statusName'];
+  status: Status['statusName'] | OrderLifecycleStatus;
   priority: 'Low' | 'Normal' | 'High' | 'Urgent';
   category?: string;
   estimatedCompletion?: Date;
@@ -75,6 +176,9 @@ export interface Order {
   assignedTo?: string;
   assignedUser?: User; // Reference to the assigned user
   attachments?: Attachment[]; // Array of attachments
+  motorInfo?: MotorInfo;
+  items?: OrderItem[];
+  services?: OrderServiceEntry[];
   createdAt: Date;
   updatedAt: Date;
   createdBy: string;
