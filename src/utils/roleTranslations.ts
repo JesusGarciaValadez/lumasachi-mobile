@@ -1,4 +1,4 @@
-import {UserRole} from '../types';
+import {UserRole} from '@/types';
 
 export const getRoleTranslationKey = (role: UserRole): string => {
   switch (role) {
@@ -34,7 +34,14 @@ export const getStatusTranslation = (status: string): string => {
     'Not paid': 'orders.statuses.notPaid',
     'On hold': 'orders.statuses.onHold',
     'Cancelled': 'orders.statuses.cancelled',
+    // Lifecycle statuses
+    'Received': 'orders.statuses.received',
+    'Awaiting Review': 'orders.statuses.awaitingReview',
+    'Reviewed': 'orders.statuses.reviewed',
+    'Awaiting Customer Approval': 'orders.statuses.awaitingCustomerApproval',
+    'Ready for Work': 'orders.statuses.readyForWork',
+    'Ready for Delivery': 'orders.statuses.readyForDelivery',
   };
 
-  return statusMap[status] || 'orders.statuses.open'; // fallback to 'open' if status not found
-}; 
+  return statusMap[status] || 'orders.statuses.open';
+};
