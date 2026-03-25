@@ -801,6 +801,47 @@
       "inactive": "Inactivos"
     }
   },
+  "budget": {
+    "title": "Presupuestar",
+    "description": "Selecciona los servicios a presupuestar para esta orden.",
+    "serviceName": "Servicio",
+    "measurement": "Medida",
+    "measurementPlaceholder": "ej. 0.020",
+    "notes": "Notas",
+    "notesPlaceholder": "Notas opcionales",
+    "ppto": "PPTO",
+    "submit": "Enviar Presupuesto",
+    "success": "Presupuesto enviado exitosamente",
+    "noServices": "No hay servicios disponibles para este tipo de artículo.",
+    "atLeastOneRequired": "Selecciona al menos un servicio.",
+    "statusGuard": "Esta orden ya no está en espera de revisión."
+  },
+  "approval": {
+    "title": "Aprobar Servicios",
+    "description": "Selecciona los servicios a autorizar e ingresa el anticipo.",
+    "serviceName": "Servicio",
+    "authorize": "Aut.",
+    "netPrice": "Precio Neto",
+    "downPayment": "Anticipo",
+    "downPaymentPlaceholder": "0.00",
+    "selectedTotal": "Total Autorizado",
+    "submit": "Aprobar Servicios",
+    "success": "Servicios aprobados exitosamente",
+    "atLeastOneRequired": "Autoriza al menos un servicio.",
+    "statusGuard": "Esta orden ya no está esperando aprobación del cliente."
+  },
+  "workCompleted": {
+    "title": "Marcar Trabajo Realizado",
+    "description": "Selecciona los servicios que han sido completados.",
+    "serviceName": "Servicio",
+    "completed": "T.R.",
+    "netPrice": "Precio Neto",
+    "selectedTotal": "Total Realizado",
+    "submit": "Marcar Completado",
+    "success": "Trabajo marcado como completado",
+    "atLeastOneRequired": "Selecciona al menos un servicio.",
+    "statusGuard": "Esta orden ya no está lista para trabajo."
+  },
   "validation": {
     "email": {
       "invalid": "Por favor ingresa un correo electrónico válido.",
