@@ -801,6 +801,47 @@
       "inactive": "Inactive"
     }
   },
+  "budget": {
+    "title": "Submit Budget",
+    "description": "Select services to budget for this order.",
+    "serviceName": "Service",
+    "measurement": "Measurement",
+    "measurementPlaceholder": "e.g. 0.020",
+    "notes": "Notes",
+    "notesPlaceholder": "Optional notes",
+    "ppto": "PPTO",
+    "submit": "Submit Budget",
+    "success": "Budget submitted successfully",
+    "noServices": "No services available for this item type.",
+    "atLeastOneRequired": "Select at least one service.",
+    "statusGuard": "This order is no longer awaiting review."
+  },
+  "approval": {
+    "title": "Approve Services",
+    "description": "Select services to authorize and enter down payment.",
+    "serviceName": "Service",
+    "authorize": "Aut.",
+    "netPrice": "Net Price",
+    "downPayment": "Down Payment",
+    "downPaymentPlaceholder": "0.00",
+    "selectedTotal": "Authorized Total",
+    "submit": "Approve Services",
+    "success": "Services approved successfully",
+    "atLeastOneRequired": "Authorize at least one service.",
+    "statusGuard": "This order is no longer awaiting customer approval."
+  },
+  "workCompleted": {
+    "title": "Mark Work Completed",
+    "description": "Select services that have been completed.",
+    "serviceName": "Service",
+    "completed": "T.R.",
+    "netPrice": "Net Price",
+    "selectedTotal": "Completed Total",
+    "submit": "Mark Completed",
+    "success": "Work marked as completed",
+    "atLeastOneRequired": "Select at least one service.",
+    "statusGuard": "This order is no longer ready for work."
+  },
   "validation": {
     "email": {
       "invalid": "Please enter a valid email address.",

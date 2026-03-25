@@ -1,29 +1,32 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {RootStackParamList} from '../types/navigation';
+import {RootStackParamList} from '@/types';
 import AuthNavigator from './AuthNavigator';
 import MainNavigator from './MainNavigator';
 import SplashScreen from '../screens/SplashScreen';
 import OrderDetailsScreen from '../screens/OrderDetailsScreen';
 import CreateOrderScreen from '../screens/CreateOrderScreen';
 import EditOrderScreen from '../screens/EditOrderScreen';
+import OrderBudgetScreen from '../screens/OrderBudgetScreen';
+import OrderApprovalScreen from '../screens/OrderApprovalScreen';
+import OrderWorkCompletedScreen from '../screens/OrderWorkCompletedScreen';
 import UserManagementScreen from '../screens/UserManagementScreen';
 import CreateUserScreen from '../screens/CreateUserScreen';
 import ManageRolesScreen from '../screens/ManageRolesScreen';
 import ViewReportsScreen from '../screens/ViewReportsScreen';
 import ExportDataScreen from '../screens/ExportDataScreen';
-import {useAuth} from '../hooks/useAuth';
-import {usePermissions} from '../hooks/usePermissions';
-import {useTranslationSafe} from '../hooks/useTranslationSafe';
-import {PERMISSIONS} from '../services/permissionsService';
+import {useAuth} from '@hooks/useAuth';
+import {usePermissions} from '@hooks/usePermissions';
+import {useTranslationSafe} from '@hooks/useTranslationSafe';
+import {PERMISSIONS} from '@services/permissionsService';
 import {View, Text, StyleSheet} from 'react-native';
 import {navigationRef} from './navigationRef';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
-// Componente para mostrar cuando el usuario no tiene permisos
+// Component to show when the user doesn't have permits
 const UnauthorizedScreen: React.FC = () => {
   const {t} = useTranslationSafe();
   
@@ -129,6 +132,42 @@ const RootNavigator: React.FC = () => {
                 headerShown: true,
                 title: t('editOrder.title') as string,
                 headerStyle: { backgroundColor: '#007AFF' },
+                headerTintColor: '#ffffff',
+                headerTitleStyle: { color: '#ffffff' },
+                headerBackTitle: '',
+              }}
+            />
+            <Stack.Screen
+              name="OrderBudget"
+              component={OrderBudgetScreen}
+              options={{
+                headerShown: true,
+                title: t('budget.title') as string,
+                headerStyle: { backgroundColor: '#007AFF' },
+                headerTintColor: '#ffffff',
+                headerTitleStyle: { color: '#ffffff' },
+                headerBackTitle: '',
+              }}
+            />
+            <Stack.Screen
+              name="OrderApproval"
+              component={OrderApprovalScreen}
+              options={{
+                headerShown: true,
+                title: t('approval.title') as string,
+                headerStyle: { backgroundColor: '#FF9500' },
+                headerTintColor: '#ffffff',
+                headerTitleStyle: { color: '#ffffff' },
+                headerBackTitle: '',
+              }}
+            />
+            <Stack.Screen
+              name="OrderWorkCompleted"
+              component={OrderWorkCompletedScreen}
+              options={{
+                headerShown: true,
+                title: t('workCompleted.title') as string,
+                headerStyle: { backgroundColor: '#30B0C7' },
                 headerTintColor: '#ffffff',
                 headerTitleStyle: { color: '#ffffff' },
                 headerBackTitle: '',
