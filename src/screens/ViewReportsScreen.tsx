@@ -5,9 +5,9 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  FlatList,
   Alert,
 } from 'react-native';
+import {FlashList} from '@shopify/flash-list';
 import {useTranslationSafe} from '../hooks/useTranslationSafe';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -181,10 +181,11 @@ const ViewReportsScreen: React.FC = () => {
           </ScrollView>
         </View>
 
-        <FlatList
+        <FlashList
           data={filteredReports}
           renderItem={renderReportItem}
           keyExtractor={item => item.id}
+          estimatedItemSize={160}
           contentContainerStyle={styles.reportsList}
           showsVerticalScrollIndicator={false}
         />
