@@ -530,6 +530,46 @@
       "deliverSuccess": "Orden entregada exitosamente"
     }
   },
+  "itemTypes": {
+    "cylinder_head": "Cabeza de Cilindro",
+    "engine_block": "Block de Motor",
+    "crankshaft": "Cigüeñal",
+    "connecting_rods": "Bielas",
+    "others": "Otros"
+  },
+  "components": {
+    "camshaft_covers": "Tapas de Árbol de Levas",
+    "bolts": "Tornillos",
+    "rocker_arm_shaft": "Eje de Balancines",
+    "wedges": "Cuñas",
+    "springs": "Resortes",
+    "shims": "Lainas",
+    "valves": "Válvulas",
+    "guides": "Guías",
+    "bearing_caps": "Tapas de Cojinete",
+    "cap_bolts": "Tornillos de Tapa",
+    "camshaft": "Árbol de Levas",
+    "bearings": "Cojinetes",
+    "camshaft_key": "Cuña del Árbol",
+    "camshaft_gear": "Engrane del Árbol",
+    "iron_gear": "Engrane de Hierro",
+    "bronze_gear": "Engrane de Bronce",
+    "lock": "Seguro",
+    "key": "Cuña",
+    "flywheel": "Volante",
+    "bolt": "Tornillo",
+    "deflector": "Deflector",
+    "nuts": "Tuercas",
+    "pistons": "Pistones",
+    "locks": "Seguros",
+    "water_pump": "Bomba de Agua",
+    "oil_pump": "Bomba de Aceite",
+    "oil_pan": "Cárter",
+    "windage_tray": "Charola Rompevientos",
+    "intake_manifold": "Múltiple de Admisión",
+    "exhaust_manifold": "Múltiple de Escape",
+    "timing_covers": "Tapas de Distribución"
+  },
   "orderStats": {
     "errors": {
       "noInternetConnection": "No hay conexión a internet"

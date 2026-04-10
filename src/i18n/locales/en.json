@@ -530,6 +530,46 @@
       "deliverSuccess": "Order delivered successfully"
     }
   },
+  "itemTypes": {
+    "cylinder_head": "Cylinder Head",
+    "engine_block": "Engine Block",
+    "crankshaft": "Crankshaft",
+    "connecting_rods": "Connecting Rods",
+    "others": "Others"
+  },
+  "components": {
+    "camshaft_covers": "Camshaft Covers",
+    "bolts": "Bolts",
+    "rocker_arm_shaft": "Rocker Arm Shaft",
+    "wedges": "Wedges",
+    "springs": "Springs",
+    "shims": "Shims",
+    "valves": "Valves",
+    "guides": "Guides",
+    "bearing_caps": "Bearing Caps",
+    "cap_bolts": "Cap Bolts",
+    "camshaft": "Camshaft",
+    "bearings": "Bearings",
+    "camshaft_key": "Camshaft Key",
+    "camshaft_gear": "Camshaft Gear",
+    "iron_gear": "Iron Gear",
+    "bronze_gear": "Bronze Gear",
+    "lock": "Lock",
+    "key": "Key",
+    "flywheel": "Flywheel",
+    "bolt": "Bolt",
+    "deflector": "Deflector",
+    "nuts": "Nuts",
+    "pistons": "Pistons",
+    "locks": "Locks",
+    "water_pump": "Water Pump",
+    "oil_pump": "Oil Pump",
+    "oil_pan": "Oil Pan",
+    "windage_tray": "Windage Tray",
+    "intake_manifold": "Intake Manifold",
+    "exhaust_manifold": "Exhaust Manifold",
+    "timing_covers": "Timing Covers"
+  },
   "orderStats": {
     "errors": {
       "noInternetConnection": "No internet connection"
