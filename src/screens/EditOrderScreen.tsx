@@ -9,8 +9,8 @@ import {
   Alert,
   ActivityIndicator,
   Modal,
-  FlatList,
 } from 'react-native';
+import {FlashList} from '@shopify/flash-list';
 import {Picker} from '@react-native-picker/picker';
 import {EditOrderScreenProps} from '../types/navigation';
 import {useTranslationSafe} from '../hooks/useTranslationSafe';
@@ -1401,11 +1401,12 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
                 <Text style={styles.closeButtonText}>{t('common.done') as string}</Text>
               </TouchableOpacity>
             </View>
-            <FlatList
+            <FlashList
               data={categories}
               renderItem={renderCategoryItem}
               keyExtractor={(item) => item.id.toString()}
-              style={styles.customerList}
+              estimatedItemSize={50}
+              contentContainerStyle={styles.customerList}
             />
           </View>
         </Modal>
@@ -1424,11 +1425,12 @@ const EditOrderScreen: React.FC<EditOrderScreenProps> = ({
                 <Text style={styles.closeButtonText}>{t('common.close') as string}</Text>
               </TouchableOpacity>
             </View>
-            <FlatList
+            <FlashList
               data={employees}
               renderItem={renderEmployeeItem}
               keyExtractor={(item) => item.id}
-              style={styles.customerList}
+              estimatedItemSize={60}
+              contentContainerStyle={styles.customerList}
             />
           </View>
         </Modal>

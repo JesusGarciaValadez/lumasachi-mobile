@@ -1,5 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import { View, Text, StyleSheet, FlatList, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, RefreshControl } from 'react-native';
+import {FlashList} from '@shopify/flash-list';
 import { Searchbar, Chip } from 'react-native-paper';
 import { UsersScreenProps } from '../types/navigation';
 import { useTranslationSafe } from '../hooks/useTranslationSafe';
@@ -113,15 +114,13 @@ const UsersScreen: React.FC<UsersScreenProps> = () => {
           <ErrorMessage error={error} onRetry={() => load()} onDismiss={clearError} />
         )}
 
-        <FlatList
+        <FlashList
           data={filteredUsers}
           renderItem={renderUserItem}
           keyExtractor={(item) => item.id}
+          estimatedItemSize={80}
           refreshControl={<RefreshControl refreshing={refreshing || loading} onRefresh={onRefresh} />}
           ListEmptyComponent={!loading ? EmptyComponent : null}
-          initialNumToRender={12}
-          windowSize={10}
-          removeClippedSubviews
           ListHeaderComponent={ListHeader}
           contentContainerStyle={filteredUsers.length === 0 ? styles.emptyList : undefined}
         />

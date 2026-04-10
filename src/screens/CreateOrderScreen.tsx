@@ -9,8 +9,8 @@ import {
   Alert,
   ActivityIndicator,
   Modal,
-  FlatList,
 } from 'react-native';
+import {FlashList} from '@shopify/flash-list';
 import {Picker} from '@react-native-picker/picker';
 import {useNavigation} from '@react-navigation/native';
 import {useTranslationSafe} from '@hooks/useTranslationSafe';
@@ -946,7 +946,7 @@ const CreateOrderScreen: React.FC = () => {
               <Text style={styles.modalTitle}>{t('createOrder.selectCustomer') as string}</Text>
               <TouchableOpacity onPress={() => setShowCustomerModal(false)}><Text style={styles.modalCloseButton}>×</Text></TouchableOpacity>
             </View>
-            <FlatList
+            <FlashList
               data={customers}
               renderItem={({item}) => (
                 <TouchableOpacity style={styles.listItem} onPress={() => handleCustomerSelect(item)}>
@@ -955,7 +955,8 @@ const CreateOrderScreen: React.FC = () => {
                 </TouchableOpacity>
               )}
               keyExtractor={item => item.id}
-              style={styles.listContent}
+              estimatedItemSize={60}
+              contentContainerStyle={styles.listContent}
             />
           </View>
         </Modal>
@@ -967,7 +968,7 @@ const CreateOrderScreen: React.FC = () => {
               <Text style={styles.modalTitle}>{t('createOrder.selectEmployee') as string}</Text>
               <TouchableOpacity onPress={() => setShowEmployeeModal(false)}><Text style={styles.modalCloseButton}>{t('common.close') as string}</Text></TouchableOpacity>
             </View>
-            <FlatList
+            <FlashList
               data={employees}
               renderItem={({item}) => (
                 <TouchableOpacity style={styles.listItem} onPress={() => handleEmployeeSelect(item)}>
@@ -976,7 +977,8 @@ const CreateOrderScreen: React.FC = () => {
                 </TouchableOpacity>
               )}
               keyExtractor={item => item.id}
-              style={styles.listContent}
+              estimatedItemSize={60}
+              contentContainerStyle={styles.listContent}
             />
           </View>
         </Modal>

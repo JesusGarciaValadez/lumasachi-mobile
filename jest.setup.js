@@ -490,5 +490,13 @@ jest.mock('./src/hooks/useErrorHandler', () => ({
   }),
 }));
 
+// Mock @shopify/flash-list
+jest.mock('@shopify/flash-list', () => {
+  const { FlatList } = require('react-native');
+  return {
+    FlashList: FlatList,
+  };
+});
+
 // Mock timers
 jest.useFakeTimers();

@@ -3,11 +3,11 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
   TouchableOpacity,
   RefreshControl,
   useColorScheme,
 } from 'react-native';
+import {FlashList} from '@shopify/flash-list';
 import {OrdersScreenProps} from '../types/navigation';
 import {useTranslation} from 'react-i18next';
 import {getStatusTranslation} from '../utils/roleTranslations';
@@ -230,10 +230,11 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({navigation}) => {
 
   return (
     <View style={[styles.container, isDark ? styles.containerDark : styles.containerLight]}>
-      <FlatList
+      <FlashList
         data={orders}
         renderItem={renderOrderItem}
         keyExtractor={(item) => String(item.uuid || item.id)}
+        estimatedItemSize={180}
         refreshControl={
           <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
         }
