@@ -7,6 +7,7 @@ import {useTranslationSafe} from '@hooks/useTranslationSafe';
 import {orderService, RawOrder, BudgetServicePayload} from '@services/orderService';
 import type {OrderItem, CatalogService, EngineCatalog} from '@/types';
 import {ORDER_LIFECYCLE_STATUSES} from '@/constants';
+import {getItemTypeLabel} from '../utils/itemLabels';
 import ErrorBoundary from '../components/ErrorBoundary';
 import Toast from 'react-native-toast-message';
 
@@ -126,7 +127,7 @@ const OrderBudgetScreen: React.FC<Props> = ({navigation, route}) => {
 
         {items.map(item => {
           const catalogServices: CatalogService[] = catalog?.services_by_type?.[item.item_type] ?? [];
-          const typeLabel = item.item_type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+          const typeLabel = getItemTypeLabel(t as any, item.item_type);
           if (!catalogServices.length) return null;
           return (
             <View key={item.id} style={styles.card}>

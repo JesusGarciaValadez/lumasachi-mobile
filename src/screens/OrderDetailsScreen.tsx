@@ -35,6 +35,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {STORAGE_KEYS, API_BASE_URL_CONFIG} from '@/constants';
 import Toast from 'react-native-toast-message';
 import {useIsFocused} from '@react-navigation/native';
+import {getItemTypeLabel, getComponentLabel} from '../utils/itemLabels';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -306,9 +307,9 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({navigation, rout
         <View style={styles.card}>
           {items.map(item => (
             <View key={item.id} style={styles.itemBlock}>
-              <Text style={styles.itemTypeLabel}>{item.item_type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</Text>
+              <Text style={styles.itemTypeLabel}>{getItemTypeLabel(t as any, item.item_type)}</Text>
               {item.components?.length ? (
-                <View style={styles.componentList}>{item.components.map(c => <Text key={c.id} style={styles.componentChip}>{c.component_name.replace(/_/g, ' ')}</Text>)}</View>
+                <View style={styles.componentList}>{item.components.map(c => <Text key={c.id} style={styles.componentChip}>{getComponentLabel(t as any, c.component_name)}</Text>)}</View>
               ) : <Text style={styles.mutedText}>—</Text>}
             </View>
           ))}
@@ -325,7 +326,7 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({navigation, rout
         {items.map(item => {
           const svc = servicesByItem.get(item.id) || [];
           if (!svc.length) return null;
-          const label = item.item_type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+          const label = getItemTypeLabel(t as any, item.item_type);
           return (
             <View key={item.id} style={[styles.card, {marginBottom: 12}]}>
               <Text style={styles.serviceGroupTitle}>{label}</Text>
