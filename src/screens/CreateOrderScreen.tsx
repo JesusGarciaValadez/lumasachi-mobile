@@ -28,6 +28,7 @@ import {ProgressBar} from 'react-native-paper';
 import {useIsFocused} from '@react-navigation/native';
 import i18n from '../i18n';
 import {API_ENDPOINTS} from '@/constants';
+import {getItemTypeLabel, getComponentLabel} from '../utils/itemLabels';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -98,6 +99,8 @@ const CreateOrderScreen: React.FC = () => {
 
   // Step 3 — Items Received
   const [catalog, setCatalog] = useState<EngineCatalog | null>(null);
+  const [catalogLoading, setCatalogLoading] = useState(false);
+  const [catalogError, setCatalogError] = useState<string | null>(null);
   const [selectedItemTypes, setSelectedItemTypes] = useState<string[]>([]);
   const [selectedComponents, setSelectedComponents] = useState<SelectedComponents>({});
 
@@ -131,11 +134,28 @@ const CreateOrderScreen: React.FC = () => {
   // Load initial data
   // -------------------------------------------------------------------------
 
+  // Catalog loader — isolated so a catalog failure never blocks users/employees
+  const loadCatalog = async () => {
+    setCatalogLoading(true);
+    setCatalogError(null);
+    try {
+      const catalogData = await orderService.fetchCatalog();
+      setCatalog(catalogData);
+    } catch (err: any) {
+      const status = err?.response?.status;
+      const msg = err?.response?.data?.message || err?.message || 'Unknown error';
+      console.error('[CreateOrderScreen] fetchCatalog failed', {status, msg, err});
+      setCatalogError(`${status ? `HTTP ${status}: ` : ''}${msg}`);
+    } finally {
+      setCatalogLoading(false);
+    }
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const loadInitialData = async () => {
       try {
         setIsLoading(true);
-        clearError();
 
         // Customers
         const customersResp = await httpClient.get('/v1/users/customers');
@@ -197,10 +217,6 @@ const CreateOrderScreen: React.FC = () => {
           } as User;
         });
         setEmployees(mappedEmployees);
-
-        // Catalog (fetch full)
-        const catalogData = await orderService.fetchCatalog();
-        setCatalog(catalogData);
       } catch (err) {
         await errorService.logError(err as Error, {component: 'CreateOrderScreen', operation: 'loadInitialData'});
         handleError(err as Error);
@@ -208,8 +224,10 @@ const CreateOrderScreen: React.FC = () => {
         setIsLoading(false);
       }
     };
+
     loadInitialData();
-  }, [handleError, clearError]);
+    loadCatalog();
+  }, []); // ← empty deps: run once on mount; avoids re-runs caused by unstable handleError reference
 
   // -------------------------------------------------------------------------
   // Handlers — Basic form
@@ -751,6 +769,34 @@ const CreateOrderScreen: React.FC = () => {
   // Step 3 — Items Received
   const renderStep3 = () => {
     const itemTypes = catalog?.item_types ?? [];
+
+    // Loading state
+    if (catalogLoading) {
+      return (
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>{t('createOrder.items.title') as string}</Text>
+          <ActivityIndicator size="large" color="#007AFF" style={{marginVertical: 24}} />
+        </View>
+      );
+    }
+
+    // Error state — shows the exact error so it can be debugged
+    if (catalogError) {
+      return (
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>{t('createOrder.items.title') as string}</Text>
+          <Text style={[styles.errorText, {marginBottom: 8, fontSize: 13}]}>
+            {catalogError}
+          </Text>
+          <TouchableOpacity
+            style={[styles.chip, {alignSelf: 'flex-start', backgroundColor: '#007AFF', borderColor: '#007AFF'}]}
+            onPress={loadCatalog}>
+            <Text style={[styles.chipText, {color: '#fff'}]}>{t('common.retry') as string}</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
     return (
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>{t('createOrder.items.title') as string}</Text>
@@ -765,7 +811,7 @@ const CreateOrderScreen: React.FC = () => {
                 key={it.key}
                 style={[styles.chip, selected && styles.chipSelected]}
                 onPress={() => toggleItemType(it.key)}>
-                <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{it.label}</Text>
+                <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{getItemTypeLabel(t as any, it.key)}</Text>
               </TouchableOpacity>
             );
           })}
@@ -779,7 +825,7 @@ const CreateOrderScreen: React.FC = () => {
         {selectedItemTypes.map(itemType => {
           const components: CatalogComponent[] = catalog?.components_by_type?.[itemType] ?? [];
           const selected = selectedComponents[itemType] || [];
-          const typeLabel = catalog?.item_types.find(it => it.key === itemType)?.label ?? itemType;
+          const typeLabel = getItemTypeLabel(t as any, itemType);
           return (
             <View key={itemType} style={styles.componentSection}>
               <Text style={styles.componentSectionTitle}>{typeLabel} — {t('createOrder.items.components') as string}</Text>
@@ -793,7 +839,7 @@ const CreateOrderScreen: React.FC = () => {
                     <View style={[styles.checkbox, isChecked && styles.checkboxChecked]}>
                       {isChecked && <Text style={styles.checkmark}>✓</Text>}
                     </View>
-                    <Text style={styles.checkboxLabel}>{comp.label}</Text>
+                    <Text style={styles.checkboxLabel}>{getComponentLabel(t as any, comp.key)}</Text>
                   </TouchableOpacity>
                 );
               })}
@@ -861,7 +907,7 @@ const CreateOrderScreen: React.FC = () => {
         {/* Items */}
         <Text style={styles.reviewHeading}>{t('createOrder.review.itemsReceived') as string}</Text>
         {selectedItemTypes.map(itemType => {
-          const typeLabel = catalog?.item_types.find(it => it.key === itemType)?.label ?? itemType;
+          const typeLabel = getItemTypeLabel(t as any, itemType);
           const comps = selectedComponents[itemType] || [];
           return (
             <View key={itemType} style={styles.reviewItemBlock}>
